@@ -13,10 +13,13 @@ import { Financials } from './pages/Financials/Financials';
 
 function App() {
   const [currentPage, setCurrentPage] = useState('dashboard');
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' });
+    setSearchQuery(''); // Reset search on page change
   }, [currentPage]);
+
   const [branding, setBranding] = useState({
     name: 'AURA.FIT.',
     color: '#22C55E',
@@ -51,7 +54,7 @@ function App() {
         {(() => {
           switch (currentPage) {
             case 'dashboard':
-              return <Dashboard />;
+              return <Dashboard searchQuery={searchQuery} />;
             case 'settings':
               return (
                 <AccountSettings 
@@ -60,21 +63,21 @@ function App() {
                 />
               );
             case 'support':
-              return <Support />;
+              return <Support searchQuery={searchQuery} />;
             case 'library':
-              return <Library />;
+              return <Library searchQuery={searchQuery} />;
             case 'gyms':
-              return <Gyms />;
+              return <Gyms searchQuery={searchQuery} />;
             case 'pt':
-              return <Trainers />;
+              return <Trainers searchQuery={searchQuery} />;
             case 'trainees':
-              return <Trainees />;
+              return <Trainees searchQuery={searchQuery} />;
             case 'infra':
-              return <Infrastructure />;
+              return <Infrastructure searchQuery={searchQuery} />;
             case 'financials':
-              return <Financials />;
+              return <Financials searchQuery={searchQuery} />;
             default:
-              return <Dashboard />;
+              return <Dashboard searchQuery={searchQuery} />;
           }
         })()}
       </div>
@@ -86,6 +89,8 @@ function App() {
       currentPage={currentPage} 
       onNavigate={setCurrentPage}
       branding={branding}
+      searchQuery={searchQuery}
+      onSearch={setSearchQuery}
     >
       {renderPage()}
     </DashboardLayout>

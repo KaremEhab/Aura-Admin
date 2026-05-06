@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Search, RefreshCcw, Moon, Sun, Bell, Plus, Menu } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
-import auraLogo from '../../assets/Aura.svg';
 import './Header.css';
 
-export function Header({ onMenuClick, branding, onRefresh, onNotifClick, onNavigate }) {
+export function Header({ onMenuClick, branding, onRefresh, onNotifClick, onNavigate, searchQuery, onSearch }) {
   const { isDark, toggleTheme } = useTheme();
   const [scrolled, setScrolled] = useState(false);
 
@@ -32,7 +31,12 @@ export function Header({ onMenuClick, branding, onRefresh, onNotifClick, onNavig
         </div>
         <div className="search-bar">
           <Search size={18} className="search-icon" />
-          <input type="text" placeholder="Search systems..." />
+          <input 
+            type="text" 
+            placeholder="Search systems..." 
+            value={searchQuery || ''}
+            onChange={(e) => onSearch && onSearch(e.target.value)}
+          />
         </div>
       </div>
 

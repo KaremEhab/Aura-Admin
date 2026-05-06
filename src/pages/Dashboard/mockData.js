@@ -26,7 +26,8 @@ export const dashboardData = {
       activePTs: { value: 852, growth: 12.1 },
       receptionists: { value: 342, growth: 3.2 },
       totalTrainees: { value: '12,894', growth: 18.5 },
-      activeSubscriptions: { value: '8,921', status: 'Healthy' }
+      activeSubscriptions: { value: '8,921', growth: 14.2 },
+      arpu: { value: '$320.15', growth: 5.4 }
     },
     infrastructure: {
       supabase: { size: '2.4 TB', provisioned: '4.0 TB', usage: 72 },
@@ -41,9 +42,9 @@ export const dashboardData = {
     { id: 3, name: 'Oasis Fitness Hub', tier: 'Enterprise Partner', image: 'https://images.unsplash.com/photo-1540497077202-7c8a3999166f?q=80&w=150&auto=format&fit=crop' }
   ],
   directory: [
-    { id: 'GP-001', name: 'Iron Temple Cairo', tier: 'Premium Branch (Downtown)', revenue: 45200.00, status: 'ACTIVE', image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=150&auto=format&fit=crop' },
-    { id: 'GP-402', name: 'Velocity Athletics', tier: 'Standard Tier (Giza)', revenue: 12180.50, status: 'SUSPENDED', image: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?q=80&w=150&auto=format&fit=crop' },
-    { id: 'GP-122', name: 'Oasis Fitness Hub', tier: 'Enterprise Partner', revenue: 89400.00, status: 'ACTIVE', image: 'https://images.unsplash.com/photo-1540497077202-7c8a3999166f?q=80&w=150&auto=format&fit=crop' },
-    { id: 'GP-125', name: 'Summit Strength Center', tier: 'Elite Membership (Maadi)', revenue: 33750.75, status: 'PENDING', image: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?q=80&w=150&auto=format&fit=crop' }
+    { id: 'GP-001', name: 'Iron Temple Cairo', tier: 'Premium Branch', trainees: 452, location: 'Downtown, Cairo', revenue: 45200.00, status: 'ACTIVE', lastActive: '2 mins ago', image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=150&auto=format&fit=crop' },
+    { id: 'GP-402', name: 'Velocity Athletics', tier: 'Standard Tier', trainees: 128, location: 'Giza, Egypt', revenue: 12180.50, status: 'SUSPENDED', lastActive: '4 days ago', image: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?q=80&w=150&auto=format&fit=crop' },
+    { id: 'GP-122', name: 'Oasis Fitness Hub', tier: 'Enterprise Partner', trainees: 894, location: 'Sheikh Zayed', revenue: 89400.00, status: 'ACTIVE', lastActive: 'Just now', image: 'https://images.unsplash.com/photo-1540497077202-7c8a3999166f?q=80&w=150&auto=format&fit=crop' },
+    { id: 'GP-125', name: 'Summit Strength Center', tier: 'Elite Membership', trainees: 245, location: 'Maadi, Cairo', revenue: 33750.75, status: 'PENDING', lastActive: '1 hr ago', image: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?q=80&w=150&auto=format&fit=crop' }
   ]
 };

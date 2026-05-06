@@ -6,7 +6,7 @@ import { NotificationPanel } from './NotificationPanel';
 import { Plus } from 'lucide-react';
 import './DashboardLayout.css';
 
-export function DashboardLayout({ children, currentPage, onNavigate, branding }) {
+export function DashboardLayout({ children, currentPage, onNavigate, branding, searchQuery, onSearch }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
@@ -51,6 +51,8 @@ export function DashboardLayout({ children, currentPage, onNavigate, branding })
           onRefresh={handleRefresh}
           onNotifClick={() => setNotifOpen(true)}
           onNavigate={onNavigate}
+          searchQuery={searchQuery}
+          onSearch={onSearch}
         />
         <main className="main-content" key={refreshKey}>
           {children}

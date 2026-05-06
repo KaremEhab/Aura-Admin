@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Search, ChevronDown, ExternalLink, ChevronLeft, ChevronRight, PowerOff, RefreshCcw, CheckCircle, Settings, Users, TrendingUp, Clock, Dumbbell, CalendarDays, CreditCard, Activity, Sparkles } from 'lucide-react';
+import { Search, ChevronDown, ExternalLink, PowerOff, RefreshCcw, CheckCircle, Settings, Users, Clock, CreditCard, Sparkles } from 'lucide-react';
 import { Badge } from '../../components/ui/Badge';
+import { Pagination } from '../../components/ui/Pagination';
 import './Trainees.css';
 
 const getStatusVariant = (status) => {
@@ -35,6 +36,7 @@ const getActionTitle = (status) => {
 
 export function Trainees() {
   const [activeTab, setActiveTab] = useState('all');
+  const [currentPage, setCurrentPage] = useState(1);
 
   const traineeData = [
     { id: 'TR-4401', name: 'Ahmed Khalil', plan: 'Elite 12-Month', image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop', status: 'ACTIVE', source: 'GYM', gym: 'Apex Performance Hub', coach: 'Marcus Sterling', joinDate: 'Jan 15, 2024', spent: 2400.00 },
@@ -53,7 +55,6 @@ export function Trainees() {
         <p className="page-subtitle">Track memberships, monitor engagement, and manage the Aura subscriber base.</p>
       </div>
 
-      {/* Stats Grid */}
       <div className="trainees-stats-grid">
         <div className="trainee-stat-card card animate-slide-up delay-1">
           <div className="stat-icon-wrap blue">
@@ -100,8 +101,6 @@ export function Trainees() {
         </div>
       </div>
 
-      {/* Filter Hub */}
-
       <div className="trainees-filter-hub card animate-slide-up delay-5">
         <div className="filter-controls">
           <div className="search-mini">
@@ -122,91 +121,87 @@ export function Trainees() {
         </div>
       </div>
 
-      {/* Directory Table */}
       <div className="trainees-table-container animate-slide-up delay-6">
         <div className="table-responsive">
-          <table className="directory-table">
-            <thead>
-              <tr>
-                <th>MEMBER</th>
-                <th>SOURCE</th>
-                <th>PLAN</th>
-                <th>GYM</th>
-                <th>COACH</th>
-                <th>JOINED</th>
-                <th>TOTAL SPENT</th>
-                <th>STATUS</th>
-                <th className="text-right">ACTIONS</th>
-              </tr>
-            </thead>
-            <tbody>
-              {traineeData.map(trainee => (
-                <tr key={trainee.id}>
-                  <td>
-                    <div className="trainee-identity">
-                      <img src={trainee.image} alt={trainee.name} className="trainee-img" />
-                      <div className="trainee-info-meta">
-                        <h4>{trainee.name}</h4>
-                        <span className="t-id">#{trainee.id}</span>
-                      </div>
-                    </div>
-                  </td>
-                  <td>
-                    <span className={`source-badge source-${trainee.source.toLowerCase()}`}>
-                      {trainee.source === 'DIRECT' ? 'Aura Direct' : trainee.source === 'GYM' ? 'Via Gym' : 'Via PT'}
-                    </span>
-                  </td>
-                  <td>
-                    <span className={`plan-tag ${trainee.plan.includes('Elite') || trainee.plan.includes('Aura Direct') ? 'elite' : trainee.plan.includes('Trial') ? 'trial' : 'standard'}`}>
-                      {trainee.plan}
-                    </span>
-                  </td>
-                  <td className={`gym-cell ${!trainee.gym ? 'unassigned' : ''}`}>
-                    {trainee.gym || '— Not assigned'}
-                  </td>
-                  <td className={`coach-cell ${!trainee.coach ? 'unassigned' : ''}`}>
-                    {trainee.coach || '— Not assigned'}
-                  </td>
-                  <td className="date-cell">{trainee.joinDate}</td>
-                  <td>
-                    <span className="trainee-spent">
-                      ${trainee.spent.toLocaleString(undefined, { minimumFractionDigits: 2 })}
-                    </span>
-                  </td>
-                  <td>
-                    <Badge variant={getStatusVariant(trainee.status)}>{trainee.status}</Badge>
-                  </td>
-                  <td className="text-right">
-                    <div className="action-group">
-                      <button className="btn-action-ghost" title="View Profile">
-                        <ExternalLink size={16} />
-                      </button>
-                      <button 
-                        className={`btn-action btn-${trainee.status.toLowerCase()}`} 
-                        title={getActionTitle(trainee.status)}
-                      >
-                        {getActionIcon(trainee.status)}
-                      </button>
-                    </div>
-                  </td>
+          <div className="overflow-x-auto">
+            <table className="directory-table min-w-[1000px]">
+              <thead>
+                <tr>
+                  <th>MEMBER</th>
+                  <th>SOURCE</th>
+                  <th>PLAN</th>
+                  <th>GYM</th>
+                  <th>COACH</th>
+                  <th>JOINED</th>
+                  <th>TOTAL SPENT</th>
+                  <th>STATUS</th>
+                  <th className="text-right">ACTIONS</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        
-        <div className="table-footer-pagination">
-          <span className="results-count">Showing 1 to 5 of 24,812 members</span>
-          <div className="pagination-controls">
-            <button className="page-nav"><ChevronLeft size={18} /></button>
-            <button className="page-num-btn active">1</button>
-            <button className="page-num-btn">2</button>
-            <button className="page-num-btn">3</button>
-            <span className="page-dots">...</span>
-            <button className="page-num-btn">4,963</button>
-            <button className="page-nav"><ChevronRight size={18} /></button>
+              </thead>
+              <tbody>
+                {traineeData.map(trainee => (
+                  <tr key={trainee.id}>
+                    <td className="whitespace-nowrap">
+                      <div className="trainee-identity">
+                        <img src={trainee.image} alt={trainee.name} className="trainee-img" />
+                        <div className="trainee-info-meta">
+                          <h4>{trainee.name}</h4>
+                          <span className="t-id">#{trainee.id}</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="whitespace-nowrap">
+                      <span className={`source-badge source-${trainee.source.toLowerCase()}`}>
+                        {trainee.source === 'DIRECT' ? 'Aura Direct' : trainee.source === 'GYM' ? 'Via Gym' : 'Via PT'}
+                      </span>
+                    </td>
+                    <td className="whitespace-nowrap">
+                      <span className={`plan-tag ${trainee.plan.includes('Elite') || trainee.plan.includes('Aura Direct') ? 'elite' : trainee.plan.includes('Trial') ? 'trial' : 'standard'}`}>
+                        {trainee.plan}
+                      </span>
+                    </td>
+                    <td className={`gym-cell whitespace-nowrap ${!trainee.gym ? 'unassigned' : ''}`}>
+                      {trainee.gym || '— Not assigned'}
+                    </td>
+                    <td className={`coach-cell whitespace-nowrap ${!trainee.coach ? 'unassigned' : ''}`}>
+                      {trainee.coach || '— Not assigned'}
+                    </td>
+                    <td className="date-cell whitespace-nowrap">{trainee.joinDate}</td>
+                    <td className="whitespace-nowrap">
+                      <span className="trainee-spent">
+                        ${trainee.spent.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                      </span>
+                    </td>
+                    <td className="whitespace-nowrap">
+                      <Badge variant={getStatusVariant(trainee.status)}>{trainee.status}</Badge>
+                    </td>
+                    <td className="text-right whitespace-nowrap">
+                      <div className="action-group">
+                        <button className="btn-action-ghost" title="View Profile">
+                          <ExternalLink size={16} />
+                        </button>
+                        <button 
+                          className={`btn-action btn-${trainee.status.toLowerCase()}`} 
+                          title={getActionTitle(trainee.status)}
+                        >
+                          {getActionIcon(trainee.status)}
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
+        
+        <Pagination 
+          totalItems={24812}
+          itemsPerPage={10}
+          currentPage={currentPage}
+          onPageChange={setCurrentPage}
+          label="members"
+        />
       </div>
     </div>
   );

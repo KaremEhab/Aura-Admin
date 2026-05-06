@@ -1,27 +1,22 @@
 .business-stats-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 24px;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 12px;
   width: 100%;
 }
 
 .business-stat-card {
   display: flex;
   align-items: center;
-  gap: 20px;
-  padding: 24px;
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.business-stat-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  gap: 12px;
+  padding: 12px 16px !important;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .stat-icon-wrapper {
-  width: 54px;
-  height: 54px;
-  border-radius: 14px;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -31,62 +26,58 @@
 .stat-content {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
 }
 
 .stat-label {
-  font-size: 0.85rem;
-  font-weight: 600;
+  font-size: 0.6rem;
+  font-weight: 700;
   color: var(--subtitle);
   margin: 0;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
+.stat-value-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
 .stat-value {
-  font-size: 1.5rem;
+  font-size: 1.15rem;
   font-weight: 800;
   color: var(--title);
   margin: 0;
+  line-height: 1.2;
 }
 
 .stat-growth {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.75rem;
-  font-weight: 600;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--primary);
 }
 
-@media (max-width: __BP_IPAD__) {
+@media (max-width: 1440px) {
   .business-stats-grid {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(4, 1fr);
   }
 }
 
-@media (max-width: __BP_MOBILE__) {
+@media (max-width: 1100px) {
   .business-stats-grid {
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
+    grid-template-columns: repeat(3, 1fr);
   }
-  
-  .business-stat-card {
-    padding: 16px 12px;
-    gap: 12px;
-    flex-direction: column;
-    align-items: flex-start;
-  }
+}
 
-  .stat-icon-wrapper {
-    width: 42px;
-    height: 42px;
+@media (max-width: 768px) {
+  .business-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
+}
 
-  .stat-value {
-    font-size: 1.25rem;
-  }
-
-  .stat-growth {
-    font-size: 0.7rem;
+@media (max-width: 480px) {
+  .business-stats-grid {
+    grid-template-columns: 1fr;
   }
 }

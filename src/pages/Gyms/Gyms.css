@@ -468,16 +468,7 @@
     justify-content: space-between;
   }
 
-  /* Table Mobile Logic */
-  .gym-main-table th:nth-child(3),
-  .gym-main-table td:nth-child(3),
-  .gym-main-table th:nth-child(4),
-  .gym-main-table td:nth-child(4),
-  .gym-main-table th:nth-child(6),
-  .gym-main-table td:nth-child(6) {
-    display: none;
-  }
-
+  /* Table Mobile Logic - ALL DATA SHOWN WITH SCROLL */
   .gym-main-table td, .gym-main-table th {
     padding: 12px;
   }

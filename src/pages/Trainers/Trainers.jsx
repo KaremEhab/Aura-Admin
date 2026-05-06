@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Search, Filter, ChevronDown, Power, ExternalLink, Globe, MapPin, Activity, Shield, Users, ChevronLeft, ChevronRight, PowerOff, RefreshCcw, CheckCircle, Settings, Award, Star, TrendingUp, Clock } from 'lucide-react';
+import { Search, Filter, ChevronDown, Power, ExternalLink, Globe, MapPin, Activity, Shield, Users, PowerOff, RefreshCcw, CheckCircle, Settings, Award, Star, TrendingUp, Clock } from 'lucide-react';
 import { Badge } from '../../components/ui/Badge';
+import { Pagination } from '../../components/ui/Pagination';
 import './Trainers.css';
 
 const getStatusVariant = (status) => {
@@ -32,6 +33,7 @@ const getActionTitle = (status) => {
 
 export function Trainers() {
   const [activeTab, setActiveTab] = useState('all');
+  const [currentPage, setCurrentPage] = useState(1);
   
   const trainerData = [
     { id: 'PT-9921', name: 'Marcus Sterling', specialty: 'Bodybuilding & Strength', image: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=100&auto=format&fit=crop', status: 'ACTIVE', revenue: 12400.00, trainees: 42, rating: 4.9 },
@@ -141,24 +143,24 @@ export function Trainers() {
                       </div>
                     </div>
                   </td>
-                  <td>
+                  <td className="whitespace-nowrap">
                     <span className="specialty-tag">{trainer.specialty}</span>
                   </td>
-                  <td>
+                  <td className="whitespace-nowrap">
                     <div className="trainee-count-cell">
                       <Users size={14} />
                       <span>{trainer.trainees}</span>
                     </div>
                   </td>
-                  <td>
+                  <td className="whitespace-nowrap">
                     <span className="trainer-revenue">
                       ${trainer.revenue.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                     </span>
                   </td>
-                  <td>
+                  <td className="whitespace-nowrap">
                     <Badge variant={getStatusVariant(trainer.status)}>{trainer.status}</Badge>
                   </td>
-                  <td className="text-right">
+                  <td className="text-right whitespace-nowrap">
                     <div className="action-group">
                       <button className="btn-action-ghost" title="View Profile">
                         <ExternalLink size={16} />
@@ -177,18 +179,13 @@ export function Trainers() {
           </table>
         </div>
         
-        <div className="table-footer-pagination">
-          <span className="results-count">Showing 1 to 4 of 1,248 coaches</span>
-          <div className="pagination-controls">
-            <button className="page-nav"><ChevronLeft size={18} /></button>
-            <button className="page-num-btn active">1</button>
-            <button className="page-num-btn">2</button>
-            <button className="page-num-btn">3</button>
-            <span className="page-dots">...</span>
-            <button className="page-num-btn">156</button>
-            <button className="page-nav"><ChevronRight size={18} /></button>
-          </div>
-        </div>
+        <Pagination 
+          totalItems={1248}
+          itemsPerPage={8}
+          currentPage={currentPage}
+          onPageChange={setCurrentPage}
+          label="coaches"
+        />
       </div>
     </div>
   );

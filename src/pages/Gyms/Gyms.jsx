@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { Search, Filter, ChevronDown, Power, ExternalLink, Globe, MapPin, Activity, Shield, Users, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Pagination } from '../../components/ui/Pagination';
 import './Gyms.css';
 
-export function Gyms() {
+export function Gyms({ searchQuery }) {
   const [viewType, setViewType] = useState('grid');
+  const [currentPage, setCurrentPage] = useState(1);
   
   const chains = [
     { name: 'Titanium Fitness', branches: 12, members: '15.4k', growth: '+8.2%' },
@@ -16,6 +18,12 @@ export function Gyms() {
     { id: 'GP-1092', name: 'Iron Sanctuary NYC', tier: 'STANDARD KINETIC', owner: 'Elena Rodriguez', location: 'New York, NY', status: 'Pending', revenue: '$0', active: true },
     { id: 'GP-3304', name: 'Velocity Lab', tier: 'ELITE PERFORMANCE', owner: 'Sarah Jenkins', location: 'Austin, TX', status: 'Suspended', revenue: '$64,500', active: false }
   ];
+
+  const filteredGyms = gymData.filter(gym => 
+    gym.name.toLowerCase().includes((searchQuery || '').toLowerCase()) ||
+    gym.id.toLowerCase().includes((searchQuery || '').toLowerCase()) ||
+    gym.location.toLowerCase().includes((searchQuery || '').toLowerCase())
+  );
 
   return (
     <div className="gyms-page animate-fade-in">
@@ -132,56 +140,53 @@ export function Gyms() {
       </div>
 
       <div className="gyms-table-container animate-slide-up delay-6">
-        <table className="gym-main-table">
-          <thead>
-            <tr>
-              <th>GYM ID</th>
-              <th>NAME & TIER</th>
-              <th>OWNER</th>
-              <th>LOCATION</th>
-              <th>STATUS</th>
-              <th>CURRENT REVENUE</th>
-              <th>KILL SWITCH</th>
-            </tr>
-          </thead>
-          <tbody>
-            {gymData.map((gym, i) => (
-              <tr key={i} className={`gym-row ${gym.status.toLowerCase()}`}>
-                <td className="gym-id-cell">{gym.id}</td>
-                <td className="name-tier-cell">
-                  <span className="gym-name-val">{gym.name}</span>
-                  <span className={`gym-tier-tag ${gym.tier.includes('ELITE') ? 'elite' : 'kinetic'}`}>{gym.tier}</span>
-                </td>
-                <td>{gym.owner}</td>
-                <td>{gym.location}</td>
-                <td>
-                  <span className={`status-chip ${gym.status.toLowerCase()}`}>
-                    <div className="dot" /> {gym.status}
-                  </span>
-                </td>
-                <td>{gym.revenue}</td>
-                <td>
-                  <button className={`kill-switch-btn ${gym.active ? 'active' : ''}`}>
-                    <Power size={16} />
-                  </button>
-                </td>
+        <div className="overflow-x-auto">
+          <table className="gym-main-table min-w-[900px]">
+            <thead>
+              <tr>
+                <th>GYM ID</th>
+                <th>NAME & TIER</th>
+                <th>OWNER</th>
+                <th>LOCATION</th>
+                <th>STATUS</th>
+                <th>CURRENT REVENUE</th>
+                <th>KILL SWITCH</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-        
-        <div className="table-footer-pagination">
-          <span className="results-count">Showing 1 to 8 of 1,248 gyms</span>
-          <div className="pagination-controls">
-            <button className="page-nav"><ChevronLeft size={18} /></button>
-            <button className="page-num-btn active">1</button>
-            <button className="page-num-btn">2</button>
-            <button className="page-num-btn">3</button>
-            <span className="page-dots">...</span>
-            <button className="page-num-btn">52</button>
-            <button className="page-nav"><ChevronRight size={18} /></button>
-          </div>
+            </thead>
+            <tbody>
+              {filteredGyms.map((gym, i) => (
+                <tr key={i} className={`gym-row ${gym.status.toLowerCase()}`}>
+                  <td className="gym-id-cell whitespace-nowrap">{gym.id}</td>
+                  <td className="name-tier-cell whitespace-nowrap">
+                    <span className="gym-name-val">{gym.name}</span>
+                    <span className={`gym-tier-tag ${gym.tier.includes('ELITE') ? 'elite' : 'kinetic'}`}>{gym.tier}</span>
+                  </td>
+                  <td className="whitespace-nowrap">{gym.owner}</td>
+                  <td className="whitespace-nowrap">{gym.location}</td>
+                  <td className="whitespace-nowrap">
+                    <span className={`status-chip ${gym.status.toLowerCase()}`}>
+                      <div className="dot" /> {gym.status}
+                    </span>
+                  </td>
+                  <td className="whitespace-nowrap">{gym.revenue}</td>
+                  <td className="whitespace-nowrap">
+                    <button className={`kill-switch-btn ${gym.active ? 'active' : ''}`}>
+                      <Power size={16} />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
+        
+        <Pagination 
+          totalItems={filteredGyms.length}
+          itemsPerPage={8}
+          currentPage={currentPage}
+          onPageChange={setCurrentPage}
+          label="gyms"
+        />
       </div>
     </div>
   );
