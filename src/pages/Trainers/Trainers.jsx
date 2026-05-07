@@ -47,10 +47,78 @@ export function Trainers({ searchQuery }) {
   ];
 
   const trainerData = [
-    { id: 'PT-9921', name: 'Marcus Sterling', specialty: 'Bodybuilding & Strength', image: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=100&auto=format&fit=crop', status: 'ACTIVE', revenue: 12400, trainees: 42, rating: 4.9, city: 'Cairo', retention: '91%' },
-    { id: 'PT-1042', name: 'Elena Rodriguez', specialty: 'Yoga & Mindfulness', image: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&auto=format&fit=crop', status: 'ACTIVE', revenue: 8200.5, trainees: 28, rating: 5.0, city: 'Giza', retention: '94%' },
-    { id: 'PT-3304', name: 'Sarah Jenkins', specialty: 'HIIT & Athletics', image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&auto=format&fit=crop', status: 'PENDING', revenue: 0, trainees: 0, rating: 0, city: 'Alexandria', retention: 'New' },
-    { id: 'PT-4412', name: 'David Chen', specialty: 'Rehabilitation', image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&auto=format&fit=crop', status: 'SUSPENDED', revenue: 3400, trainees: 15, rating: 4.7, city: 'Cairo', retention: '78%' },
+    { 
+      id: 'PT-9921', 
+      name: 'Marcus Sterling', 
+      specialty: 'Bodybuilding & Strength', 
+      image: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=100&auto=format&fit=crop', 
+      status: 'ACTIVE', 
+      revenue: 12400, 
+      trainees: 42, 
+      rating: 4.9, 
+      city: 'Cairo', 
+      retention: '91%',
+      financials: {
+        commissionRate: '15%',
+        totalPayout: 10540,
+        pendingPayout: 0,
+        status: 'PAID'
+      }
+    },
+    { 
+      id: 'PT-1042', 
+      name: 'Elena Rodriguez', 
+      specialty: 'Yoga & Mindfulness', 
+      image: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&auto=format&fit=crop', 
+      status: 'ACTIVE', 
+      revenue: 8200.5, 
+      trainees: 28, 
+      rating: 5.0, 
+      city: 'Giza', 
+      retention: '94%',
+      financials: {
+        commissionRate: '12%',
+        totalPayout: 7216,
+        pendingPayout: 240,
+        status: 'PROCESSING'
+      }
+    },
+    { 
+      id: 'PT-3304', 
+      name: 'Sarah Jenkins', 
+      specialty: 'HIIT & Athletics', 
+      image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&auto=format&fit=crop', 
+      status: 'PENDING', 
+      revenue: 0, 
+      trainees: 0, 
+      rating: 0, 
+      city: 'Alexandria', 
+      retention: 'New',
+      financials: {
+        commissionRate: '10%',
+        totalPayout: 0,
+        pendingPayout: 0,
+        status: 'N/A'
+      }
+    },
+    { 
+      id: 'PT-4412', 
+      name: 'David Chen', 
+      specialty: 'Rehabilitation', 
+      image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&auto=format&fit=crop', 
+      status: 'SUSPENDED', 
+      revenue: 3400, 
+      trainees: 15, 
+      rating: 4.7, 
+      city: 'Cairo', 
+      retention: '78%',
+      financials: {
+        commissionRate: '18%',
+        totalPayout: 2788,
+        pendingPayout: 0,
+        status: 'PAID'
+      }
+    },
   ];
 
   const filtered = trainerData.filter((trainer) =>
@@ -124,18 +192,59 @@ export function Trainers({ searchQuery }) {
       <section className="trainers-table-container animate-slide-up delay-6" id="trainers-directory">
         <div className="table-responsive">
           <table className="directory-table">
-            <thead><tr><th>COACH IDENTITY</th><th>SPECIALTY</th><th>CITY</th><th>TRAINEES</th><th>RETENTION</th><th>REVENUE</th><th>STATUS</th><th className="text-right">ACTIONS</th></tr></thead>
+            <thead>
+              <tr>
+                <th>COACH IDENTITY</th>
+                <th>SPECIALTY</th>
+                <th>CITY</th>
+                <th>PERFORMANCE</th>
+                <th>FINANCIALS</th>
+                <th>STATUS</th>
+                <th className="text-right">ACTIONS</th>
+              </tr>
+            </thead>
             <tbody>
               {filtered.map((trainer) => (
                 <tr key={trainer.id}>
-                  <td><div className="trainer-identity"><img src={trainer.image} alt={trainer.name} className="trainer-img" /><div className="trainer-info-meta"><h4>{trainer.name}</h4><div className="trainer-id-rating"><span className="t-id">#{trainer.id}</span>{trainer.rating > 0 && <span className="t-rating"><Star size={10} fill="var(--warning)" color="var(--warning)" /> {trainer.rating}</span>}</div></div></div></td>
+                  <td>
+                    <div className="trainer-identity">
+                      <img src={trainer.image} alt={trainer.name} className="trainer-img" />
+                      <div className="trainer-info-meta">
+                        <h4>{trainer.name}</h4>
+                        <div className="trainer-id-rating">
+                          <span className="t-id">#{trainer.id}</span>
+                          {trainer.rating > 0 && <span className="t-rating"><Star size={10} fill="var(--warning)" color="var(--warning)" /> {trainer.rating}</span>}
+                        </div>
+                      </div>
+                    </div>
+                  </td>
                   <td className="whitespace-nowrap"><span className="specialty-tag">{trainer.specialty}</span></td>
                   <td className="whitespace-nowrap"><span className="city-cell">{trainer.city}</span></td>
-                  <td className="whitespace-nowrap"><div className="trainee-count-cell"><Users size={14} /><span>{trainer.trainees}</span></div></td>
-                  <td className="whitespace-nowrap"><span className="retention-pill">{trainer.retention}</span></td>
-                  <td className="whitespace-nowrap"><span className="trainer-revenue">${trainer.revenue.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span></td>
+                  <td className="whitespace-nowrap">
+                    <div className="trainer-perf-cell">
+                      <div className="trainee-count-cell"><Users size={14} /><span>{trainer.trainees}</span></div>
+                      <span className="retention-pill">Ret: {trainer.retention}</span>
+                    </div>
+                  </td>
+                  <td className="whitespace-nowrap">
+                    <div className="trainer-financials">
+                      <span className="trainer-revenue">${trainer.revenue.toLocaleString()}</span>
+                      <div className="payout-summary">
+                        <span className="payout-label">Payout:</span>
+                        <span className="payout-val">${trainer.financials.totalPayout.toLocaleString()}</span>
+                        <Badge variant={trainer.financials.status === 'PAID' ? 'success' : trainer.financials.status === 'PROCESSING' ? 'warning' : 'neutral'} className="mini-badge">
+                          {trainer.financials.status}
+                        </Badge>
+                      </div>
+                    </div>
+                  </td>
                   <td className="whitespace-nowrap"><Badge variant={getStatusVariant(trainer.status)}>{trainer.status}</Badge></td>
-                  <td className="text-right whitespace-nowrap"><div className="action-group"><button className="btn-action-ghost" title="View Profile"><ExternalLink size={16} /></button><button className={`btn-action btn-${trainer.status.toLowerCase()}`}>{getActionIcon(trainer.status)}</button></div></td>
+                  <td className="text-right whitespace-nowrap">
+                    <div className="action-group">
+                      <button className="btn-action-ghost" title="View Profile"><ExternalLink size={16} /></button>
+                      <button className={`btn-action btn-${trainer.status.toLowerCase()}`}>{getActionIcon(trainer.status)}</button>
+                    </div>
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -146,3 +255,4 @@ export function Trainers({ searchQuery }) {
     </div>
   );
 }
+

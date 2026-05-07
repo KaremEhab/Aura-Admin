@@ -49,12 +49,126 @@ export function Trainees({ searchQuery }) {
   ];
 
   const traineeData = [
-    { id: 'TR-4401', name: 'Ahmed Khalil', plan: 'Elite 12-Month', image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop', status: 'ACTIVE', source: 'GYM', gym: 'Apex Performance Hub', coach: 'Marcus Sterling', joinDate: 'Jan 15, 2026', spent: 2400, engagement: '92%', risk: 'Low' },
-    { id: 'TR-4402', name: 'Lina Morales', plan: 'Standard Monthly', image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop', status: 'ACTIVE', source: 'GYM', gym: 'Iron Sanctuary NYC', coach: 'Elena Rodriguez', joinDate: 'Mar 02, 2026', spent: 780, engagement: '81%', risk: 'Low' },
-    { id: 'TR-4403', name: 'Omar Hassan', plan: 'Elite 6-Month', image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&auto=format&fit=crop', status: 'EXPIRED', source: 'PT', gym: 'Velocity Lab', coach: 'Sarah Jenkins', joinDate: 'Aug 20, 2025', spent: 1200, engagement: '22%', risk: 'High' },
-    { id: 'TR-4404', name: 'Sofia Nguyen', plan: 'Trial - 14 Days', image: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop', status: 'PENDING', source: 'DIRECT', gym: null, coach: null, joinDate: 'Apr 28, 2026', spent: 0, engagement: 'New', risk: 'Medium' },
-    { id: 'TR-4405', name: "James O'Brien", plan: 'Standard Monthly', image: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=100&auto=format&fit=crop', status: 'SUSPENDED', source: 'GYM', gym: 'Titanium Fitness', coach: 'David Chen', joinDate: 'Nov 10, 2025', spent: 560, engagement: '36%', risk: 'High' },
-    { id: 'TR-4406', name: 'Nadia El-Amin', plan: 'Aura Direct Monthly', image: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=100&auto=format&fit=crop', status: 'ACTIVE', source: 'DIRECT', gym: null, coach: null, joinDate: 'Apr 12, 2026', spent: 49.99, engagement: '68%', risk: 'Medium' },
+    { 
+      id: 'TR-4401', 
+      name: 'Ahmed Khalil', 
+      plan: 'Elite 12-Month', 
+      image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop', 
+      status: 'ACTIVE', 
+      source: 'GYM', 
+      gym: 'Apex Performance Hub', 
+      coach: 'Marcus Sterling', 
+      joinDate: 'Jan 15, 2026', 
+      spent: 2400, 
+      engagement: '92%', 
+      risk: 'Low',
+      financials: {
+        ltv: 2400,
+        lastPayment: 200,
+        nextBilling: 'Feb 15, 2026',
+        billingStatus: 'HEALTHY'
+      }
+    },
+    { 
+      id: 'TR-4402', 
+      name: 'Lina Morales', 
+      plan: 'Standard Monthly', 
+      image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop', 
+      status: 'ACTIVE', 
+      source: 'GYM', 
+      gym: 'Iron Sanctuary NYC', 
+      coach: 'Elena Rodriguez', 
+      joinDate: 'Mar 02, 2026', 
+      spent: 780, 
+      engagement: '81%', 
+      risk: 'Low',
+      financials: {
+        ltv: 780,
+        lastPayment: 65,
+        nextBilling: 'Apr 02, 2026',
+        billingStatus: 'HEALTHY'
+      }
+    },
+    { 
+      id: 'TR-4403', 
+      name: 'Omar Hassan', 
+      plan: 'Elite 6-Month', 
+      image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&auto=format&fit=crop', 
+      status: 'EXPIRED', 
+      source: 'PT', 
+      gym: 'Velocity Lab', 
+      coach: 'Sarah Jenkins', 
+      joinDate: 'Aug 20, 2025', 
+      spent: 1200, 
+      engagement: '22%', 
+      risk: 'High',
+      financials: {
+        ltv: 1200,
+        lastPayment: 200,
+        nextBilling: 'Expired',
+        billingStatus: 'FAILED'
+      }
+    },
+    { 
+      id: 'TR-4404', 
+      name: 'Sofia Nguyen', 
+      plan: 'Trial - 14 Days', 
+      image: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop', 
+      status: 'PENDING', 
+      source: 'DIRECT', 
+      gym: null, 
+      coach: null, 
+      joinDate: 'Apr 28, 2026', 
+      spent: 0, 
+      engagement: 'New', 
+      risk: 'Medium',
+      financials: {
+        ltv: 0,
+        lastPayment: 0,
+        nextBilling: 'May 12, 2026',
+        billingStatus: 'TRIAL'
+      }
+    },
+    { 
+      id: 'TR-4405', 
+      name: "James O'Brien", 
+      plan: 'Standard Monthly', 
+      image: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=100&auto=format&fit=crop', 
+      status: 'SUSPENDED', 
+      source: 'GYM', 
+      gym: 'Titanium Fitness', 
+      coach: 'David Chen', 
+      joinDate: 'Nov 10, 2025', 
+      spent: 560, 
+      engagement: '36%', 
+      risk: 'High',
+      financials: {
+        ltv: 560,
+        lastPayment: 80,
+        nextBilling: 'Paused',
+        billingStatus: 'PAUSED'
+      }
+    },
+    { 
+      id: 'TR-4406', 
+      name: 'Nadia El-Amin', 
+      plan: 'Aura Direct Monthly', 
+      image: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=100&auto=format&fit=crop', 
+      status: 'ACTIVE', 
+      source: 'DIRECT', 
+      gym: null, 
+      coach: null, 
+      joinDate: 'Apr 12, 2026', 
+      spent: 49.99, 
+      engagement: '68%', 
+      risk: 'Medium',
+      financials: {
+        ltv: 49.99,
+        lastPayment: 49.99,
+        nextBilling: 'May 12, 2026',
+        billingStatus: 'HEALTHY'
+      }
+    },
   ];
 
   const filtered = traineeData.filter((trainee) =>
@@ -111,19 +225,54 @@ export function Trainees({ searchQuery }) {
       <section className="trainees-table-container animate-slide-up delay-6" id="trainees-directory">
         <div className="table-responsive">
           <div className="overflow-x-auto">
-            <table className="directory-table min-w-[1100px]">
-              <thead><tr><th>MEMBER</th><th>SOURCE</th><th>PLAN</th><th>GYM</th><th>COACH</th><th>ENGAGEMENT</th><th>RISK</th><th>TOTAL SPENT</th><th>STATUS</th><th className="text-right">ACTIONS</th></tr></thead>
+            <table className="directory-table min-w-[1200px]">
+              <thead>
+                <tr>
+                  <th>MEMBER</th>
+                  <th>ASSIGNMENT</th>
+                  <th>ENGAGEMENT</th>
+                  <th>FINANCIALS</th>
+                  <th>STATUS</th>
+                  <th className="text-right">ACTIONS</th>
+                </tr>
+              </thead>
               <tbody>
                 {filtered.map((trainee) => (
                   <tr key={trainee.id}>
-                    <td className="whitespace-nowrap"><div className="trainee-identity"><img src={trainee.image} alt={trainee.name} className="trainee-img" /><div className="trainee-info-meta"><h4>{trainee.name}</h4><span className="t-id">#{trainee.id}</span></div></div></td>
-                    <td className="whitespace-nowrap"><span className={`source-badge source-${trainee.source.toLowerCase()}`}>{trainee.source === 'DIRECT' ? 'Aura Direct' : trainee.source === 'GYM' ? 'Via Gym' : 'Via PT'}</span></td>
-                    <td className="whitespace-nowrap"><span className={`plan-tag ${trainee.plan.includes('Elite') || trainee.plan.includes('Aura Direct') ? 'elite' : trainee.plan.includes('Trial') ? 'trial' : 'standard'}`}>{trainee.plan}</span></td>
-                    <td className={`gym-cell whitespace-nowrap ${!trainee.gym ? 'unassigned' : ''}`}>{trainee.gym || '- Not assigned'}</td>
-                    <td className={`coach-cell whitespace-nowrap ${!trainee.coach ? 'unassigned' : ''}`}>{trainee.coach || '- Not assigned'}</td>
-                    <td className="whitespace-nowrap"><span className="engagement-pill">{trainee.engagement}</span></td>
-                    <td className="whitespace-nowrap"><span className={`risk-pill risk-${trainee.risk.toLowerCase()}`}>{trainee.risk}</span></td>
-                    <td className="whitespace-nowrap"><span className="trainee-spent">${trainee.spent.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span></td>
+                    <td className="whitespace-nowrap">
+                      <div className="trainee-identity">
+                        <img src={trainee.image} alt={trainee.name} className="trainee-img" />
+                        <div className="trainee-info-meta">
+                          <h4>{trainee.name}</h4>
+                          <span className="t-id">#{trainee.id}</span>
+                          <span className={`plan-tag ${trainee.plan.includes('Elite') || trainee.plan.includes('Aura Direct') ? 'elite' : trainee.plan.includes('Trial') ? 'trial' : 'standard'}`}>{trainee.plan}</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="whitespace-nowrap">
+                      <div className="assignment-cell">
+                        <span className="gym-name">{trainee.gym || 'No Gym'}</span>
+                        <span className="coach-name">{trainee.coach || 'No Coach'}</span>
+                      </div>
+                    </td>
+                    <td className="whitespace-nowrap">
+                      <div className="engagement-cell">
+                        <div className="eng-row">
+                          <span className="engagement-pill">{trainee.engagement}</span>
+                          <span className={`risk-pill risk-${trainee.risk.toLowerCase()}`}>{trainee.risk}</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="whitespace-nowrap">
+                      <div className="trainee-financials">
+                        <span className="ltv-val">LTV: ${trainee.financials.ltv.toLocaleString()}</span>
+                        <div className="billing-summary">
+                          <span className="billing-label">Next:</span>
+                          <span className="billing-date">{trainee.financials.nextBilling}</span>
+                          <div className={`status-dot-mini ${trainee.financials.billingStatus.toLowerCase() === 'healthy' ? 'green' : trainee.financials.billingStatus.toLowerCase() === 'trial' ? 'purple' : 'red'}`} />
+                        </div>
+                      </div>
+                    </td>
                     <td className="whitespace-nowrap"><Badge variant={getStatusVariant(trainee.status)}>{trainee.status}</Badge></td>
                     <td className="text-right whitespace-nowrap"><div className="action-group"><button className="btn-action-ghost" title="View Profile"><ExternalLink size={16} /></button><button className={`btn-action btn-${trainee.status.toLowerCase()}`}>{getActionIcon(trainee.status)}</button></div></td>
                   </tr>
@@ -137,3 +286,4 @@ export function Trainees({ searchQuery }) {
     </div>
   );
 }
+

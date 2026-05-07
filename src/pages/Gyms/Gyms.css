@@ -479,3 +479,104 @@
     padding: 16px;
   }
 }
+
+/* New Gyms Financials Row */
+.gyms-financials-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.financial-stat-card {
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  background: var(--sidebar);
+  border: 1px solid var(--stroke);
+  border-radius: 16px;
+}
+
+.f-icon-wrap {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.f-icon-wrap.green { background: rgba(34, 197, 94, 0.1); color: var(--primary); }
+.f-icon-wrap.blue { background: rgba(59, 130, 246, 0.1); color: #3B82F6; }
+.f-icon-wrap.purple { background: rgba(168, 85, 247, 0.1); color: #A855F7; }
+
+.f-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.f-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--subtitle);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.f-value {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--title);
+}
+
+.f-trend {
+  font-size: 0.65rem;
+  font-weight: 600;
+}
+
+.f-trend.positive { color: var(--primary); }
+
+/* Table Mini Stats */
+.gym-mini-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.gym-mini-stats span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  color: var(--subtitle);
+  font-weight: 500;
+}
+
+.gym-financial-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.rev-val {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--title);
+}
+
+.profit-val {
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.profit-val.pos { color: var(--primary); }
+.profit-val.neg { color: var(--alert); }
+
+@media (max-width: 1024px) {
+  .gyms-financials-row {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+}
+

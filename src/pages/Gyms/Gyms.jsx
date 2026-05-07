@@ -14,9 +14,66 @@ export function Gyms({ searchQuery }) {
   ];
 
   const gymData = [
-    { id: 'GP-7721', name: 'Apex Performance Hub', tier: 'ELITE PERFORMANCE', owner: 'Marcus Sterling', location: 'Los Angeles, CA', status: 'Active', revenue: '$184,200', active: true },
-    { id: 'GP-1092', name: 'Iron Sanctuary NYC', tier: 'STANDARD KINETIC', owner: 'Elena Rodriguez', location: 'New York, NY', status: 'Pending', revenue: '$0', active: true },
-    { id: 'GP-3304', name: 'Velocity Lab', tier: 'ELITE PERFORMANCE', owner: 'Sarah Jenkins', location: 'Austin, TX', status: 'Suspended', revenue: '$64,500', active: false }
+    { 
+      id: 'GP-7721', 
+      name: 'Apex Performance Hub', 
+      tier: 'ELITE PERFORMANCE', 
+      owner: 'Marcus Sterling', 
+      location: 'Los Angeles, CA', 
+      status: 'Active', 
+      revenue: '$184,200', 
+      active: true,
+      capacity: '85%',
+      equipmentHealth: 98,
+      staffCount: 24,
+      classesWeekly: 45,
+      financials: {
+        revenue: 184200,
+        expenses: 112000,
+        profit: 72200,
+        arpu: 142
+      }
+    },
+    { 
+      id: 'GP-1092', 
+      name: 'Iron Sanctuary NYC', 
+      tier: 'STANDARD KINETIC', 
+      owner: 'Elena Rodriguez', 
+      location: 'New York, NY', 
+      status: 'Pending', 
+      revenue: '$0', 
+      active: true,
+      capacity: '0%',
+      equipmentHealth: 100,
+      staffCount: 12,
+      classesWeekly: 0,
+      financials: {
+        revenue: 0,
+        expenses: 45000,
+        profit: -45000,
+        arpu: 0
+      }
+    },
+    { 
+      id: 'GP-3304', 
+      name: 'Velocity Lab', 
+      tier: 'ELITE PERFORMANCE', 
+      owner: 'Sarah Jenkins', 
+      location: 'Austin, TX', 
+      status: 'Suspended', 
+      revenue: '$64,500', 
+      active: false,
+      capacity: '42%',
+      equipmentHealth: 72,
+      staffCount: 18,
+      classesWeekly: 32,
+      financials: {
+        revenue: 64500,
+        expenses: 58000,
+        profit: 6500,
+        arpu: 118
+      }
+    }
   ];
 
   const filteredGyms = gymData.filter(gym => 
@@ -78,32 +135,62 @@ export function Gyms({ searchQuery }) {
         </div>
       </div>
 
+      {/* New Financials Overview Row */}
+      <div className="gyms-financials-row animate-slide-up delay-3">
+        <div className="financial-stat-card card">
+          <div className="f-icon-wrap green"><Activity size={20} /></div>
+          <div className="f-info">
+            <span className="f-label">Global Net Margin</span>
+            <span className="f-value">32.4%</span>
+            <span className="f-trend positive">+2.1% this month</span>
+          </div>
+        </div>
+        <div className="financial-stat-card card">
+          <div className="f-icon-wrap blue"><Users size={20} /></div>
+          <div className="f-info">
+            <span className="f-label">Avg Revenue Per Member</span>
+            <span className="f-value">$124.50</span>
+            <span className="f-trend positive">High efficiency</span>
+          </div>
+        </div>
+        <div className="financial-stat-card card">
+          <div className="f-icon-wrap purple"><Shield size={20} /></div>
+          <div className="f-info">
+            <span className="f-label">Operational Efficiency</span>
+            <span className="f-value">94%</span>
+            <span className="f-trend positive">Optimized</span>
+          </div>
+        </div>
+      </div>
+
       <div className="gyms-analytics-row">
-        <div className="analytics-card animate-slide-up delay-3">
+        <div className="analytics-card animate-slide-up delay-4">
           <div className="card-header-flex">
             <h3 className="card-title-md">Top 5 Gym Chains by Scale</h3>
             <span className="full-report-link">Full Report <ExternalLink size={14} /></span>
           </div>
-          <table className="chains-table">
-            <thead>
-              <tr>
-                <th>GYM CHAIN</th>
-                <th>BRANCHES</th>
-                <th>MEMBERS</th>
-                <th>GROWTH</th>
-              </tr>
-            </thead>
-            <tbody>
-              {chains.map((chain, i) => (
-                <tr key={i}>
-                  <td>{chain.name}</td>
-                  <td>{chain.branches}</td>
-                  <td>{chain.members}</td>
-                  <td className="growth-positive">{chain.growth}</td>
+          <div className="overflow-x-auto">
+            <table className="chains-table">
+              <thead>
+                <tr>
+                  <th>GYM CHAIN</th>
+                  <th>BRANCHES</th>
+                  <th>MEMBERS</th>
+                  <th>GROWTH</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {chains.map((chain, i) => (
+                  <tr key={i}>
+                    <td>{chain.name}</td>
+                    <td>{chain.branches}</td>
+                    <td>{chain.members}</td>
+                    <td className="growth-positive">{chain.growth}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
 
         <div className="highlights-card animate-slide-up delay-4">
@@ -141,15 +228,16 @@ export function Gyms({ searchQuery }) {
 
       <div className="gyms-table-container animate-slide-up delay-6">
         <div className="overflow-x-auto">
-          <table className="gym-main-table min-w-[900px]">
+          <table className="gym-main-table min-w-[1200px]">
             <thead>
               <tr>
                 <th>GYM ID</th>
                 <th>NAME & TIER</th>
                 <th>OWNER</th>
                 <th>LOCATION</th>
+                <th>STATS</th>
+                <th>FINANCIALS</th>
                 <th>STATUS</th>
-                <th>CURRENT REVENUE</th>
                 <th>KILL SWITCH</th>
               </tr>
             </thead>
@@ -164,11 +252,24 @@ export function Gyms({ searchQuery }) {
                   <td className="whitespace-nowrap">{gym.owner}</td>
                   <td className="whitespace-nowrap">{gym.location}</td>
                   <td className="whitespace-nowrap">
+                    <div className="gym-mini-stats">
+                      <span title="Capacity"><Users size={12} /> {gym.capacity}</span>
+                      <span title="Equipment Health"><Activity size={12} /> {gym.equipmentHealth}%</span>
+                    </div>
+                  </td>
+                  <td className="whitespace-nowrap">
+                    <div className="gym-financial-summary">
+                      <span className="rev-val">${gym.financials.revenue.toLocaleString()}</span>
+                      <span className={`profit-val ${gym.financials.profit >= 0 ? 'pos' : 'neg'}`}>
+                        {gym.financials.profit >= 0 ? '+' : ''}${gym.financials.profit.toLocaleString()}
+                      </span>
+                    </div>
+                  </td>
+                  <td className="whitespace-nowrap">
                     <span className={`status-chip ${gym.status.toLowerCase()}`}>
                       <div className="dot" /> {gym.status}
                     </span>
                   </td>
-                  <td className="whitespace-nowrap">{gym.revenue}</td>
                   <td className="whitespace-nowrap">
                     <button className={`kill-switch-btn ${gym.active ? 'active' : ''}`}>
                       <Power size={16} />
@@ -191,3 +292,4 @@ export function Gyms({ searchQuery }) {
     </div>
   );
 }
+

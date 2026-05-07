@@ -512,3 +512,41 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Trainer Financials & Perf */
+.trainer-perf-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.trainer-financials {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.payout-summary {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.payout-label {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--subtitle);
+}
+
+.payout-val {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--title);
+}
+
+.mini-badge {
+  font-size: 0.55rem !important;
+  padding: 1px 6px !important;
+  height: 16px !important;
+}
+

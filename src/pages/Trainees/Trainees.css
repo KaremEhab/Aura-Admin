@@ -444,3 +444,67 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Trainee New Cells */
+.assignment-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.gym-name {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--title);
+}
+
+.coach-name {
+  font-size: 0.75rem;
+  color: var(--subtitle);
+}
+
+.engagement-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.eng-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.trainee-financials {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ltv-val {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.billing-summary {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.billing-label {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--subtitle);
+}
+
+.billing-date {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--title);
+}
+
+.status-dot-mini.purple { background: #A855F7; }
+.status-dot-mini.red { background: var(--alert); }
+
