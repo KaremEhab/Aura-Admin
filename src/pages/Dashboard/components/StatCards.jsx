@@ -4,24 +4,24 @@ import './StatCards.css';
 
 export function StatCards({ stats }) {
   return (
-    <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
+    <div className="stat-cards-container">
       {/* Supabase DB */}
       <div className="card stat-card">
         <div className="stat-header">
           <Database size={16} className="stat-icon" />
           <span>SUPABASE DB</span>
         </div>
-        <div className="stat-main">
-          <span className="stat-label">Total Size</span>
+        <div className="stat-value-group">
           <span className="stat-value">{stats.supabase.size}</span>
+          <span className="stat-label">TOTAL SIZE</span>
         </div>
         <div className="stat-progress-container">
           <div className="stat-progress-bar">
             <div className="stat-progress-fill" style={{ width: `${stats.supabase.usage}%` }}></div>
           </div>
           <div className="stat-progress-labels">
-            <span>Provisioned: {stats.supabase.provisioned}</span>
-            <span className="text-primary">{stats.supabase.usage}% Usage</span>
+            <span>{stats.supabase.usage}% Usage</span>
+            <span>{stats.supabase.provisioned}</span>
           </div>
         </div>
       </div>
@@ -29,48 +29,47 @@ export function StatCards({ stats }) {
       {/* Edge Functions */}
       <div className="card stat-card">
         <div className="stat-header">
-          <Zap size={16} className="stat-icon text-primary" />
+          <Zap size={16} className="stat-icon" />
           <span>EDGE FUNCTIONS</span>
         </div>
-        <div className="stat-main">
-          <span className="stat-label">Total Invocations</span>
+        <div className="stat-value-group">
           <span className="stat-value">{stats.edgeFunctions.invocations}</span>
+          <span className="stat-label">TOTAL INVOCATIONS</span>
         </div>
         <div className="stat-footer">
           <TrendingIcon />
-          <span className="text-primary">Avg Latency: {stats.edgeFunctions.avgLatency}</span>
+          <span className="text-primary">{stats.edgeFunctions.avgLatency} Latency</span>
         </div>
       </div>
 
       {/* Cloudflare R2 */}
       <div className="card stat-card">
         <div className="stat-header">
-          <Cloud size={16} className="stat-icon text-primary" />
+          <Cloud size={16} className="stat-icon" />
           <span>CLOUDFLARE R2</span>
         </div>
-        <div className="stat-main">
-          <span className="stat-label">Media Egress</span>
+        <div className="stat-value-group">
           <span className="stat-value">{stats.cloudflare.egress}</span>
+          <span className="stat-label">MEDIA EGRESS</span>
         </div>
-        <div className="stat-footer-flex">
-          <span className="stat-label">Cache Efficiency</span>
-          <span className="text-primary">{stats.cloudflare.cacheEfficiency}% (Hack On)</span>
+        <div className="stat-footer">
+          <span className="text-primary">{stats.cloudflare.cacheEfficiency}% Cache Efficiency</span>
         </div>
       </div>
 
       {/* System Health */}
       <div className="card stat-card">
         <div className="stat-header">
-          <Zap size={16} className="stat-icon text-primary" />
+          <Zap size={16} className="stat-icon" />
           <span>SYSTEM HEALTH</span>
         </div>
-        <div className="stat-main">
-          <span className="stat-label">Platform Uptime</span>
+        <div className="stat-value-group">
           <span className="stat-value">{stats.systemHealth.uptime}</span>
+          <span className="stat-label">PLATFORM UPTIME</span>
         </div>
         <div className="stat-footer">
           <span className="status-dot"></span>
-          <span>Current Error Rate: {stats.systemHealth.errorRate}</span>
+          <span>Error Rate: {stats.systemHealth.errorRate}</span>
         </div>
       </div>
     </div>

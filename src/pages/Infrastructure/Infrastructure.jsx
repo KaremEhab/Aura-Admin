@@ -25,6 +25,20 @@ export function Infrastructure({ searchQuery }) {
     { name: 'Elasticsearch', type: 'Search', size: '86 GB', reads: '520K/hr', writes: '45K/hr', connections: 96, status: 'WARNING' },
   ];
 
+  const incidents = [
+    { id: 'INC-4021', title: 'Payment Processing Delay', affected: 'Payment Engine', status: 'INVESTIGATING', severity: 'HIGH', time: '14 min ago' },
+    { id: 'INC-3988', title: 'High Latency in EU-West', affected: 'API Gateway', status: 'RESOLVED', severity: 'MEDIUM', time: '2 hours ago' },
+    { id: 'INC-3952', title: 'Database Migration Complete', affected: 'PostgreSQL', status: 'RESOLVED', severity: 'LOW', time: 'Yesterday' },
+  ];
+
+  const securityMetrics = [
+    { label: 'SSL Certificates', value: 'Active', status: 'success' },
+    { label: 'Firewall Uptime', value: '99.99%', status: 'success' },
+    { label: 'Last Security Scan', value: '2h ago', status: 'success' },
+    { label: 'Threats Blocked', value: '1.2k', status: 'neutral' },
+  ];
+
+
   const filteredServices = systemStatus.filter(s => 
     s.name.toLowerCase().includes((searchQuery || '').toLowerCase()) ||
     s.region.toLowerCase().includes((searchQuery || '').toLowerCase())
@@ -98,96 +112,142 @@ export function Infrastructure({ searchQuery }) {
         </div>
       </div>
 
-      <div className="infra-section card animate-slide-up delay-5 overflow-hidden">
-        <div className="section-header p-4 pb-0">
-          <h3 className="section-title"><Server size={18} /> Service Status</h3>
-          <span className="live-indicator"><span className="pulse-dot" /> Live</span>
-        </div>
-        <div className="table-responsive">
-          <div className="overflow-x-auto">
-            <table className="directory-table min-w-[800px]">
-              <thead>
-                <tr>
-                  <th>SERVICE</th>
-                  <th>STATUS</th>
-                  <th>UPTIME (30D)</th>
-                  <th>LATENCY</th>
-                  <th>REGION</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredServices.map((service, i) => (
-                  <tr key={i}>
-                    <td>
-                      <div className="service-identity">
-                        <div className={`service-icon ${service.status === 'OPERATIONAL' ? 'ok' : service.status === 'DEGRADED' ? 'warn' : 'maint'}`}>
-                          {service.icon}
-                        </div>
-                        <span className="service-name whitespace-nowrap">{service.name}</span>
-                      </div>
-                    </td>
-                    <td className="whitespace-nowrap"><Badge variant={getStatusVariant(service.status)}>{service.status}</Badge></td>
-                    <td className="uptime-cell whitespace-nowrap">{service.uptime}</td>
-                    <td className={`latency-cell whitespace-nowrap ${parseInt(service.latency) > 100 ? 'high' : ''}`}>{service.latency}</td>
-                    <td className="region-cell whitespace-nowrap">{service.region}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+      <div className="infra-layout-grid">
+        <div className="infra-main-content">
+          <div className="infra-section card animate-slide-up delay-5 overflow-hidden">
+            <div className="section-header p-4 pb-0">
+              <h3 className="section-title"><Server size={18} /> Service Status</h3>
+              <span className="live-indicator"><span className="pulse-dot" /> Live</span>
+            </div>
+            <div className="overflow-x-auto mt-4">
+                <table className="directory-table min-w-[900px]">
+                  <thead>
+                    <tr>
+                      <th>SERVICE</th>
+                      <th>STATUS</th>
+                      <th>UPTIME (30D)</th>
+                      <th>LATENCY</th>
+                      <th>REGION</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredServices.map((service, i) => (
+                      <tr key={i}>
+                        <td>
+                          <div className="service-identity">
+                            <div className={`service-icon ${service.status === 'OPERATIONAL' ? 'ok' : service.status === 'DEGRADED' ? 'warn' : 'maint'}`}>
+                              {service.icon}
+                            </div>
+                            <span className="service-name whitespace-nowrap">{service.name}</span>
+                          </div>
+                        </td>
+                        <td className="whitespace-nowrap"><Badge variant={getStatusVariant(service.status)}>{service.status}</Badge></td>
+                        <td className="uptime-cell whitespace-nowrap">{service.uptime}</td>
+                        <td className={`latency-cell whitespace-nowrap ${parseInt(service.latency) > 100 ? 'high' : ''}`}>{service.latency}</td>
+                        <td className="region-cell whitespace-nowrap">{service.region}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            <Pagination 
+              totalItems={filteredServices.length}
+              itemsPerPage={10}
+              currentPage={currentPageServices}
+              onPageChange={setCurrentPageServices}
+              label="services"
+            />
+          </div>
+
+          <div className="infra-section card animate-slide-up delay-6 overflow-hidden mt-6">
+            <div className="section-header p-4 pb-0">
+              <h3 className="section-title"><Database size={18} /> Database Performance</h3>
+              <button className="btn-secondary-sm">View Queries <ExternalLink size={14} /></button>
+            </div>
+            <div className="overflow-x-auto mt-4">
+                <table className="directory-table min-w-[900px]">
+                  <thead>
+                    <tr>
+                      <th>DATABASE</th>
+                      <th>TYPE</th>
+                      <th>SIZE</th>
+                      <th>READS/HR</th>
+                      <th>WRITES/HR</th>
+                      <th>CONNECTIONS</th>
+                      <th>HEALTH</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredDBs.map((db, i) => (
+                      <tr key={i}>
+                        <td className="db-name whitespace-nowrap">{db.name}</td>
+                        <td className="whitespace-nowrap"><span className="type-tag">{db.type}</span></td>
+                        <td className="mono-cell whitespace-nowrap">{db.size}</td>
+                        <td className="mono-cell whitespace-nowrap">{db.reads}</td>
+                        <td className="mono-cell whitespace-nowrap">{db.writes}</td>
+                        <td className="mono-cell whitespace-nowrap">{db.connections.toLocaleString()}</td>
+                        <td className="whitespace-nowrap"><Badge variant={getStatusVariant(db.status)}>{db.status}</Badge></td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            <Pagination 
+              totalItems={filteredDBs.length}
+              itemsPerPage={5}
+              currentPage={currentPageDB}
+              onPageChange={setCurrentPageDB}
+              label="databases"
+            />
           </div>
         </div>
-        <Pagination 
-          totalItems={filteredServices.length}
-          itemsPerPage={10}
-          currentPage={currentPageServices}
-          onPageChange={setCurrentPageServices}
-          label="services"
-        />
+
+        <div className="infra-sidebar">
+          <div className="infra-section card animate-slide-up delay-7">
+            <div className="section-header">
+              <h3 className="section-title"><Shield size={18} /> Security & Compliance</h3>
+            </div>
+            <div className="security-grid p-4">
+              {securityMetrics.map((metric, i) => (
+                <div key={i} className="security-item">
+                  <span className="security-label">{metric.label}</span>
+                  <div className="security-value-row">
+                    <span className="security-val">{metric.value}</span>
+                    {metric.status === 'success' && <div className="status-dot-mini green" />}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="infra-section card animate-slide-up delay-8 mt-6">
+            <div className="section-header">
+              <h3 className="section-title"><Activity size={18} /> Incident Timeline</h3>
+            </div>
+            <div className="incidents-list">
+              {incidents.map((incident, i) => (
+                <div key={i} className={`incident-row ${incident.status.toLowerCase()}`}>
+                  <div className="incident-left">
+                    <div className={`severity-dot severity-${incident.severity.toLowerCase()}`} />
+                    <div className="incident-meta">
+                      <div className="incident-title-row">
+                        <span className="incident-id">{incident.id}</span>
+                        <h4 className="incident-title">{incident.title}</h4>
+                      </div>
+                      <div className="incident-details">
+                        <span className="incident-affected">{incident.affected}</span>
+                        <span className="incident-time">{incident.time}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <Badge variant={getStatusVariant(incident.status)}>{incident.status}</Badge>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div className="infra-section card animate-slide-up delay-6 overflow-hidden mt-6">
-        <div className="section-header p-4 pb-0">
-          <h3 className="section-title"><Database size={18} /> Database Performance</h3>
-          <button className="btn-secondary-sm">View Queries <ExternalLink size={14} /></button>
-        </div>
-        <div className="table-responsive">
-          <div className="overflow-x-auto">
-            <table className="directory-table min-w-[900px]">
-              <thead>
-                <tr>
-                  <th>DATABASE</th>
-                  <th>TYPE</th>
-                  <th>SIZE</th>
-                  <th>READS/HR</th>
-                  <th>WRITES/HR</th>
-                  <th>CONNECTIONS</th>
-                  <th>HEALTH</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredDBs.map((db, i) => (
-                  <tr key={i}>
-                    <td className="db-name whitespace-nowrap">{db.name}</td>
-                    <td className="whitespace-nowrap"><span className="type-tag">{db.type}</span></td>
-                    <td className="mono-cell whitespace-nowrap">{db.size}</td>
-                    <td className="mono-cell whitespace-nowrap">{db.reads}</td>
-                    <td className="mono-cell whitespace-nowrap">{db.writes}</td>
-                    <td className="mono-cell whitespace-nowrap">{db.connections.toLocaleString()}</td>
-                    <td className="whitespace-nowrap"><Badge variant={getStatusVariant(db.status)}>{db.status}</Badge></td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-        <Pagination 
-          totalItems={filteredDBs.length}
-          itemsPerPage={5}
-          currentPage={currentPageDB}
-          onPageChange={setCurrentPageDB}
-          label="databases"
-        />
-      </div>
     </div>
   );
 }

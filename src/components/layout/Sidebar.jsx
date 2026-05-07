@@ -1,10 +1,12 @@
-import React from 'react';
-import { Home, Dumbbell, User, Users, DollarSign, Server, BookOpen, HelpCircle, LogOut, X, ChevronRight, ChevronDown, Zap } from 'lucide-react';
+import React, { useState } from 'react';
+import { Home, Dumbbell, User, Users, DollarSign, Server, BookOpen, HelpCircle, LogOut, X, ChevronRight, ChevronDown, Zap, Monitor } from 'lucide-react';
+import { isTauri } from '../../lib/tauri';
 import './Sidebar.css';
 
+
 export function Sidebar({ isOpen, onClose, currentPage, onNavigate, branding }) {
-  const [showPalette, setShowPalette] = React.useState(true);
-  const [openGroups, setOpenGroups] = React.useState({
+  const [showPalette, setShowPalette] = useState(true);
+  const [openGroups, setOpenGroups] = useState({
     dashboard: true,
     financials: true,
   });
@@ -101,6 +103,9 @@ export function Sidebar({ isOpen, onClose, currentPage, onNavigate, branding }) 
 
   const handleNavigate = (pageId, section) => {
     onNavigate(pageId);
+    // When navigating to a new page, collapse other groups and only keep the current one open
+    setOpenGroups({ [pageId]: true });
+    
     if (section) {
       window.setTimeout(() => scrollToSection(section), currentPage === pageId ? 0 : 120);
     }
@@ -108,7 +113,11 @@ export function Sidebar({ isOpen, onClose, currentPage, onNavigate, branding }) 
   };
 
   const toggleGroup = (id) => {
-    setOpenGroups((prev) => ({ ...prev, [id]: !prev[id] }));
+    setOpenGroups((prev) => {
+      const isCurrentlyOpen = prev[id];
+      // If closing, return empty object. If opening, set only this ID to true.
+      return isCurrentlyOpen ? {} : { [id]: true };
+    });
   };
 
   return (
@@ -122,6 +131,7 @@ export function Sidebar({ isOpen, onClose, currentPage, onNavigate, branding }) 
           )}
           <span className="logo-text" style={{ color: 'var(--primary)' }}>{branding.name}</span>
         </div>
+
         <button className="close-sidebar-btn" onClick={(e) => { e.stopPropagation(); onClose?.(); }}>
           <X size={16} />
         </button>
@@ -131,7 +141,7 @@ export function Sidebar({ isOpen, onClose, currentPage, onNavigate, branding }) 
         <ul>
           {navItems.map((item) => {
             const hasChildren = Boolean(item.children?.length);
-            const isOpenGroup = openGroups[item.id] || currentPage === item.id;
+            const isOpenGroup = !!openGroups[item.id];
             return (
             <li key={item.id} className={`${currentPage === item.id ? 'active' : ''} ${hasChildren ? 'has-children' : ''}`}>
               <div className="nav-btn-row">

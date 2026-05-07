@@ -4,7 +4,9 @@ import { Header } from './Header';
 import { BottomNav } from './BottomNav';
 import { NotificationPanel } from './NotificationPanel';
 import { Plus } from 'lucide-react';
+import { isTauri } from '../../lib/tauri';
 import './DashboardLayout.css';
+
 
 export function DashboardLayout({ children, currentPage, onNavigate, branding, searchQuery, onSearch }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -63,6 +65,7 @@ export function DashboardLayout({ children, currentPage, onNavigate, branding, s
           onNotifClick={() => setNotifOpen(true)}
         />
         <button className="fab-button" title="Add New Gym">
+
           <Plus size={24} />
         </button>
       </div>

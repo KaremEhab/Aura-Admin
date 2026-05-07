@@ -1,15 +1,16 @@
 .stat-cards-container {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 24px;
+  gap: 16px;
   width: 100%;
-  margin-top: 8px; /* Slight extra space at top */
 }
 
 .stat-card {
+  padding: 16px !important;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  gap: 16px;
+  min-width: 0;
 }
 
 .stat-header {
@@ -17,44 +18,42 @@
   align-items: center;
   gap: 8px;
   color: var(--subtitle);
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  margin-bottom: 24px;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
 }
 
-.stat-icon {
-  color: var(--primary);
-}
-
-.stat-main {
+.stat-value-group {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  margin-bottom: 24px;
-}
-
-.stat-label {
-  color: var(--subtitle);
-  font-size: 0.85rem;
+  flex-direction: column;
+  gap: 2px;
 }
 
 .stat-value {
   color: var(--title);
-  font-size: 1.5rem;
-  font-weight: 700;
+  font-size: 1.6rem;
+  font-weight: 900;
+  line-height: 1.1;
+}
+
+.stat-label {
+  color: var(--primary);
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
 }
 
 .stat-progress-container {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
 }
 
 .stat-progress-bar {
   width: 100%;
   height: 4px;
-  background-color: var(--stroke);
+  background-color: var(--background);
   border-radius: 2px;
   overflow: hidden;
 }
@@ -68,7 +67,8 @@
 .stat-progress-labels {
   display: flex;
   justify-content: space-between;
-  font-size: 0.7rem;
+  font-size: 0.65rem;
+  font-weight: 700;
   color: var(--subtitle);
 }
 
@@ -76,30 +76,23 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 0.75rem;
+  font-size: 0.7rem;
+  font-weight: 700;
   color: var(--subtitle);
   padding-top: 12px;
   border-top: 1px solid var(--stroke);
-}
-
-.stat-footer-flex {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 0.75rem;
-  padding-top: 12px;
-  border-top: 1px solid var(--stroke);
+  white-space: nowrap;
 }
 
 .status-dot {
   width: 6px;
   height: 6px;
-  background-color: var(--primary);
+  background-color: #22c55e;
   border-radius: 50%;
-  display: inline-block;
+  box-shadow: 0 0 6px rgba(34, 197, 94, 0.4);
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 1440px) {
   .stat-cards-container {
     grid-template-columns: repeat(2, 1fr);
   }

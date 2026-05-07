@@ -7,6 +7,14 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
   
   return {
+    // Prevent Vite from obscuring Rust errors
+    clearScreen: false,
+    // Tauri expects a fixed port, fail if it's already in use
+    server: {
+      strictPort: true,
+    },
+    // Use env variables prefixed with TAURI_
+    envPrefix: ['VITE_', 'TAURI_'],
     plugins: [
       react(),
       tailwindcss(),
@@ -24,5 +32,14 @@ export default defineConfig(({ mode }) => {
         }
       }
     ],
+    build: {
+      // Tauri supports es2021
+      target: process.env.TAURI_PLATFORM === 'windows' ? 'chrome105' : 'safari13',
+      // Don't minify for debug builds
+      minify: !process.env.TAURI_DEBUG ? 'esbuild' : false,
+      // Produce sourcemaps for debug builds
+      sourcemap: !!process.env.TAURI_DEBUG,
+    },
   }
 })
+

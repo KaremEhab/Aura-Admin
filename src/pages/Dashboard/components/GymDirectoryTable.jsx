@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { PowerOff, RefreshCcw, CheckCircle, Settings, Users, MapPin, Clock, DollarSign } from 'lucide-react';
 import { Badge } from '../../../components/ui/Badge';
 import { Pagination } from '../../../components/ui/Pagination';
@@ -32,7 +32,7 @@ const getActionTitle = (status) => {
 };
 
 export function GymDirectoryTable({ directory, searchQuery }) {
-  const [currentPage, setCurrentPage] = React.useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
   
   const filteredDirectory = directory.filter(gym => 
     gym.name.toLowerCase().includes((searchQuery || '').toLowerCase()) ||
