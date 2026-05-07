@@ -10,6 +10,7 @@ import { Trainers } from './pages/Trainers/Trainers';
 import { Trainees } from './pages/Trainees/Trainees';
 import { Infrastructure } from './pages/Infrastructure/Infrastructure';
 import { Financials } from './pages/Financials/Financials';
+import { Workflow } from './pages/Workflow/Workflow';
 
 function App() {
   const [currentPage, setCurrentPage] = useState('dashboard');
@@ -76,6 +77,8 @@ function App() {
               return <Infrastructure searchQuery={searchQuery} />;
             case 'financials':
               return <Financials searchQuery={searchQuery} />;
+            case 'workflow':
+              return <Workflow searchQuery={searchQuery} />;
             default:
               return <Dashboard searchQuery={searchQuery} />;
           }

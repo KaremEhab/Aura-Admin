@@ -1,7 +1,26 @@
-import React from 'react';
-import { Save, Shield, ShieldCheck, CreditCard, Database, Copy, Cloud, Settings, Trash2, History } from 'lucide-react';
+import { Save, Shield, ShieldCheck, CreditCard, Database, Copy, Cloud, Settings, History, Bell, KeyRound, Lock, Users, MapPin, Smartphone, AlertTriangle } from 'lucide-react';
 import auraLogo from '../../assets/Aura.svg';
 import './AccountSettings.css';
+
+const adminRoles = [
+  { name: 'Owner', scope: 'Full platform control', members: 1, risk: 'Critical' },
+  { name: 'Operations Lead', scope: 'Gyms, trainers, approvals', members: 4, risk: 'High' },
+  { name: 'Finance Admin', scope: 'Payouts, invoices, plans', members: 2, risk: 'High' },
+  { name: 'Support Agent', scope: 'Tickets and member lookup', members: 9, risk: 'Medium' },
+];
+
+const notificationRoutes = [
+  { label: 'Revenue drops', target: 'Owner + Finance', channel: 'Email, Push', active: true },
+  { label: 'Hardware offline', target: 'Infrastructure', channel: 'Push, SMS', active: true },
+  { label: 'Gym approval waiting', target: 'Operations', channel: 'Dashboard', active: true },
+  { label: 'Refund spikes', target: 'Finance', channel: 'Email', active: false },
+];
+
+const backupChecks = [
+  { label: 'Database snapshot', value: 'Every 6 hours', status: 'Healthy' },
+  { label: 'Media storage mirror', value: 'Cloudflare R2', status: 'Synced' },
+  { label: 'Audit retention', value: '24 months', status: 'Locked' },
+];
 
 export function AccountSettings({ branding, onBrandingChange }) {
   const copyToClipboard = (text) => {
@@ -27,6 +46,33 @@ export function AccountSettings({ branding, onBrandingChange }) {
       </div>
 
       <div className="settings-grid">
+        <div className="settings-command-grid animate-slide-up">
+          <div className="card settings-command-card">
+            <div className="command-card-top">
+              <span className="command-pill"><ShieldCheck size={14} /> Admin trust score</span>
+              <strong>94%</strong>
+            </div>
+            <p>Platform access is healthy. Two admins still need enforced 2FA before the next compliance review.</p>
+            <div className="command-meter"><span style={{ width: '94%' }} /></div>
+          </div>
+          <div className="card settings-command-card">
+            <div className="command-card-top">
+              <span className="command-pill"><Database size={14} /> Data safety</span>
+              <strong>6h</strong>
+            </div>
+            <p>Last production backup finished successfully. Next backup window is already queued.</p>
+            <div className="command-meter"><span style={{ width: '88%' }} /></div>
+          </div>
+          <div className="card settings-command-card">
+            <div className="command-card-top">
+              <span className="command-pill"><Bell size={14} /> Alert routing</span>
+              <strong>12</strong>
+            </div>
+            <p>Critical routes are active across revenue, hardware, approvals, and refund monitoring.</p>
+            <div className="command-meter"><span style={{ width: '76%' }} /></div>
+          </div>
+        </div>
+
         {/* Account Information & Security Row */}
         <div className="settings-row top-row animate-slide-up">
           <div className="card account-info-card">
@@ -177,6 +223,53 @@ export function AccountSettings({ branding, onBrandingChange }) {
                 <span className="status-dot online"></span>
                 <span>Enterprise Protected</span>
               </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="settings-row governance-row animate-slide-up delay-2">
+          <div className="card access-control-card">
+            <div className="card-header-with-action">
+              <div className="card-title-inline">
+                <KeyRound size={18} className="text-primary" />
+                <h3 className="section-title">Role & Permission Center</h3>
+              </div>
+              <button className="btn-outline compact-btn"><Users size={15} /> Invite Admin</button>
+            </div>
+            <p className="section-desc">Control exactly who can approve gyms, change pricing, export data, or touch infrastructure settings.</p>
+            <div className="role-matrix">
+              {adminRoles.map((role) => (
+                <div className="role-matrix-row" key={role.name}>
+                  <div>
+                    <h4>{role.name}</h4>
+                    <p>{role.scope}</p>
+                  </div>
+                  <span>{role.members} users</span>
+                  <strong className={`risk-chip ${role.risk.toLowerCase()}`}>{role.risk}</strong>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="card notification-routing-card">
+            <div className="card-header-simple">
+              <Bell className="text-primary" size={20} />
+              <h3 className="section-title">Smart Alert Routing</h3>
+            </div>
+            <p className="section-desc">Route platform events to the right team before they become support noise.</p>
+            <div className="route-list">
+              {notificationRoutes.map((route) => (
+                <div className="route-item" key={route.label}>
+                  <div>
+                    <h4>{route.label}</h4>
+                    <p>{route.target} via {route.channel}</p>
+                  </div>
+                  <label className="switch">
+                    <input type="checkbox" defaultChecked={route.active} />
+                    <span className="slider"></span>
+                  </label>
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -394,6 +487,60 @@ export function AccountSettings({ branding, onBrandingChange }) {
                   />
                 </div>
              </div>
+          </div>
+        </div>
+
+        <div className="settings-row ops-row animate-slide-up delay-3">
+          <div className="card data-governance-card">
+            <div className="card-header-with-action">
+              <div className="card-title-inline">
+                <Lock size={18} className="text-primary" />
+                <h3 className="section-title">Data Governance</h3>
+              </div>
+              <button className="btn-outline compact-btn"><History size={15} /> View Log</button>
+            </div>
+            <div className="backup-grid">
+              {backupChecks.map((check) => (
+                <div className="backup-tile" key={check.label}>
+                  <span>{check.label}</span>
+                  <strong>{check.value}</strong>
+                  <small>{check.status}</small>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="card rollout-card">
+            <div className="card-header-simple">
+              <Settings className="text-primary" size={20} />
+              <h3 className="section-title">Feature Rollout Controls</h3>
+            </div>
+            <div className="rollout-list">
+              <div className="rollout-item">
+                <Smartphone size={17} />
+                <div>
+                  <h4>Member app redesign</h4>
+                  <p>Rolling out to 35% of trainees in Cairo gyms.</p>
+                </div>
+                <span>35%</span>
+              </div>
+              <div className="rollout-item">
+                <MapPin size={17} />
+                <div>
+                  <h4>Gym discovery ranking</h4>
+                  <p>Enabled for verified gyms with complete media profiles.</p>
+                </div>
+                <span>Live</span>
+              </div>
+              <div className="rollout-item warning">
+                <AlertTriangle size={17} />
+                <div>
+                  <h4>Auto-refund rules</h4>
+                  <p>Paused until Finance approves the new dispute policy.</p>
+                </div>
+                <span>Paused</span>
+              </div>
+            </div>
           </div>
         </div>
 
