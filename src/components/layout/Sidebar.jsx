@@ -132,7 +132,7 @@ export function Sidebar({ isOpen, onClose, currentPage, onNavigate, branding }) 
                 <li key={item.id} className={`${currentPage === item.id || (currentPage === 'dashboard' && item.id === 'dashboard') ? 'active' : ''}`}>
                   <button 
                     className="nav-btn"
-                    onClick={() => handleNavigate('dashboard')} // Force all to dashboard for now
+                    onClick={() => handleNavigate(item.id)}
                   >
                     <div className="flex items-center gap-3">
                       <item.icon size={16} />

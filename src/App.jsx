@@ -1,6 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { DashboardLayout } from './components/layout/DashboardLayout';
 import { Dashboard } from './pages/Dashboard/Dashboard';
+import { PersonalTrainers } from './pages/PersonalTrainers/PersonalTrainers';
+
+class ErrorBoundary extends React.Component {
+  constructor(props) { super(props); this.state = { hasError: false, error: null }; }
+  static getDerivedStateFromError(error) { return { hasError: true, error }; }
+  render() {
+    if (this.state.hasError) return <div style={{padding: '50px', color: 'white', background: 'red'}}><h1>App Crashed!</h1><pre>{this.state.error.toString()}</pre></div>;
+    return this.props.children;
+  }
+}
 
 function App() {
   const [currentPage, setCurrentPage] = useState('dashboard');
@@ -40,23 +50,35 @@ function App() {
   };
 
   const renderPage = () => {
-    return (
-      <div key={currentPage} className="page-transition-wrapper">
-        <Dashboard searchQuery={searchQuery} />
-      </div>
-    );
+    switch (currentPage) {
+      case 'personal-trainers':
+        return (
+          <div key={currentPage} className="page-transition-wrapper">
+            <PersonalTrainers searchQuery={searchQuery} />
+          </div>
+        );
+      case 'dashboard':
+      default:
+        return (
+          <div key={currentPage} className="page-transition-wrapper">
+            <Dashboard searchQuery={searchQuery} />
+          </div>
+        );
+    }
   };
 
   return (
-    <DashboardLayout 
-      currentPage={currentPage} 
-      onNavigate={setCurrentPage}
-      branding={branding}
-      searchQuery={searchQuery}
-      onSearch={setSearchQuery}
-    >
-      {renderPage()}
-    </DashboardLayout>
+    <ErrorBoundary>
+      <DashboardLayout 
+        currentPage={currentPage} 
+        onNavigate={setCurrentPage}
+        branding={branding}
+        searchQuery={searchQuery}
+        onSearch={setSearchQuery}
+      >
+        {renderPage()}
+      </DashboardLayout>
+    </ErrorBoundary>
   );
 }
 
