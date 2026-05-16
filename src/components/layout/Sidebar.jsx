@@ -1,135 +1,98 @@
 import React, { useState } from 'react';
-import { Home, Dumbbell, User, Users, DollarSign, Server, BookOpen, HelpCircle, LogOut, X, ChevronRight, ChevronDown, Zap, Monitor } from 'lucide-react';
-import { isTauri } from '../../lib/tauri';
+import { 
+  Home, User, Users, Briefcase, 
+  DollarSign, Layers, Repeat,
+  Bot, Share2, MessageSquare,
+  BookOpen, BarChart2, Dumbbell, Activity, Server,
+  Shield, HelpCircle, LogOut, X, ChevronRight, CheckCircle2,
+  Settings, Database, Wallet, Globe
+} from 'lucide-react';
 import './Sidebar.css';
-
+import auraLogo from '../../assets/Aura.svg';
 
 export function Sidebar({ isOpen, onClose, currentPage, onNavigate, branding }) {
-  const [showPalette, setShowPalette] = useState(true);
   const [openGroups, setOpenGroups] = useState({
-    dashboard: true,
-    financials: true,
+    'money-flows': true,
+    'community': true,
+    'data-information': true,
+    'support-settings': true,
   });
 
-  const navItems = [
-    {
-      id: 'dashboard',
-      icon: Home,
-      label: 'DASHBOARD',
-      children: [
-        { label: 'Operator brief', section: 'top' },
-        { label: 'Insights', section: 'dashboard-insights' },
-        { label: 'Directory', section: 'dashboard-directory' },
-      ],
-    },
-    { id: 'gyms', icon: Dumbbell, label: 'GYMS' },
-    {
-      id: 'pt',
-      icon: User,
-      label: 'PERSONAL TRAINER',
-      children: [
-        { label: 'Overview', section: 'trainers-overview' },
-        { label: 'Performance', section: 'trainers-performance' },
-        { label: 'Verification', section: 'trainers-verification' },
-        { label: 'Directory', section: 'trainers-directory' },
-      ],
-    },
-    {
-      id: 'trainees',
-      icon: Users,
-      label: 'TRAINEES',
-      children: [
-        { label: 'Overview', section: 'trainees-overview' },
-        { label: 'Engagement', section: 'trainees-engagement' },
-        { label: 'Lifecycle', section: 'trainees-lifecycle' },
-        { label: 'Directory', section: 'trainees-directory' },
-      ],
-    },
-    {
-      id: 'financials',
-      icon: DollarSign,
-      label: 'FINANCIALS',
-      children: [
-        { label: 'Overview', section: 'financial-overview' },
-        { label: 'Owner KPIs', section: 'financial-kpis' },
-        { label: 'Cash flow', section: 'cash-flow' },
-        { label: 'Unit economics', section: 'unit-economics' },
-        { label: 'Risk controls', section: 'risk-controls' },
-        { label: 'Expenses', section: 'expenses' },
-        { label: 'Ledger', section: 'ledger' },
-        { label: 'Payouts', section: 'payouts' },
-      ],
-    },
-    { id: 'infra', icon: Server, label: 'INFRASTRUCTURE' },
-    {
-      id: 'workflow',
-      icon: Zap,
-      label: 'WORKFLOWS',
-      children: [
-        { label: 'Automation cockpit', section: 'workflow-overview' },
-        { label: 'Workflow table', section: 'workflow-table' },
-      ],
-    },
-    {
-      id: 'library',
-      icon: BookOpen,
-      label: 'LIBRARY',
-      children: [
-        { label: 'Overview', section: 'library-overview' },
-        { label: 'Health', section: 'library-health' },
-        { label: 'Content ops', section: 'library-ops' },
-        { label: 'Publishing', section: 'library-publishing' },
-        { label: 'Assets', section: 'library-assets' },
-      ],
-    },
-    {
-      id: 'support',
-      icon: HelpCircle,
-      label: 'SUPPORT',
-      children: [
-        { label: 'Overview', section: 'support-overview' },
-        { label: 'SLA', section: 'support-sla' },
-        { label: 'Queues', section: 'support-queues' },
-        { label: 'Tickets', section: 'support-tickets' },
-        { label: 'Broadcasts', section: 'support-broadcasts' },
-      ],
-    },
-  ];
-
-  const scrollToSection = (section) => {
-    const target = section === 'top' ? document.querySelector('.main-content') : document.getElementById(section);
-    target?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  const toggleGroup = (id) => {
+    setOpenGroups(prev => ({ ...prev, [id]: !prev[id] }));
   };
 
-  const handleNavigate = (pageId, section) => {
+  const handleNavigate = (pageId) => {
     onNavigate(pageId);
-    // When navigating to a new page, collapse other groups and only keep the current one open
-    setOpenGroups({ [pageId]: true });
-    
-    if (section) {
-      window.setTimeout(() => scrollToSection(section), currentPage === pageId ? 0 : 120);
-    }
     onClose?.();
   };
 
-  const toggleGroup = (id) => {
-    setOpenGroups((prev) => {
-      const isCurrentlyOpen = prev[id];
-      // If closing, return empty object. If opening, set only this ID to true.
-      return isCurrentlyOpen ? {} : { [id]: true };
-    });
-  };
+  const navSections = [
+    {
+      items: [
+        { id: 'dashboard', icon: Home, label: 'DASHBOARD' },
+        { id: 'personal-trainers', icon: User, label: 'PERSONAL TRAINERS' },
+        { id: 'receptionists', icon: Users, label: 'RECEPTIONISTS' },
+        { id: 'trainees', icon: Users, label: 'TRAINEES' },
+        { id: 'managers', icon: Briefcase, label: 'MANAGERS' },
+      ]
+    },
+    {
+      id: 'money-flows',
+      label: 'Money Flows',
+      icon: Wallet,
+      items: [
+        { id: 'financials', icon: DollarSign, label: 'FINANCIALS' },
+        { id: 'pricing-plans', icon: Layers, label: 'PRICING PLANS' },
+        { id: 'subscriptions', icon: Repeat, label: 'SUBSCRIPTIONS' },
+      ]
+    },
+    {
+      id: 'community',
+      label: 'Community',
+      icon: Globe,
+      items: [
+        { id: 'aura-ai', icon: Bot, label: 'AURA AI' },
+        { id: 'aura-hub', icon: Share2, label: 'AURA HUB' },
+        { id: 'aura-chats', icon: MessageSquare, label: 'AURA CHATS', badge: 5 },
+      ]
+    },
+    {
+      id: 'data-information',
+      label: 'Data Information',
+      icon: Database,
+      items: [
+        { id: 'library', icon: BookOpen, label: 'LIBRARY' },
+        { id: 'analytics', icon: BarChart2, label: 'ANALYTICS' },
+        { id: 'workout-plans', icon: Dumbbell, label: 'WORKOUT PLANS' },
+        { id: 'nutrition-plans', icon: Activity, label: 'NUTRITION PLANS' },
+        { id: 'infrastructure', icon: Server, label: 'INFRASTRUCTURE' },
+      ]
+    },
+    {
+      id: 'support-settings',
+      label: 'Settings',
+      icon: Settings,
+      items: [
+        { id: 'permissions', icon: Shield, label: 'PERMISSIONS' },
+        { id: 'support', icon: HelpCircle, label: 'SUPPORT' },
+      ]
+    }
+  ];
 
   return (
     <aside className={`sidebar ${isOpen ? 'open' : ''}`}>
       <div className="sidebar-logo" onClick={() => handleNavigate('dashboard')} style={{ cursor: 'pointer' }}>
-        <div className="logo-brand">
-          {branding.logo ? (
-            <img src={branding.logo} alt="Logo" />
-          ) : (
-            <div className="logo-icon-svg" />
-          )}
-          <span className="logo-text" style={{ color: 'var(--primary)' }}>{branding.name}</span>
+        <div className="logo-brand flex items-center gap-3">
+          <div className="gym-avatar">
+            <CheckCircle2 size={24} color="#f59e0b" />
+          </div>
+          <div className="flex flex-col">
+            <span className="logo-text var-title font-bold" style={{ fontSize: '1.1rem' }}>Caesars</span>
+            <span style={{ fontSize: '0.7rem', color: '#9ca3af', fontWeight: '500' }}>
+              <span style={{ color: '#22c55e' }}>VIP Plan</span> • since 2022
+            </span>
+          </div>
         </div>
 
         <button className="close-sidebar-btn" onClick={(e) => { e.stopPropagation(); onClose?.(); }}>
@@ -139,70 +102,71 @@ export function Sidebar({ isOpen, onClose, currentPage, onNavigate, branding }) 
 
       <nav className="sidebar-nav">
         <ul>
-          {navItems.map((item) => {
-            const hasChildren = Boolean(item.children?.length);
-            const isOpenGroup = !!openGroups[item.id];
-            return (
-            <li key={item.id} className={`${currentPage === item.id ? 'active' : ''} ${hasChildren ? 'has-children' : ''}`}>
-              <div className="nav-btn-row">
-                <button 
-                  className="nav-btn"
-                  onClick={() => handleNavigate(item.id)}
-                >
-                  <item.icon size={15} />
-                  <span>{item.label}</span>
-                </button>
-                {hasChildren && (
-                  <button className="nav-tree-toggle" onClick={() => toggleGroup(item.id)} aria-label={`Toggle ${item.label} sections`}>
-                    {isOpenGroup ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
-                  </button>
-                )}
-              </div>
-              {hasChildren && isOpenGroup && (
-                <div className="nav-children">
-                  {item.children.map((child) => (
-                    <button
-                      key={`${item.id}-${child.section}`}
-                      className="nav-child-btn"
-                      onClick={() => handleNavigate(item.id, child.section)}
-                    >
-                      {child.label}
-                    </button>
-                  ))}
-                </div>
+          {navSections.map((section, idx) => (
+            <React.Fragment key={idx}>
+              {section.label && (
+                <li className="nav-section-header" onClick={() => toggleGroup(section.id)}>
+                  <div className="flex items-center justify-between w-full text-xs text-gray-400 font-bold uppercase tracking-wider px-2 mt-4 mb-2 cursor-pointer hover:text-gray-300 transition-colors">
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      {section.icon ? <section.icon size={12} /> : <HelpCircle size={12} />} {section.label}
+                    </span>
+                    <ChevronRight 
+                      size={14} 
+                      style={{ 
+                        transform: openGroups[section.id] ? 'rotate(90deg)' : 'rotate(0deg)',
+                        transition: 'transform 0.2s ease'
+                      }} 
+                    />
+                  </div>
+                </li>
               )}
-            </li>
-          );})}
+              {(!section.id || openGroups[section.id]) && section.items.map((item) => (
+                <li key={item.id} className={`${currentPage === item.id || (currentPage === 'dashboard' && item.id === 'dashboard') ? 'active' : ''}`}>
+                  <button 
+                    className="nav-btn"
+                    onClick={() => handleNavigate('dashboard')} // Force all to dashboard for now
+                  >
+                    <div className="flex items-center gap-3">
+                      <item.icon size={16} />
+                      <span>{item.label}</span>
+                    </div>
+                    {item.badge && (
+                      <span className="ml-auto bg-[#ef4444] text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                        {item.badge}
+                      </span>
+                    )}
+                  </button>
+                </li>
+              ))}
+            </React.Fragment>
+          ))}
         </ul>
       </nav>
 
-      <div className="sidebar-bottom">
-        {showPalette && (
-          <div className="command-palette">
-            <button className="close-palette" onClick={() => setShowPalette(false)} aria-label="Dismiss">
-              <X size={16} />
-            </button>
-            <p className="palette-title">COMMAND PALETTE</p>
-            <p className="palette-desc">Press <kbd>⌘ K</kbd> for new gym check-in or gym creation.</p>
-          </div>
-        )}
+      <div className="sidebar-bottom mt-auto">
+        <div className="sidebar-promo-card">
+          <p>"Momentum is built through precision tracking and elite discipline."</p>
+        </div>
 
-        <div 
-          className={`user-profile ${currentPage === 'settings' ? 'active-profile' : ''}`}
-          onClick={() => handleNavigate('settings')}
-        >
+        <div className="user-profile mt-4" onClick={() => handleNavigate('dashboard')}>
           <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=150&auto=format&fit=crop" alt="User" />
           <div className="user-info">
             <h4>KAREEM EHAB</h4>
-            <a href="#" onClick={(e) => { e.preventDefault(); handleNavigate('settings'); }}>Manage profile</a>
+            <a href="#" onClick={(e) => { e.preventDefault(); }}>Manage profile</a>
           </div>
-          <ChevronRight size={16} className="arrow" />
+          <ChevronRight size={16} className="arrow ml-auto" />
         </div>
 
-        <button className="sign-out">
+        <button className="sign-out mt-3 w-full flex items-center gap-3 px-4 py-3 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-colors border border-red-500/20 bg-[#1f191f]">
           <LogOut size={16} />
-          <span>SIGN OUT</span>
+          <span className="font-semibold tracking-wider">END SHIFT</span>
         </button>
+
+        <div className="mt-6 flex justify-center pb-4">
+          <span className="text-primary font-bold tracking-widest flex items-center gap-2">
+            <img src={auraLogo} alt="Aura Logo" className="w-5 h-5" /> AURA.FIT.
+          </span>
+        </div>
       </div>
     </aside>
   );

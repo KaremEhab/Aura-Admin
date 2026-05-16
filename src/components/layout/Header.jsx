@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, RefreshCcw, Moon, Sun, Bell, Plus, Menu, X, Minus, Square } from 'lucide-react';
+import { Search, RefreshCcw, Moon, Sun, Bell, Plus, Menu, X, Minus, Square, MessageCircle } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
 import { isTauri, minimizeWindow, maximizeWindow, closeWindow } from '../../lib/tauri';
 import './Header.css';
@@ -51,6 +51,10 @@ export function Header({ onMenuClick, branding, onRefresh, onNotifClick, onNavig
         <button className="icon-btn relative" title="Notifications" onClick={onNotifClick}>
           <Bell size={18} />
           <span className="notification-dot">3</span>
+        </button>
+        <button className="icon-btn relative" title="Messages">
+          <MessageCircle size={18} />
+          <span className="notification-dot bg-[#ef4444]">5</span>
         </button>
         
         <button className="btn-primary">

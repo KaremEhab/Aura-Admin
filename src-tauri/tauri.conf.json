@@ -12,7 +12,7 @@
   "app": {
     "windows": [
       {
-        "title": "Aura Super Admin",
+        "title": "Aura Admin",
         "width": 1440,
         "height": 956,
         "minWidth": 440,

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Menu, Search, RefreshCcw, Moon, Sun, Bell } from 'lucide-react';
+import { Menu, Search, RefreshCcw, Moon, Sun, Bell, MessageCircle } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
 import './BottomNav.css';
 
@@ -28,6 +28,10 @@ export function BottomNav({ onMenuClick, onRefresh, onNotifClick }) {
           <button className="icon-btn relative" onClick={onNotifClick}>
             <Bell size={16} />
             <span className="notification-dot">3</span>
+          </button>
+          <button className="icon-btn relative">
+            <MessageCircle size={16} />
+            <span className="notification-dot bg-[#ef4444]">5</span>
           </button>
         </div>
       </div>
