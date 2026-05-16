@@ -12,6 +12,7 @@ import auraLogo from '../../assets/Aura.svg';
 
 export function Sidebar({ isOpen, onClose, currentPage, onNavigate, branding }) {
   const [openGroups, setOpenGroups] = useState({
+    'management': true,
     'money-flows': true,
     'community': true,
     'data-information': true,
@@ -31,6 +32,13 @@ export function Sidebar({ isOpen, onClose, currentPage, onNavigate, branding }) 
     {
       items: [
         { id: 'dashboard', icon: Home, label: 'DASHBOARD' },
+      ]
+    },
+    {
+      id: 'management',
+      label: 'Management',
+      icon: Users,
+      items: [
         { id: 'personal-trainers', icon: User, label: 'PERSONAL TRAINERS' },
         { id: 'receptionists', icon: Users, label: 'RECEPTIONISTS' },
         { id: 'trainees', icon: Users, label: 'TRAINEES' },
@@ -144,9 +152,9 @@ export function Sidebar({ isOpen, onClose, currentPage, onNavigate, branding }) 
       </nav>
 
       <div className="sidebar-bottom mt-auto">
-        <div className="sidebar-promo-card">
+        {/* <div className="sidebar-promo-card">
           <p>"Momentum is built through precision tracking and elite discipline."</p>
-        </div>
+        </div> */}
 
         <div className="user-profile mt-4" onClick={() => handleNavigate('dashboard')}>
           <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=150&auto=format&fit=crop" alt="User" />
@@ -162,9 +170,9 @@ export function Sidebar({ isOpen, onClose, currentPage, onNavigate, branding }) 
           <span className="font-semibold tracking-wider">END SHIFT</span>
         </button>
 
-        <div className="mt-6 flex justify-center pb-4">
-          <span className="text-primary font-bold tracking-widest flex items-center gap-2">
-            <img src={auraLogo} alt="Aura Logo" className="w-5 h-5" /> AURA.FIT.
+        <div className="mt-3 flex justify-center">
+          <span className="text-primary text-[15px] font-bold tracking-widest flex items-center gap-2">
+            <img src={auraLogo} alt="Aura Logo" className="w-3.5 h-3.5" /> AURA.FIT.
           </span>
         </div>
       </div>

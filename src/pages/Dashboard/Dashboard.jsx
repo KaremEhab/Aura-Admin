@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { 
   TrendingUp, TrendingDown, ChevronDown, CheckCircle2, Rocket, 
   ChevronRight, PlayCircle, Edit2, Trash2, PlusSquare, 
-  Search, Filter, Settings, Video, FileText, CheckCircle, Users, Image, Clock, Zap, Bot, Headset, Radio
+  Search, Filter, Settings, Snowflake, Pause, FileText, CheckCircle, Users, Image, Clock, Zap, Bot, Headset, Radio
 } from 'lucide-react';
 import './Dashboard.css';
 
@@ -146,10 +146,10 @@ export function Dashboard() {
 
         <div className="fin-chart-container mt-6 relative h-[180px] w-full flex items-end">
           <div className="chart-grid-lines absolute inset-0 flex flex-col justify-between z-0 pointer-events-none pb-8 pt-2">
-            <div className="border-t border-gray-800/50 w-full"></div>
-            <div className="border-t border-gray-800/50 w-full"></div>
-            <div className="border-t border-gray-800/50 w-full"></div>
-            <div className="border-t border-gray-800/50 w-full"></div>
+            <div className="border-t border-stroke w-full"></div>
+            <div className="border-t border-stroke w-full"></div>
+            <div className="border-t border-stroke w-full"></div>
+            <div className="border-t border-stroke w-full"></div>
           </div>
           <div className="bars-wrapper relative z-10 w-full flex items-end justify-between px-2 h-full pb-8">
             {[{h: 40, l: 'Mon'}, {h: 50, l: 'Tue'}, {h: 45, l: 'Wed'}, {h: 65, l: 'Thu'}, {h: 60, l: 'Fri'}, {h: 58, l: 'Sat'}, {h: 85, l: 'Sun'}, {h: 90, l: 'Mon'}, {h: 100, l: 'Tue'}].map((item, i) => (
@@ -429,7 +429,7 @@ export function Dashboard() {
                 <td className="py-4 text-right">
                   <div className="flex justify-end gap-3 text-gray-500">
                     <Settings size={18} className="hover:text-white cursor-pointer" />
-                    <Video size={18} className="hover:text-white cursor-pointer" />
+                    <Snowflake size={18} className="hover:text-white cursor-pointer" />
                     <Trash2 size={18} className="hover:text-red-500 cursor-pointer text-red-400/50" />
                   </div>
                 </td>
@@ -456,7 +456,7 @@ export function Dashboard() {
                 <td className="py-4 text-right">
                   <div className="flex justify-end gap-3 text-gray-500">
                     <Settings size={18} className="hover:text-white cursor-pointer" />
-                    <Video size={18} className="hover:text-white cursor-pointer" />
+                    <Pause size={18} className="hover:text-white cursor-pointer" />
                     <Trash2 size={18} className="hover:text-red-500 cursor-pointer text-red-400/50" />
                   </div>
                 </td>
