@@ -3,7 +3,7 @@ import {
   Search, Filter, Plus, ArrowLeft, MoreVertical, 
   MapPin, Star, Users, Calendar, Award, DollarSign,
   Globe, Edit2, Trash2, Mail, Phone,
-  Clock, CheckCircle2, FileText
+  Clock, CheckCircle2, FileText, Fingerprint
 } from 'lucide-react';
 import './PersonalTrainers.css';
 
@@ -36,6 +36,10 @@ const mockTrainers = [
     reviews: [
       { id: 1, author: 'Alex Mercer', rating: 5, date: '2 days ago', text: 'Marcus completely transformed my approach to lifting. Incredible attention to detail!' },
       { id: 2, author: 'Sarah Connor', rating: 5, date: '1 week ago', text: 'Best coach I\'ve ever had. Very professional and supportive.' }
+    ],
+    timeLogs: [
+      { id: 301, date: '16 May 2026', clockIn: '05:55 AM', clockOut: '02:05 PM', duration: '8h 10m', status: 'On Time' },
+      { id: 302, date: '15 May 2026', clockIn: '08:15 AM', clockOut: '04:00 PM', duration: '7h 45m', status: 'Late' }
     ]
   },
   {
@@ -62,6 +66,9 @@ const mockTrainers = [
     ],
     reviews: [
       { id: 3, author: 'John Doe', rating: 4, date: '1 month ago', text: 'Great yoga classes, very relaxing environment.' }
+    ],
+    timeLogs: [
+      { id: 303, date: '14 May 2026', clockIn: '06:50 AM', clockOut: '08:35 AM', duration: '1h 45m', status: 'On Time' }
     ]
   },
   {
@@ -91,6 +98,9 @@ const mockTrainers = [
     reviews: [
       { id: 4, author: 'Chris Evans', rating: 5, date: '3 days ago', text: 'David pushes you exactly as hard as you need to be pushed. Seeing great results.' },
       { id: 5, author: 'Mark Ruffalo', rating: 4, date: '2 weeks ago', text: 'Solid strength programming.' }
+    ],
+    timeLogs: [
+      { id: 304, date: '14 May 2026', clockIn: '02:00 PM', clockOut: '09:30 PM', duration: '7h 30m', status: 'Early Leave' }
     ]
   }
 ];
@@ -219,6 +229,7 @@ export function PersonalTrainers({ searchQuery }) {
           { id: 'overview', label: 'Overview', icon: FileText },
           { id: 'trainees', label: 'Trainees', icon: Users },
           { id: 'schedule', label: 'Schedule & Classes', icon: Calendar },
+          { id: 'attendance', label: 'Attendance', icon: Fingerprint },
           { id: 'awards', label: 'Awards & Certs', icon: Award },
           { id: 'financials', label: 'Financials', icon: DollarSign },
           { id: 'reviews', label: 'Reviews', icon: Star },
@@ -332,6 +343,54 @@ export function PersonalTrainers({ searchQuery }) {
                   <button className="text-text hover:text-title"><MoreVertical size={16} /></button>
                 </div>
               ))}
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'attendance' && (
+          <div className="info-card">
+            <div className="flex justify-between items-center mb-6">
+              <h3><Fingerprint size={18} className="text-primary" /> Shift Attendance Logs</h3>
+              <button className="flex items-center gap-2 bg-background border border-stroke px-3 py-1.5 rounded-lg text-xs font-bold text-title hover:bg-stroke transition-colors">
+                <Filter size={14} /> Filter Logs
+              </button>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="border-b border-stroke text-xs text-text uppercase tracking-wider">
+                    <th className="pb-3 font-bold text-title">Date</th>
+                    <th className="pb-3 font-bold text-title">Clock In</th>
+                    <th className="pb-3 font-bold text-title">Clock Out</th>
+                    <th className="pb-3 font-bold text-title">Duration</th>
+                    <th className="pb-3 font-bold text-title">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {pt.timeLogs.map(log => (
+                    <tr key={log.id} className="border-b border-stroke hover:bg-background transition-colors">
+                      <td className="py-4 font-bold text-title">{log.date}</td>
+                      <td className="py-4 text-text">{log.clockIn}</td>
+                      <td className="py-4 text-text">{log.clockOut}</td>
+                      <td className="py-4 text-text">{log.duration}</td>
+                      <td className="py-4">
+                        <span className={`px-2 py-1 rounded text-xs font-bold ${
+                          log.status === 'On Time' ? 'bg-primary-lite text-primary border border-primary-border' :
+                          log.status === 'Late' ? 'bg-alert-lite text-alert border border-alert-border' :
+                          'bg-yellow-500/10 text-yellow-500 border border-yellow-500/20'
+                        }`}>
+                          {log.status}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                  {pt.timeLogs.length === 0 && (
+                    <tr>
+                      <td colSpan="5" className="py-8 text-center text-text">No attendance logs available.</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
             </div>
           </div>
         )}

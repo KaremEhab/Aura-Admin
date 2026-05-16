@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { DashboardLayout } from './components/layout/DashboardLayout';
 import { Dashboard } from './pages/Dashboard/Dashboard';
 import { PersonalTrainers } from './pages/PersonalTrainers/PersonalTrainers';
+import { Receptionists } from './pages/Receptionists/Receptionists';
+import { TimeClock } from './pages/TimeClock/TimeClock';
 
 class ErrorBoundary extends React.Component {
   constructor(props) { super(props); this.state = { hasError: false, error: null }; }
@@ -55,6 +57,18 @@ function App() {
         return (
           <div key={currentPage} className="page-transition-wrapper">
             <PersonalTrainers searchQuery={searchQuery} />
+          </div>
+        );
+      case 'receptionists':
+        return (
+          <div key={currentPage} className="page-transition-wrapper">
+            <Receptionists searchQuery={searchQuery} />
+          </div>
+        );
+      case 'time-clock':
+        return (
+          <div key={currentPage} className="page-transition-wrapper">
+            <TimeClock />
           </div>
         );
       case 'dashboard':

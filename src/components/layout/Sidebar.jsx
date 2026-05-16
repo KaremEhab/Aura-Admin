@@ -43,6 +43,7 @@ export function Sidebar({ isOpen, onClose, currentPage, onNavigate, branding }) 
         { id: 'receptionists', icon: Users, label: 'RECEPTIONISTS' },
         { id: 'trainees', icon: Users, label: 'TRAINEES' },
         { id: 'managers', icon: Briefcase, label: 'MANAGERS' },
+        { id: 'time-clock', icon: CheckCircle2, label: 'STAFF KIOSK' },
       ]
     },
     {
