@@ -1,0 +1,12 @@
+.aurahub-container {
+  /* Styling inherited from global dark theme */
+}
+
+/* Hide scrollbar for the feed but keep functionality */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

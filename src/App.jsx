@@ -3,7 +3,26 @@ import { DashboardLayout } from './components/layout/DashboardLayout';
 import { Dashboard } from './pages/Dashboard/Dashboard';
 import { PersonalTrainers } from './pages/PersonalTrainers/PersonalTrainers';
 import { Receptionists } from './pages/Receptionists/Receptionists';
+import { Trainees } from './pages/Trainees/Trainees';
 import { TimeClock } from './pages/TimeClock/TimeClock';
+import { Managers } from './pages/Managers/Managers';
+import { Financials } from './pages/Financials/Financials';
+import { PricingPlans } from './pages/PricingPlans/PricingPlans';
+import { Subscriptions } from './pages/Subscriptions/Subscriptions';
+import { Permissions } from './pages/Permissions/Permissions';
+import { Support } from './pages/Support/Support';
+import { AccountManagement } from './pages/AccountManagement/AccountManagement';
+
+import { Library } from './pages/Library/Library';
+import { Analytics } from './pages/Analytics/Analytics';
+import { WorkoutPlans } from './pages/WorkoutPlans/WorkoutPlans';
+import { WorkoutBuilder } from './pages/WorkoutPlans/WorkoutBuilder';
+import { NutritionPlans } from './pages/NutritionPlans/NutritionPlans';
+import { NutritionBuilder } from './pages/NutritionPlans/NutritionBuilder';
+import { SystemConfiguration } from './pages/SystemConfiguration/SystemConfiguration';
+import { AuraHub } from './pages/AuraHub/AuraHub';
+import { AuraChats } from './pages/AuraChats/AuraChats';
+import { AuraAI } from './pages/AuraAI/AuraAI';
 
 class ErrorBoundary extends React.Component {
   constructor(props) { super(props); this.state = { hasError: false, error: null }; }
@@ -65,10 +84,106 @@ function App() {
             <Receptionists searchQuery={searchQuery} />
           </div>
         );
+      case 'trainees':
+        return (
+          <div key={currentPage} className="page-transition-wrapper">
+            <Trainees searchQuery={searchQuery} />
+          </div>
+        );
       case 'time-clock':
         return (
           <div key={currentPage} className="page-transition-wrapper">
             <TimeClock />
+          </div>
+        );
+      case 'managers':
+        return (
+          <div key={currentPage} className="page-transition-wrapper">
+            <Managers searchQuery={searchQuery} />
+          </div>
+        );
+      case 'financials':
+        return (
+          <div key={currentPage} className="page-transition-wrapper">
+            <Financials />
+          </div>
+        );
+      case 'pricing-plans':
+        return (
+          <div key={currentPage} className="page-transition-wrapper">
+            <PricingPlans />
+          </div>
+        );
+      case 'subscriptions':
+        return (
+          <div key={currentPage} className="page-transition-wrapper">
+            <Subscriptions />
+          </div>
+        );
+      case 'permissions':
+        return (
+          <div key={currentPage} className="page-transition-wrapper">
+            <Permissions />
+          </div>
+        );
+      case 'support':
+        return (
+          <div key={currentPage} className="page-transition-wrapper">
+            <Support />
+          </div>
+        );
+      case 'account-management':
+        return (
+          <div key={currentPage} className="page-transition-wrapper">
+            <AccountManagement />
+          </div>
+        );
+      case 'library':
+        return (
+          <div key={currentPage} className="page-transition-wrapper">
+            <Library />
+          </div>
+        );
+      case 'analytics':
+        return (
+          <div key={currentPage} className="page-transition-wrapper">
+            <Analytics />
+          </div>
+        );
+      case 'workout-plans':
+        return (
+          <div key={currentPage} className="page-transition-wrapper">
+            <WorkoutPlans onNavigate={setCurrentPage} />
+          </div>
+        );
+      case 'workout-builder':
+        return (
+          <div key={currentPage} className="page-transition-wrapper">
+            <WorkoutBuilder onNavigate={setCurrentPage} />
+          </div>
+        );
+      case 'nutrition-plans':
+        return (
+          <div key={currentPage} className="page-transition-wrapper">
+            <NutritionPlans onNavigate={setCurrentPage} />
+          </div>
+        );
+      case 'nutrition-builder':
+        return (
+          <div key={currentPage} className="page-transition-wrapper">
+            <NutritionBuilder onNavigate={setCurrentPage} />
+          </div>
+        );
+      case 'system-configuration':
+        return (
+          <div key={currentPage} className="page-transition-wrapper">
+            <SystemConfiguration />
+          </div>
+        );
+      case 'aura-chats':
+        return (
+          <div key={currentPage} className="page-transition-wrapper">
+            <AuraChats />
           </div>
         );
       case 'dashboard':
@@ -80,6 +195,17 @@ function App() {
         );
     }
   };
+
+  const isFullScreenPage = currentPage === 'aura-ai' || currentPage === 'aura-hub';
+
+  if (isFullScreenPage) {
+    return (
+      <ErrorBoundary>
+        {currentPage === 'aura-ai' && <AuraAI onNavigate={setCurrentPage} />}
+        {currentPage === 'aura-hub' && <AuraHub onNavigate={setCurrentPage} />}
+      </ErrorBoundary>
+    );
+  }
 
   return (
     <ErrorBoundary>

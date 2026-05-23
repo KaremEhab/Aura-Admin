@@ -1,0 +1,29 @@
+.library-container {
+  padding: 0px 2px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+  .library-container {
+    padding: 16px;
+  }
+}
+
+.media-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.media-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+.progress-card {
+  transition: box-shadow 0.3s ease;
+}
+
+.progress-card:hover {
+  box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+  border-color: var(--primary-border);
+}

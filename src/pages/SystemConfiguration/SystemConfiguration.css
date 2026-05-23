@@ -1,0 +1,11 @@
+.sysconfig-container {
+  padding: 0px 2px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+  .sysconfig-container {
+    padding: 16px;
+  }
+}

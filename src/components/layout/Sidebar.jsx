@@ -43,7 +43,7 @@ export function Sidebar({ isOpen, onClose, currentPage, onNavigate, branding }) 
         { id: 'receptionists', icon: Users, label: 'RECEPTIONISTS' },
         { id: 'trainees', icon: Users, label: 'TRAINEES' },
         { id: 'managers', icon: Briefcase, label: 'MANAGERS' },
-        { id: 'time-clock', icon: CheckCircle2, label: 'STAFF KIOSK' },
+        // { id: 'time-clock', icon: CheckCircle2, label: 'STAFF KIOSK' },
       ]
     },
     {
@@ -75,7 +75,7 @@ export function Sidebar({ isOpen, onClose, currentPage, onNavigate, branding }) 
         { id: 'analytics', icon: BarChart2, label: 'ANALYTICS' },
         { id: 'workout-plans', icon: Dumbbell, label: 'WORKOUT PLANS' },
         { id: 'nutrition-plans', icon: Activity, label: 'NUTRITION PLANS' },
-        { id: 'infrastructure', icon: Server, label: 'INFRASTRUCTURE' },
+        { id: 'system-configuration', icon: Server, label: 'SYSTEM CONFIG' },
       ]
     },
     {
@@ -157,11 +157,11 @@ export function Sidebar({ isOpen, onClose, currentPage, onNavigate, branding }) 
           <p>"Momentum is built through precision tracking and elite discipline."</p>
         </div> */}
 
-        <div className="user-profile mt-4" onClick={() => handleNavigate('dashboard')}>
+        <div className="user-profile mt-4" onClick={() => handleNavigate('account-management')}>
           <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=150&auto=format&fit=crop" alt="User" />
           <div className="user-info">
             <h4>KAREEM EHAB</h4>
-            <a href="#" onClick={(e) => { e.preventDefault(); }}>Manage profile</a>
+            <a href="#" onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleNavigate('account-management'); }}>Manage profile</a>
           </div>
           <ChevronRight size={16} className="arrow ml-auto" />
         </div>
