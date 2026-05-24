@@ -31,7 +31,7 @@ export function BottomNav({ onMenuClick, onRefresh, onNotifClick }) {
           </button>
           <button className="icon-btn relative">
             <MessageCircle size={16} />
-            <span className="notification-dot bg-[#ef4444]">5</span>
+            <span className="notification-dot" style={{ backgroundColor: 'var(--alert)' }}>5</span>
           </button>
         </div>
       </div>
