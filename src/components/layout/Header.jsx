@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Search, RefreshCcw, Moon, Sun, Bell, Plus, Menu, X, Minus, Square, MessageCircle } from 'lucide-react';
+import { Search, RefreshCcw, Moon, Sun, Bell, Plus, Menu, X, Minus, Square, MessageCircle, ChevronDown } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
 import { isTauri, minimizeWindow, maximizeWindow, closeWindow } from '../../lib/tauri';
 import './Header.css';
 
-export function Header({ onMenuClick, branding, onRefresh, onNotifClick, onNavigate, searchQuery, onSearch }) {
+export function Header({ onMenuClick, branding, onRefresh, onNotifClick, onNavigate, searchQuery, onSearch, children, isAuraHub }) {
   const { isDark, toggleTheme } = useTheme();
   const [scrolled, setScrolled] = useState(false);
 
@@ -57,10 +57,22 @@ export function Header({ onMenuClick, branding, onRefresh, onNotifClick, onNavig
           <span className="notification-dot bg-[#ef4444]">5</span>
         </button>
         
-        <button className="btn-primary">
-          <Plus size={18} />
-          <span>Add New Gym</span>
-        </button>
+        {!isAuraHub && (
+          <button className="btn-primary">
+            <Plus size={18} />
+            <span>Add New Gym</span>
+          </button>
+        )}
+
+        {children}
+
+        {isAuraHub && (
+          <button className="flex items-center gap-2 pl-1 pr-3 py-1 rounded-full border border-[var(--primary-border)] bg-[var(--primary-lite)] hover:opacity-80 transition-all ml-2" style={{ border: '1px solid var(--primary-border)' }}>
+            <img src="https://images.unsplash.com/photo-1568602471122-7832951cc4c5?w=150&auto=format&fit=crop" className="w-8 h-8 rounded-full object-cover" alt="Profile" />
+            <span className="text-sm font-semibold text-[var(--primary)] tracking-wide">Kareem Ehab</span>
+            <ChevronDown className="w-4 h-4 text-[var(--primary)]" />
+          </button>
+        )}
       </div>
     </header>
   );
