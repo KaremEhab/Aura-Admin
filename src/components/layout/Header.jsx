@@ -3,6 +3,7 @@ import { Search, RefreshCcw, Moon, Sun, Bell, Plus, Menu, X, Minus, Square, Mess
 import AuraLogo from '../../assets/Aura.svg';
 import { useTheme } from '../../context/ThemeContext';
 import { isTauri, minimizeWindow, maximizeWindow, closeWindow } from '../../lib/tauri';
+import { ProfileHoverCard, getDummyUser } from '../../pages/AuraHub/AuraHub';
 import './Header.css';
 
 export function Header({ onMenuClick, branding, onRefresh, onNotifClick, onNavigate, searchQuery, onSearch, children, isAuraHub }) {
@@ -27,11 +28,14 @@ export function Header({ onMenuClick, branding, onRefresh, onNotifClick, onNavig
         )}
 
         {isAuraHub && (
-          <button className="flex items-center gap-1.5 pl-1.5 pr-2.5 py-1 rounded-full border border-[var(--primary-border)] bg-[var(--primary-lite)] hover:opacity-80 transition-all z-10">
-            <img src="https://images.unsplash.com/photo-1568602471122-7832951cc4c5?w=150&auto=format&fit=crop" className="w-6 h-6 sm:w-8 sm:h-8 rounded-full object-cover" alt="Profile" />
-            <span className="text-[11px] sm:text-sm font-semibold text-[var(--primary)] tracking-wide">Kareem Ehab</span>
-            <ChevronDown className="w-3 h-3 sm:w-4 sm:h-4 text-[var(--primary)]" />
-          </button>
+          <div className="relative group flex items-center h-max self-start z-10">
+            <button className="flex items-center gap-1.5 pl-1.5 pr-2.5 py-1 rounded-full border border-[var(--primary-border)] bg-[var(--primary-lite)] hover:opacity-80 transition-all">
+              <img src="https://images.unsplash.com/photo-1568602471122-7832951cc4c5?w=150&auto=format&fit=crop" className="w-6 h-6 sm:w-8 sm:h-8 rounded-full object-cover" alt="Profile" />
+              <span className="text-[11px] sm:text-sm font-semibold text-[var(--primary)] tracking-wide">Kareem Ehab</span>
+              <ChevronDown className="w-3 h-3 sm:w-4 sm:h-4 text-[var(--primary)]" />
+            </button>
+            <ProfileHoverCard user={getDummyUser('Kareem Ehab (ME)')} />
+          </div>
         )}
 
         {!isAuraHub && (
@@ -45,7 +49,7 @@ export function Header({ onMenuClick, branding, onRefresh, onNotifClick, onNavig
           </div>
         )}
         
-        <div className="search-bar">
+        <div className={`search-bar ${isAuraHub ? '!hidden lg:!flex' : ''}`}>
           <Search size={18} className="search-icon" />
           <input 
             type="text" 
@@ -95,7 +99,7 @@ export function Header({ onMenuClick, branding, onRefresh, onNotifClick, onNavig
       {/* Mobile Search & Streak (AuraHub Only) */}
       {isAuraHub && (
         <div className="flex lg:hidden w-full items-center gap-3">
-          <div className="flex-1 flex items-center gap-2 bg-[var(--formfield)] border border-[var(--stroke)] rounded-full px-4 py-2.5 shadow-sm">
+          <div className="flex-1 flex items-center gap-2 align-items- center bg-[var(--sidebar)] border border-[var(--stroke)] rounded-full px-4 py-2.5 transition: border-color 0.2s">
             <Search className="w-4 h-4 text-[var(--subtitle)]" />
             <input type="text" placeholder="Search networks..." className="bg-transparent border-none outline-none text-sm text-[var(--title)] placeholder:text-[var(--subtitle)] w-full" />
           </div>
