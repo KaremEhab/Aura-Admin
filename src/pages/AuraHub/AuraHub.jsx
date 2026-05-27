@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { 
-  Search, RefreshCw, Moon, Sun, Bell, ChevronDown, 
+  Search, RefreshCw, Moon, Sun, Bell, ChevronDown, ChevronUp,
   Home, Newspaper, Dumbbell, Users, Bookmark,
   Star, MessageCircle, Share, Edit2, Trash2,
   Image as ImageIcon, Activity, FileText, Droplet,
   Globe, UserPlus, BarChart2, ArrowRight,
   TrendingUp, TrendingDown, ChevronRight, CheckCircle2, BadgeCheck,
-  Crown, X, ArrowLeft, Eye
+  Crown, X, ArrowLeft, Eye, Clock, PieChart, Info, PlayCircle, Timer, Apple, Trophy
 } from 'lucide-react';
 import { Header } from '../../components/layout/Header';
 
@@ -148,6 +148,79 @@ const MentionBadge = ({ name, inText }) => (
 );
 
 const mockPosts = [
+  {
+    id: 'mock-workout-1',
+    author: 'Aura Coach',
+    verified: true,
+    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop',
+    time: 'Just now',
+    content: "Just dropped a new Push Day routine! Let's get these gains! 💪🔥",
+    cheersCount: '+1.2K Cheers',
+    isLiked: false,
+    template: {
+      type: 'workout',
+      title: 'Push Day Alpha',
+      tier: 'Global',
+      goal: '45 minutes',
+      difficulty: 'Advanced',
+      exercises: [
+        { type: 'single', name: 'Barbell Back Squat', sets: '4', reps: '8-10', rest: '90s' },
+        { type: 'superset', exercises: [
+          { name: 'Deadlift', sets: '3', reps: '10' },
+          { name: 'Romanian Deadlift', sets: '3', reps: '12' }
+        ]},
+        { type: 'single', name: 'Pull-Up', sets: '4', reps: 'Max', rest: '60s' },
+        { type: 'single', name: 'Overhead Press', sets: '3', reps: '8-10', rest: '90s' },
+        { type: 'dropset', exercises: [
+          { name: 'Dumbbell Row', sets: '3', reps: '12-10-8', dropBy: '-20%', rpe: '10' }
+        ]},
+        { type: 'single', name: 'Plank', sets: '3', duration: '60s', rest: '45s' }
+      ]
+    }
+  },
+  {
+    id: 'mock-nutrition-1',
+    author: 'Aura Nutritionist',
+    verified: true,
+    avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&auto=format&fit=crop',
+    time: '2 hours ago',
+    content: "Here is your Lean Bulk Day 1 plan! High protein, balanced carbs. 🥗🍗",
+    cheersCount: '+3.5K Cheers',
+    isLiked: true,
+    template: {
+      type: 'nutrition',
+      title: 'Lean Bulk - Day 1',
+      calories: 2305,
+      macros: { p: 180, c: 250, f: 65 },
+      meals: [
+        { name: 'Breakfast', items: [{ name: 'Oats (Raw)', amount: 100, unit: 'g' }, { name: 'Quinoa (Cooked)', amount: 120, unit: 'g' }, { name: 'Chia Seeds', amount: 30, unit: 'g' }] },
+        { name: 'Lunch', items: [{ name: 'Chicken Breast', amount: 200, unit: 'g' }, { name: 'White Rice', amount: 150, unit: 'g' }] },
+        { name: 'Dinner', items: [{ name: 'Grilled Salmon', amount: 180, unit: 'g' }, { name: 'Quinoa', amount: 120, unit: 'g' }] },
+        { name: 'Snack', items: [{ name: 'Greek Yogurt', amount: 100, unit: 'g' }, { name: 'Mixed Berries', amount: 80, unit: 'g' }] }
+      ]
+    }
+  },
+  {
+    id: 'mock-hydration-1',
+    author: 'Aura Wellness',
+    verified: true,
+    avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150&auto=format&fit=crop',
+    time: '4 hours ago',
+    content: "Stay hydrated out there! This is the optimal water intake schedule for active rest days. 💧",
+    cheersCount: '+800 Cheers',
+    isLiked: false,
+    template: {
+      type: 'hydration',
+      title: 'Active Rest Day Hydration',
+      target: '3.5L',
+      intervals: [
+        { time: 'Morning (Wake up)', amount: '500ml' },
+        { time: 'Pre-workout', amount: '500ml' },
+        { time: 'During workout', amount: '1L' },
+        { time: 'Evening', amount: '1.5L' }
+      ]
+    }
+  },
   {
     id: 1,
     author: 'Camelia Jaison',
@@ -410,13 +483,19 @@ const StickySidebar = ({ children, className }) => {
       if (ref.current) {
         const height = ref.current.getBoundingClientRect().height;
         const viewportHeight = window.innerHeight;
+        
+        // Find header height to add 20px space underneath it
+        const headerEl = document.querySelector('header');
+        const headerHeight = headerEl ? headerEl.getBoundingClientRect().height : 90;
+        const targetTopOffset = headerHeight + 20;
+
         // Check if sidebar is taller than viewport (minus padding)
-        if (height > viewportHeight - 48) {
+        if (height > viewportHeight - targetTopOffset - 24) {
           // Sticks so bottom of sidebar aligns with bottom of viewport + 24px padding
           setTop(viewportHeight - height - 24);
         } else {
-          // Sticks to top with 24px padding
-          setTop(24);
+          // Sticks to top with 20px space under header
+          setTop(targetTopOffset);
         }
       }
     };
@@ -441,6 +520,248 @@ const StickySidebar = ({ children, className }) => {
   );
 };
 
+const WorkoutTemplateViewer = ({ template }) => {
+  const [expanded, setExpanded] = useState(false);
+  const displayExercises = expanded ? template.exercises : template.exercises.slice(0, 1);
+
+  const renderMetricsBoxes = (ex, themePrefix) => {
+    const isTinted = !!themePrefix;
+    const bgClass = isTinted ? `bg-[var(--${themePrefix}-lite)]` : 'bg-[var(--formfield)]';
+    const borderClass = isTinted ? `border-[var(--${themePrefix}-border)]` : 'border-[var(--stroke)]';
+    const labelClass = isTinted ? `text-[var(--${themePrefix})] opacity-80` : 'text-[var(--subtitle)]';
+    const valueClass = 'text-[var(--title)]';
+
+    return (
+      <div className="flex gap-2 text-[13px] overflow-x-auto w-full pb-1" style={{ scrollbarWidth: 'none' }}>
+        {ex.sets && (
+          <div className={`flex-1 min-w-[70px] ${bgClass} border ${borderClass} rounded-lg p-2.5 flex flex-col gap-1.5`}>
+            <span className={`${labelClass} text-[10px] tracking-wider font-bold uppercase`}>Sets</span>
+            <span className={`font-medium ${valueClass}`}>{ex.sets}</span>
+          </div>
+        )}
+        {ex.reps && (
+          <div className={`flex-1 min-w-[70px] ${bgClass} border ${borderClass} rounded-lg p-2.5 flex flex-col gap-1.5`}>
+            <span className={`${labelClass} text-[10px] tracking-wider font-bold uppercase`}>Reps</span>
+            <span className={`font-medium ${valueClass}`}>{ex.reps}</span>
+          </div>
+        )}
+        {ex.duration && (
+          <div className={`flex-1 min-w-[70px] ${bgClass} border ${borderClass} rounded-lg p-2.5 flex flex-col gap-1.5`}>
+            <span className={`${labelClass} text-[10px] tracking-wider font-bold uppercase`}>Duration</span>
+            <span className={`font-medium ${valueClass}`}>{ex.duration}</span>
+          </div>
+        )}
+        {ex.rest && (
+          <div className={`flex-1 min-w-[70px] ${bgClass} border ${borderClass} rounded-lg p-2.5 flex flex-col gap-1.5`}>
+            <span className={`${labelClass} text-[10px] tracking-wider font-bold uppercase`}>Rest</span>
+            <span className={`font-medium ${valueClass}`}>{ex.rest}</span>
+          </div>
+        )}
+        {ex.dropBy && (
+          <div className={`flex-1 min-w-[70px] ${bgClass} border ${borderClass} rounded-lg p-2.5 flex flex-col gap-1.5`}>
+            <span className={`${labelClass} text-[10px] tracking-wider font-bold uppercase`}>Drop by</span>
+            <span className={`font-medium ${valueClass}`}>{ex.dropBy}</span>
+          </div>
+        )}
+        {ex.rpe && (
+          <div className={`flex-1 min-w-[70px] bg-[var(--alert-lite)] border border-[var(--alert-border)] rounded-lg p-2.5 flex flex-col gap-1.5`}>
+            <span className={`text-[var(--alert)] opacity-80 text-[10px] tracking-wider font-bold uppercase`}>RPE</span>
+            <span className={`font-medium text-[var(--alert)]`}>{ex.rpe}</span>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  return (
+    <div className="mt-4 bg-[var(--background)] border border-[var(--stroke)] rounded-2xl overflow-hidden flex flex-col font-sans mb-2">
+      <div className="p-5 flex justify-between items-start">
+        <div className="flex gap-4">
+          <Dumbbell className="w-7 h-7 text-[var(--title)] mt-0.5" strokeWidth={1.5} />
+          <div>
+            <h4 className="font-medium text-[var(--title)] text-[16px] mb-2.5 tracking-wide">{template.title}</h4>
+            <div className="flex gap-2 text-[12px] font-medium text-[var(--title)]">
+              <span className="bg-[var(--background)] border border-[var(--stroke)] px-3.5 py-1.5 rounded-lg">{template.difficulty}</span>
+              <span className="bg-[var(--background)] border border-[var(--stroke)] px-3.5 py-1.5 rounded-lg">{template.goal}</span>
+            </div>
+          </div>
+        </div>
+        <div className="bg-[var(--sidebar)] border border-[var(--primary)] text-[var(--primary)] px-4 py-2.5 rounded-lg text-[12px] font-medium tracking-wide">
+          {template.exercises.length} EXERCISES
+        </div>
+      </div>
+
+      <div className="bg-[var(--sidebar)] p-4 flex flex-col gap-3 relative min-h-[120px]">
+        {displayExercises.map((ex, i) => {
+          if (ex.type === 'single') {
+            return (
+              <div key={i} className="bg-[var(--background)] rounded-xl p-4 border border-[var(--stroke)]">
+                <h5 className="text-[var(--primary)] text-[13px] font-medium mb-3">{ex.name}</h5>
+                {renderMetricsBoxes(ex, null)}
+              </div>
+            );
+          } else if (ex.type === 'superset') {
+            return (
+              <div key={i} className="bg-[var(--primary-lite)] border border-[var(--primary-border)] rounded-xl p-4">
+                <div className="flex justify-between items-center mb-4">
+                  <h5 className="text-[var(--primary)] text-[13px] font-medium">Superset</h5>
+                  <span className="text-[var(--primary)] opacity-80 text-[11px] font-medium">({ex.exercises?.length || 0} Exercises)</span>
+                </div>
+                <div className="flex flex-col gap-4">
+                  {ex.exercises?.map((sub, j) => (
+                    <div key={j} className="flex flex-col gap-2">
+                      <span className="text-[var(--subtitle)] text-[12px] font-medium">{sub.name}</span>
+                      {renderMetricsBoxes(sub, 'primary')}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          } else if (ex.type === 'dropset') {
+            return (
+              <div key={i} className="bg-[var(--secondary-lite)] border border-[var(--secondary-border)] rounded-xl p-4">
+                <div className="flex justify-between items-center mb-4">
+                  <h5 className="text-[var(--secondary)] text-[13px] font-medium">Dropset</h5>
+                  <span className="text-[var(--secondary)] opacity-80 text-[11px] font-medium">({ex.exercises?.length || 0} Exercises)</span>
+                </div>
+                <div className="flex flex-col gap-4">
+                  {ex.exercises?.map((sub, j) => (
+                    <div key={j} className="flex flex-col gap-2">
+                      <span className="text-[var(--subtitle)] text-[12px] font-medium">{sub.name}</span>
+                      {renderMetricsBoxes(sub, 'secondary')}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          }
+          return null;
+        })}
+
+        {!expanded && template.exercises.length > 1 && (
+          <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[var(--sidebar)] via-[var(--sidebar)]/80 to-transparent flex items-end justify-center pb-4 rounded-b-xl pointer-events-none">
+            <button 
+              onClick={(e) => { e.stopPropagation(); setExpanded(true); }} 
+              className="pointer-events-auto bg-[var(--background)]/95 border border-[var(--primary)]/60 text-[var(--primary)] px-6 py-2 rounded-full text-[12px] font-medium flex items-center gap-1.5 backdrop-blur-md hover:bg-[var(--background)] transition-colors"
+            >
+              See more <ChevronDown className="w-4 h-4" />
+            </button>
+          </div>
+        )}
+
+        {expanded && template.exercises.length > 1 && (
+          <div className="flex items-center justify-center pt-2">
+            <button 
+              onClick={(e) => { e.stopPropagation(); setExpanded(false); }} 
+              className="bg-[var(--background)]/95 border border-[var(--primary)]/60 text-[var(--primary)] px-6 py-2 rounded-full text-[12px] font-medium flex items-center gap-1.5 backdrop-blur-md hover:bg-[var(--background)] transition-colors"
+            >
+              See less <ChevronUp className="w-4 h-4" />
+            </button>
+          </div>
+        )}
+      </div>
+
+      <div className="p-4 bg-[var(--background)] border-t border-[var(--stroke)]">
+        <button className="w-full bg-[var(--primary)] hover:opacity-90 text-[var(--background)] font-bold py-3.5 rounded-xl text-[14px] transition-opacity active:scale-[0.98]">
+          Save Plan
+        </button>
+      </div>
+    </div>
+  );
+};
+
+const NutritionTemplateViewer = ({ template }) => {
+  const [expanded, setExpanded] = useState(false);
+  const displayMeals = expanded ? template.meals : template.meals.slice(0, 2);
+
+  return (
+    <div className="mt-4 bg-[var(--background)] border border-[var(--stroke)] rounded-2xl overflow-hidden flex flex-col font-sans mb-2">
+      <div className="p-5 flex justify-between items-start">
+        <div className="flex gap-4">
+          <Apple className="w-7 h-7 text-[var(--title)] mt-0.5" strokeWidth={1.5} />
+          <div>
+            <h4 className="font-medium text-[var(--title)] text-[16px] mb-2.5 tracking-wide">{template.title}</h4>
+            <div className="flex gap-2 text-[12px] font-medium text-[var(--title)]">
+              <span className="bg-[var(--background)] border border-[var(--stroke)] px-3.5 py-1.5 rounded-lg">P {template.macros.p}</span>
+              <span className="bg-[var(--background)] border border-[var(--stroke)] px-3.5 py-1.5 rounded-lg">C {template.macros.c}</span>
+              <span className="bg-[var(--background)] border border-[var(--stroke)] px-3.5 py-1.5 rounded-lg">F {template.macros.f}</span>
+            </div>
+          </div>
+        </div>
+        <div className="bg-[var(--sidebar)] border border-[var(--primary)] text-[var(--primary)] px-4 py-2.5 rounded-lg text-[12px] font-medium tracking-wide">
+          KCAL {template.calories}
+        </div>
+      </div>
+
+      <div className="bg-[var(--sidebar)] p-4 flex flex-col gap-3 relative min-h-[120px]">
+        {displayMeals.map((meal, i) => (
+          <div key={i} className="bg-[var(--background)] rounded-xl p-4 border border-[var(--stroke)]">
+            <h5 className="text-[var(--primary)] text-[13px] font-medium mb-3.5">{meal.name}</h5>
+            <div className="flex flex-col gap-2.5">
+              {meal.items.map((item, j) => (
+                <div key={j} className="flex justify-between items-center text-[13px] text-[var(--title)]">
+                  <span>{item.name}</span>
+                  <span className="font-medium text-[var(--title)]">{item.amount}{item.unit}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+
+        {!expanded && template.meals.length > 2 && (
+          <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[var(--sidebar)] via-[var(--sidebar)]/80 to-transparent flex items-end justify-center pb-4 rounded-b-xl pointer-events-none">
+            <button 
+              onClick={(e) => { e.stopPropagation(); setExpanded(true); }} 
+              className="pointer-events-auto bg-[var(--background)]/95 border border-[var(--primary)]/60 text-[var(--primary)] px-6 py-2 rounded-full text-[12px] font-medium flex items-center gap-1.5 backdrop-blur-md hover:bg-[var(--background)] transition-colors"
+            >
+              See more <ChevronDown className="w-4 h-4" />
+            </button>
+          </div>
+        )}
+
+        {expanded && template.meals.length > 2 && (
+          <div className="flex items-center justify-center pt-2">
+            <button 
+              onClick={(e) => { e.stopPropagation(); setExpanded(false); }} 
+              className="bg-[var(--background)]/95 border border-[var(--primary)]/60 text-[var(--primary)] px-6 py-2 rounded-full text-[12px] font-medium flex items-center gap-1.5 backdrop-blur-md hover:bg-[var(--background)] transition-colors"
+            >
+              See less <ChevronUp className="w-4 h-4" />
+            </button>
+          </div>
+        )}
+      </div>
+
+      <div className="p-4 bg-[var(--background)] border-t border-[var(--stroke)]">
+        <button className="w-full bg-[var(--primary)] hover:opacity-90 text-[var(--background)] font-bold py-3.5 rounded-xl text-[14px] transition-opacity active:scale-[0.98]">
+          Save Plan
+        </button>
+      </div>
+    </div>
+  );
+};
+
+const HydrationTemplateViewer = ({ template }) => (
+  <div className="mt-3 bg-[var(--background)] border border-[var(--stroke)] rounded-xl overflow-hidden">
+    <div className="p-4 border-b border-[var(--stroke)] bg-[var(--sidebar)] flex justify-between items-center">
+      <div>
+        <h4 className="font-bold text-[15px] flex items-center gap-2"><Droplet className="w-4 h-4 text-[#3cbdf6]" fill="currentColor" /> {template.title}</h4>
+      </div>
+      <div className="text-[13px] font-black text-[#3cbdf6] bg-[#3cbdf6]/10 px-3 py-1 rounded-lg border border-[#3cbdf6]/20">
+        Target: {template.target}
+      </div>
+    </div>
+    <div className="p-4 flex gap-2 overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
+      {template.intervals.map((interval, i) => (
+        <div key={i} className="min-w-[120px] bg-[var(--formfield)] border border-[var(--stroke)] p-3 rounded-xl flex flex-col items-center justify-center text-center gap-1.5">
+          <Clock className="w-5 h-5 text-[var(--subtitle)]" />
+          <span className="text-[10px] font-bold text-[var(--subtitle)] uppercase tracking-wider">{interval.time}</span>
+          <span className="text-[14px] font-black text-[#3cbdf6]">{interval.amount}</span>
+        </div>
+      ))}
+    </div>
+  </div>
+);
+
 const PostItem = ({ 
   post, 
   editingPostId, 
@@ -451,7 +772,8 @@ const PostItem = ({
   handleDeletePost, 
   handleToggleLike, 
   handleToggleFollow,
-  onCommentClick
+  onCommentClick,
+  isDetailsMode = false
 }) => (
   <div className={`bg-[var(--formfield)] border border-[var(--stroke)] rounded-[20px] p-5 sm:p-6 mb-6`}>
     <div className="flex justify-between items-start mb-3">
@@ -532,18 +854,29 @@ const PostItem = ({
         </p>
       )}
 
+      {post.template && post.template.type === 'workout' && <WorkoutTemplateViewer template={post.template} />}
+      {post.template && post.template.type === 'nutrition' && <NutritionTemplateViewer template={post.template} />}
+      {post.template && post.template.type === 'hydration' && <HydrationTemplateViewer template={post.template} />}
+
       {post.images && post.images.length > 0 && (
-        <div className={`mt-3 mb-4 rounded-xl overflow-hidden border border-[var(--stroke)]`}>
+        <div className={`mt-4 mb-5 ${isDetailsMode && post.images.length > 1 ? '' : 'rounded-xl overflow-hidden border border-[var(--stroke)]'}`}>
           {post.images.length === 1 && (
             <img src={post.images[0]} className="w-full h-auto max-h-[300px] object-cover hover:opacity-95 transition-opacity cursor-pointer" alt="Post media" />
           )}
-          {post.images.length === 2 && (
+          {post.images.length > 1 && isDetailsMode && (
+            <div className="flex overflow-x-auto snap-x snap-mandatory gap-3 sm:gap-4 pb-4 -ml-[76px] -mr-[40px] sm:-ml-[88px] sm:-mr-[48px] px-[92px] sm:px-[108px]" style={{ scrollbarWidth: 'none' }}>
+              {post.images.map((img, idx) => (
+                <img key={idx} src={img} className="shrink-0 w-[85%] sm:w-[70%] h-[320px] sm:h-[400px] object-cover rounded-2xl snap-center hover:opacity-95 transition-opacity cursor-pointer shadow-lg border border-[var(--stroke)]" alt={`Post media ${idx+1}`} />
+              ))}
+            </div>
+          )}
+          {post.images.length === 2 && !isDetailsMode && (
             <div className="flex w-full h-[200px]">
               <img src={post.images[0]} className="w-1/2 h-full object-cover border-r border-[var(--stroke)] hover:opacity-95 transition-opacity cursor-pointer" alt="Post media 1" />
               <img src={post.images[1]} className="w-1/2 h-full object-cover hover:opacity-95 transition-opacity cursor-pointer" alt="Post media 2" />
             </div>
           )}
-          {post.images.length >= 3 && (
+          {post.images.length >= 3 && !isDetailsMode && (
             <div className="flex w-full h-[250px]">
               <img src={post.images[0]} className="w-2/3 h-full object-cover border-r border-[var(--stroke)] hover:opacity-95 transition-opacity cursor-pointer" alt="Post media 1" />
               <div className="w-1/3 h-full flex flex-col">
@@ -603,7 +936,7 @@ const CommentsFeed = ({ post, onBack, renderPostProps }) => {
       </div>
 
       <div className="-mt-1 border-none shadow-none m-0">
-        <PostItem post={post} {...renderPostProps} />
+        <PostItem post={post} {...renderPostProps} isDetailsMode={true} />
       </div>
 
       {/* Desktop Composer */}
@@ -716,6 +1049,83 @@ const CommentsFeed = ({ post, onBack, renderPostProps }) => {
   );
 };
 
+const LeaderboardFeed = ({ onBack }) => {
+  const fullLeaderboard = [
+    { rank: 1, name: 'Kareem Ehab (ME)', gym: 'AURA HUB', points: '7,120', avatar: 'https://images.unsplash.com/photo-1568602471122-7832951cc4c5?w=150&auto=format&fit=crop', trend: 'up', trendValue: '+2', streak: '37 🔥', workouts: 142 },
+    { rank: 2, name: 'Camelia Jaison', gym: 'CEASERS GYM', points: '6,500', avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&auto=format&fit=crop', trend: 'same', trendValue: '-', streak: '21 🔥', workouts: 98 },
+    { rank: 3, name: 'Wilson', gym: 'IRONCLAD FITNESS', points: '4,800', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop', trend: 'up', trendValue: '+1', streak: '14 🔥', workouts: 76 },
+    { rank: 4, name: 'Rafael Kim', gym: 'IRONCLAD FITNESS', points: '4,250', avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150&auto=format&fit=crop', trend: 'down', trendValue: '-2', streak: '5 🔥', workouts: 65 },
+    { rank: 5, name: 'Sophia Lee', gym: 'VITALITY HUB', points: '3,980', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop', trend: 'up', trendValue: '+4', streak: '18 🔥', workouts: 61 },
+    { rank: 6, name: 'Mateo Rivera', gym: 'PRIMAL STRENGTH', points: '3,800', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop', trend: 'same', trendValue: '-', streak: '7 🔥', workouts: 59 },
+    { rank: 7, name: 'Ayesha Malik', gym: 'ZENITH WELLNESS', points: '3,450', avatar: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150&auto=format&fit=crop', trend: 'down', trendValue: '-1', streak: '12 🔥', workouts: 52 },
+    { rank: 8, name: 'David Chen', gym: 'AURA HUB', points: '3,100', avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150&auto=format&fit=crop', trend: 'up', trendValue: '+5', streak: '9 🔥', workouts: 45 },
+    { rank: 9, name: 'Emma Wilson', gym: 'CEASERS GYM', points: '2,950', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop', trend: 'down', trendValue: '-3', streak: '4 🔥', workouts: 41 },
+    { rank: 10, name: 'Lucas Silva', gym: 'VITALITY HUB', points: '2,800', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop', trend: 'same', trendValue: '-', streak: '2 🔥', workouts: 38 }
+  ];
+
+  return (
+    <div className="flex flex-col h-full lg:min-h-0 pb-[80px] lg:pb-0 relative animate-fade-in">
+      <div className="sticky top-0 z-50 bg-[var(--background)]/95 backdrop-blur-md px-3 sm:px-4 py-3.5 flex items-center justify-between mb-4 border-b border-[var(--stroke)] shadow-sm">
+        <div className="flex items-center gap-1.5 text-[12px] font-bold text-[var(--subtitle)] uppercase tracking-wider">
+           <span className="cursor-pointer hover:text-[var(--primary)] transition-colors" onClick={onBack}>AuraHub</span> 
+           <span>/</span> 
+           <span className="text-[var(--title)]">Leaderboard</span>
+        </div>
+        <div className="text-[11px] sm:text-[12px] font-bold text-[var(--subtitle)] bg-[var(--formfield)] border border-[var(--stroke)] px-3 py-1 rounded-full shadow-sm flex items-center gap-1.5">
+          <BarChart2 className="w-3.5 h-3.5 text-[var(--primary)]" /> Global Rank
+        </div>
+      </div>
+
+      <div className="bg-[var(--formfield)] border border-[var(--stroke)] rounded-[20px] p-5 sm:p-8 mb-6 shadow-sm overflow-hidden relative">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-[var(--primary)] opacity-[0.03] rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none"></div>
+        
+        <div className="flex flex-col items-center justify-center text-center mb-8 relative z-10">
+          <div className="w-16 h-16 rounded-full bg-[var(--primary-lite)] text-[var(--primary)] flex items-center justify-center mb-4 shadow-inner">
+            <Trophy className="w-8 h-8" />
+          </div>
+          <h2 className="text-2xl sm:text-3xl font-black text-[var(--title)] tracking-tight mb-2">Global Top 100</h2>
+          <p className="text-sm text-[var(--subtitle)] max-w-[400px]">Compete with friends and athletes globally. Earn points through workouts and community engagement.</p>
+        </div>
+
+        <div className="flex flex-col gap-3 relative z-10">
+          {fullLeaderboard.map((user, idx) => (
+            <div key={user.rank} className={`flex items-center justify-between p-4 rounded-[16px] border ${idx < 3 ? 'border-[var(--primary)]/30 bg-[var(--primary-lite)]/30' : 'border-[var(--stroke)] bg-[var(--background)]'} transition-transform hover:scale-[1.01] cursor-pointer`}>
+              <div className="flex items-center gap-4">
+                <div className={`w-8 font-black text-center ${idx === 0 ? 'text-[#ffb5ae] text-2xl' : idx === 1 ? 'text-[#ffb5ae] text-xl' : idx === 2 ? 'text-[#3cbdf6] text-xl' : 'text-[var(--subtitle)] text-lg'}`}>
+                  {user.rank}
+                </div>
+                <div className="relative hidden sm:block">
+                  <img src={user.avatar} className={`w-12 h-12 rounded-full object-cover border-[2px] ${idx === 0 ? 'border-[var(--primary)] shadow-[0_0_10px_rgba(34,197,94,0.3)]' : 'border-[var(--formfield)]'}`} alt={user.name} />
+                  {idx === 0 && <Crown className="absolute -top-3 -right-2 w-5 h-5 text-[var(--primary)] rotate-[15deg] fill-[var(--primary)]" />}
+                </div>
+                <div>
+                  <h4 className="font-bold text-[14px] text-[var(--title)] flex items-center gap-2">
+                    {user.name}
+                    {user.trend === 'up' && <span className="text-[10px] text-green-500 font-bold bg-green-500/10 px-1.5 py-0.5 rounded flex items-center"><TrendingUp className="w-3 h-3 mr-0.5" /> {user.trendValue}</span>}
+                    {user.trend === 'down' && <span className="text-[10px] text-red-500 font-bold bg-red-500/10 px-1.5 py-0.5 rounded flex items-center"><TrendingDown className="w-3 h-3 mr-0.5" /> {user.trendValue}</span>}
+                    {user.trend === 'same' && <span className="text-[10px] text-[var(--subtitle)] font-bold bg-[var(--sidebar)] px-1.5 py-0.5 rounded flex items-center">-</span>}
+                  </h4>
+                  <div className="flex items-center gap-2 mt-1">
+                    <span className="text-[11px] font-medium text-[var(--subtitle)]">{user.gym}</span>
+                    <span className="text-[10px] text-[var(--stroke)]">•</span>
+                    <span className="text-[11px] font-medium text-[var(--subtitle)] flex items-center gap-1"><Dumbbell className="w-3 h-3" /> {user.workouts}</span>
+                    <span className="text-[10px] text-[var(--stroke)] hidden sm:block">•</span>
+                    <span className="text-[11px] font-medium text-[var(--subtitle)] hidden sm:block">Streak: <strong className="text-[var(--title)]">{user.streak}</strong></span>
+                  </div>
+                </div>
+              </div>
+              <div className="flex flex-col items-end">
+                <span className={`font-black text-[16px] sm:text-[18px] ${idx < 3 ? 'text-[var(--primary)]' : 'text-[var(--title)]'}`}>{user.points}</span>
+                <span className="text-[10px] font-bold text-[var(--subtitle)] uppercase tracking-wider">Points</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export function AuraHub({ onNavigate }) {
   const [showNotifications, setShowNotifications] = useState(false);
   const [isActivitiesOpen, setIsActivitiesOpen] = useState(false);
@@ -726,10 +1136,19 @@ export function AuraHub({ onNavigate }) {
   const [newPostText, setNewPostText] = useState('');
   const [editingPostId, setEditingPostId] = useState(null);
   const [editContent, setEditContent] = useState('');
+  const [attachedTemplate, setAttachedTemplate] = useState(null);
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
+
+  // Scroll to top when a post or leaderboard is opened
+  useEffect(() => {
+    if (activePostId || showLeaderboard) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [activePostId, showLeaderboard]);
 
   // Handlers
   const handleCreatePost = () => {
-    if (!newPostText.trim()) return;
+    if (!newPostText.trim() && !attachedTemplate) return;
     const newPost = {
       id: Date.now(),
       author: 'Kareem Ehab (ME)',
@@ -740,10 +1159,12 @@ export function AuraHub({ onNavigate }) {
       cheersCount: '+0 Cheers',
       isLiked: false,
       isMe: true,
-      photosCount: 0
+      photosCount: 0,
+      template: attachedTemplate
     };
     setPosts([newPost, ...posts]);
     setNewPostText('');
+    setAttachedTemplate(null);
   };
 
   const handleDeletePost = (id) => {
@@ -788,7 +1209,10 @@ export function AuraHub({ onNavigate }) {
         <h3 className={`text-sm font-bold text-[var(--title)] tracking-wider flex items-center gap-2`}>
           <BarChart2 className={`w-5 h-5 text-[var(--subtitle)]`} /> LEADERBOARD
         </h3>
-        <button className="text-[12px] font-bold text-[var(--primary)] bg-[var(--primary-lite)] transition-colors px-3 py-1.5 rounded-xl flex items-center gap-1.5">
+        <button 
+          onClick={() => setShowLeaderboard(true)}
+          className="text-[12px] font-bold text-[var(--primary)] bg-[var(--primary-lite)] hover:bg-[var(--primary)] hover:text-white transition-colors px-3 py-1.5 rounded-xl flex items-center gap-1.5"
+        >
           See all <ArrowRight className="w-3.5 h-3.5" />
         </button>
       </div>
@@ -846,6 +1270,71 @@ export function AuraHub({ onNavigate }) {
   );
 
 
+  const renderLeaderboardInsights = () => (
+    <div className={`bg-[var(--formfield)] border border-[var(--stroke)] rounded-[20px] overflow-hidden animate-fade-in`}>
+      {/* My Standing */}
+      <div className="p-5 border-b border-[var(--stroke)] flex flex-col relative">
+         <h3 className={`text-xs font-bold text-[var(--subtitle)] tracking-wider mb-4 flex items-center gap-2`}>
+           <Trophy className="w-4 h-4 text-[var(--primary)]" /> MY STANDING
+         </h3>
+         
+         <div className="flex items-center gap-4 mb-4">
+            <div className="w-14 h-14 rounded-full border-2 border-[var(--primary)] overflow-hidden p-0.5">
+               <img src="https://images.unsplash.com/photo-1568602471122-7832951cc4c5?w=150&auto=format&fit=crop" className="w-full h-full rounded-full object-cover" alt="Me" />
+            </div>
+            <div>
+               <div className="flex items-center gap-2">
+                 <span className="text-[12px] font-bold text-[var(--subtitle)] uppercase tracking-wider">Rank</span>
+                 <span className="text-[24px] font-black text-[var(--title)]">#1</span>
+               </div>
+               <span className="text-[14px] font-bold text-[var(--primary)]">7,120 Pts</span>
+            </div>
+         </div>
+         
+         <div className="bg-[var(--sidebar)] rounded-xl p-3 mt-2 border border-[var(--stroke)]">
+            <div className="flex justify-between items-center mb-1">
+               <span className="text-[11px] font-bold text-[var(--subtitle)]">Distance to #2</span>
+               <span className="text-[11px] font-bold text-[var(--title)]">620 Pts</span>
+            </div>
+            <div className="w-full bg-[var(--formfield)] h-2 rounded-full overflow-hidden mt-2">
+               <div className="bg-[var(--primary)] h-full rounded-full" style={{ width: '80%' }}></div>
+            </div>
+         </div>
+      </div>
+      
+      {/* Top Gyms */}
+      <div className="p-5 flex flex-col">
+         <h3 className={`text-xs font-bold text-[var(--subtitle)] tracking-wider mb-4 flex items-center gap-2`}>
+           <Dumbbell className="w-4 h-4 text-[var(--primary)]" /> TOP GYMS
+         </h3>
+         
+         <div className="space-y-4">
+            <div className="flex justify-between items-center">
+               <div className="flex items-center gap-2">
+                 <span className="text-[14px] font-black text-[#ffb5ae]">1</span>
+                 <span className="text-[13px] font-bold text-[var(--title)]">CEASERS GYM</span>
+               </div>
+               <span className="text-[12px] font-bold text-[var(--subtitle)]">142K Pts</span>
+            </div>
+            <div className="flex justify-between items-center">
+               <div className="flex items-center gap-2">
+                 <span className="text-[14px] font-black text-[#ffb5ae]">2</span>
+                 <span className="text-[13px] font-bold text-[var(--title)]">AURA HUB</span>
+               </div>
+               <span className="text-[12px] font-bold text-[var(--subtitle)]">138K Pts</span>
+            </div>
+            <div className="flex justify-between items-center">
+               <div className="flex items-center gap-2">
+                 <span className="text-[14px] font-black text-[#3cbdf6]">3</span>
+                 <span className="text-[13px] font-bold text-[var(--title)]">IRONCLAD FITNESS</span>
+               </div>
+               <span className="text-[12px] font-bold text-[var(--subtitle)]">115K Pts</span>
+            </div>
+         </div>
+      </div>
+    </div>
+  );
+
   const renderPostInsights = (post) => (
     <div className={`bg-[var(--formfield)] border border-[var(--stroke)] rounded-[20px] overflow-hidden animate-fade-in`}>
       {/* Author Header */}
@@ -902,7 +1391,7 @@ export function AuraHub({ onNavigate }) {
 
       <div className="max-w-[1650px] mx-auto px-4 sm:px-[20px] pt-4 pb-[100px] lg:pb-[20px]">
         {/* Header Section (Desktop keeps Streak here, Mobile hides it) */}
-        {!activePostId && (
+        {!activePostId && !showLeaderboard && (
           <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4 animate-fade-in">
             <div>
               <h1 className="text-2xl sm:text-3xl font-bold text-[var(--title)] tracking-tight mb-1">
@@ -923,7 +1412,7 @@ export function AuraHub({ onNavigate }) {
         )}
 
         {/* Mobile Active Users (Stories) */}
-        {!activePostId && (
+        {!activePostId && !showLeaderboard && (
           <div className="lg:hidden flex gap-4 overflow-x-auto pb-2 mb-6" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
             {activeFriends.map((friend) => (
               <div key={`story-${friend.id}`} className="flex flex-col items-center gap-2 min-w-[56px]">
@@ -942,7 +1431,7 @@ export function AuraHub({ onNavigate }) {
         )}
 
         {/* Mobile Leaderboard */}
-        {!activePostId && (
+        {!activePostId && !showLeaderboard && (
           <div className="block lg:hidden">
             {renderLeaderboard()}
           </div>
@@ -956,9 +1445,9 @@ export function AuraHub({ onNavigate }) {
               {/* Navigation Menu */}
               <div className={`bg-[var(--formfield)] border border-[var(--stroke)] rounded-[20px] overflow-hidden flex flex-col shadow-sm`}>
                 <button 
-                  onClick={activePostId ? () => setActivePostId(null) : undefined}
+                  onClick={(activePostId || showLeaderboard) ? () => { setActivePostId(null); setShowLeaderboard(false); } : undefined}
                   className={`flex items-center gap-4 px-6 py-4 border-l-[4px] transition-colors group cursor-pointer
-                    ${!activePostId ? 'border-l-[var(--primary)] bg-[var(--primary-lite)] text-[var(--primary)]' : 'border-l-transparent text-[var(--subtitle)] hover:text-[var(--title)] hover:bg-[var(--overlay)]'}`}
+                    ${(!activePostId && !showLeaderboard) ? 'border-l-[var(--primary)] bg-[var(--primary-lite)] text-[var(--primary)]' : 'border-l-transparent text-[var(--subtitle)] hover:text-[var(--title)] hover:bg-[var(--overlay)]'}`}
                 >
                   <Home className="w-[18px] h-[18px]" fill="currentColor" strokeWidth={1.5} /> 
                   <span className="font-bold text-xs tracking-wide">HOME</span>
@@ -1067,7 +1556,9 @@ export function AuraHub({ onNavigate }) {
 
           {/* ================= CENTER COLUMN ================= */}
           <div className="lg:col-span-6 space-y-6">
-            {activePostId ? (() => {
+            {showLeaderboard ? (
+              <LeaderboardFeed onBack={() => setShowLeaderboard(false)} />
+            ) : activePostId ? (() => {
               const activePost = posts.find(p => p.id === activePostId);
               if (!activePost) return null;
               return (
@@ -1108,20 +1599,35 @@ export function AuraHub({ onNavigate }) {
                       value={newPostText}
                       onChange={(e) => setNewPostText(e.target.value)}
                     />
+
+                  {attachedTemplate && (
+                    <div className="mt-2 mb-2 bg-[var(--sidebar)] border border-[var(--stroke)] rounded-lg p-3 flex justify-between items-center shadow-sm">
+                      <div className="flex items-center gap-2">
+                        {attachedTemplate.type === 'workout' && <Activity className="w-4 h-4 text-[var(--primary)]" />}
+                        {attachedTemplate.type === 'nutrition' && <FileText className="w-4 h-4 text-blue-500" />}
+                        {attachedTemplate.type === 'hydration' && <Droplet className="w-4 h-4 text-[#3cbdf6]" />}
+                        <span className="text-[13px] font-bold text-[var(--title)]">Attached: {attachedTemplate.title}</span>
+                      </div>
+                      <button onClick={() => setAttachedTemplate(null)} className="p-1 hover:bg-[var(--overlay)] rounded-full transition-colors text-[var(--subtitle)] hover:text-red-500">
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                  )}
+
                   <div className="flex gap-2 sm:gap-3 mt-4 pt-4 border-t border-[var(--stroke)] overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
                     <button className="flex-1 py-2 px-2 flex items-center justify-center gap-1 sm:gap-1.5 text-[10px] sm:text-[11px] font-bold text-[var(--primary)] border border-[var(--primary)] rounded-xl hover:bg-[var(--primary-lite)] transition-colors bg-transparent whitespace-nowrap">
                       <ImageIcon className="w-3.5 h-3.5"/> Media
                     </button>
-                    <button className="flex-1 py-2 px-2 flex items-center justify-center gap-1 sm:gap-1.5 text-[10px] sm:text-[11px] font-bold text-[var(--primary)] border border-[var(--primary)] rounded-xl hover:bg-[var(--primary-lite)] transition-colors bg-transparent whitespace-nowrap">
+                    <button onClick={() => setAttachedTemplate(mockPosts.find(p => p.id === 'mock-workout-1').template)} className="flex-1 py-2 px-2 flex items-center justify-center gap-1 sm:gap-1.5 text-[10px] sm:text-[11px] font-bold text-[var(--primary)] border border-[var(--primary)] rounded-xl hover:bg-[var(--primary-lite)] transition-colors bg-transparent whitespace-nowrap">
                       <Activity className="w-3.5 h-3.5"/> Workout
                     </button>
-                    <button className="flex-1 py-2 px-2 flex items-center justify-center gap-1 sm:gap-1.5 text-[10px] sm:text-[11px] font-bold text-[var(--primary)] border border-[var(--primary)] rounded-xl hover:bg-[var(--primary-lite)] transition-colors bg-transparent whitespace-nowrap">
+                    <button onClick={() => setAttachedTemplate(mockPosts.find(p => p.id === 'mock-nutrition-1').template)} className="flex-1 py-2 px-2 flex items-center justify-center gap-1 sm:gap-1.5 text-[10px] sm:text-[11px] font-bold text-[var(--primary)] border border-[var(--primary)] rounded-xl hover:bg-[var(--primary-lite)] transition-colors bg-transparent whitespace-nowrap">
                       <FileText className="w-3.5 h-3.5"/> Nutrition
                     </button>
-                    <button className="flex-1 py-2 px-2 flex items-center justify-center gap-1 sm:gap-1.5 text-[10px] sm:text-[11px] font-bold text-[var(--primary)] border border-[var(--primary)] rounded-xl hover:bg-[var(--primary-lite)] transition-colors bg-transparent whitespace-nowrap">
+                    <button onClick={() => setAttachedTemplate(mockPosts.find(p => p.id === 'mock-hydration-1').template)} className="flex-1 py-2 px-2 flex items-center justify-center gap-1 sm:gap-1.5 text-[10px] sm:text-[11px] font-bold text-[var(--primary)] border border-[var(--primary)] rounded-xl hover:bg-[var(--primary-lite)] transition-colors bg-transparent whitespace-nowrap">
                       <Droplet className="w-3.5 h-3.5"/> Hydration
                     </button>
-                    {newPostText.trim() && (
+                    {(newPostText.trim() || attachedTemplate) && (
                       <button 
                         onClick={handleCreatePost}
                         className="px-4 py-2 flex items-center justify-center gap-1 sm:gap-1.5 text-[11px] font-bold text-[var(--background)] bg-[var(--primary)] rounded-xl hover:opacity-90 transition-opacity whitespace-nowrap shadow-sm"
@@ -1155,7 +1661,8 @@ export function AuraHub({ onNavigate }) {
           {/* ================= RIGHT SIDEBAR ================= */}
           <div className="hidden lg:block lg:col-span-3">
             <StickySidebar className="space-y-6">
-              {activePostId ? (() => {
+              {(activePostId || showLeaderboard) ? (() => {
+                if (showLeaderboard) return renderLeaderboardInsights();
                 const activePost = posts.find(p => p.id === activePostId);
                 if (!activePost) return null;
                 return renderPostInsights(activePost);
@@ -1242,7 +1749,7 @@ export function AuraHub({ onNavigate }) {
       )}
 
       {/* Mobile Bottom Navigation */}
-      {!activePostId && <AuraBottomNav />}
+      {(!activePostId && !showLeaderboard) && <AuraBottomNav />}
     </div>
   );
 }
