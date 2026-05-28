@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { 
   Search, RefreshCw, Moon, Sun, Bell, ChevronDown, ChevronUp,
   Home, Newspaper, Dumbbell, Users, Bookmark,
+  Plus,
   Star, MessageCircle, Share, Edit2, Trash2,
   Image as ImageIcon, Activity, FileText, Droplet,
   Globe, UserPlus, BarChart2, ArrowRight,
@@ -10,29 +11,46 @@ import {
 } from 'lucide-react';
 import { Header } from '../../components/layout/Header';
 
-function AuraBottomNav() {
+function AuraBottomNav({ activeTab, setActiveTab, setActivePostId, setShowLeaderboard, setActiveCollectionId }) {
+  const handleNav = (tab) => {
+    setActiveTab(tab);
+    setActivePostId(null);
+    setShowLeaderboard(false);
+    if (setActiveCollectionId) setActiveCollectionId(null);
+  };
+
+  const getBtnClass = (tab) => {
+    return activeTab === tab
+      ? "flex flex-col items-center justify-center text-[var(--primary)] w-16 bg-[var(--primary-lite)] rounded-[18px] py-2 relative overflow-hidden transition-all"
+      : "flex flex-col items-center justify-center text-[var(--subtitle)] hover:text-[var(--title)] w-16 py-2 transition-all";
+  };
+
   return (
     <div className="lg:hidden fixed bottom-4 left-1/2 -translate-x-1/2 w-[95%] max-w-[400px] bg-[var(--sidebar)] backdrop-blur-xl border border-[var(--stroke)] rounded-[24px] z-50 flex justify-between items-center px-1.5 py-1.5 shadow-2xl">
-      <button className="flex flex-col items-center justify-center text-[var(--primary)] w-16 bg-[var(--primary-lite)] rounded-[18px] py-2 relative overflow-hidden">
-        <Home className="w-[20px] h-[20px] mb-1" fill="currentColor" />
+      <button onClick={() => handleNav('home')} className={getBtnClass('home')}>
+        <Home className="w-[20px] h-[20px] mb-1" fill={activeTab === 'home' ? "currentColor" : "none"} />
         <span className="text-[9px] font-bold tracking-wide">HOME</span>
-        <div className="absolute bottom-0 left-0 w-full h-[4px] bg-[var(--primary)]" />
+        {activeTab === 'home' && <div className="absolute bottom-0 left-0 w-full h-[4px] bg-[var(--primary)]" />}
       </button>
-      <button className="flex flex-col items-center justify-center text-[var(--subtitle)] hover:text-[var(--title)] w-16 py-2 transition-colors">
+      <button onClick={() => handleNav('news')} className={getBtnClass('news')}>
         <Newspaper className="w-[20px] h-[20px] mb-1" />
         <span className="text-[9px] font-medium tracking-wide">NEWS</span>
+        {activeTab === 'news' && <div className="absolute bottom-0 left-0 w-full h-[4px] bg-[var(--primary)]" />}
       </button>
-      <button className="flex flex-col items-center justify-center text-[var(--subtitle)] hover:text-[var(--title)] w-16 py-2 transition-colors">
+      <button onClick={() => handleNav('gyms')} className={getBtnClass('gyms')}>
         <Dumbbell className="w-[20px] h-[20px] mb-1" />
         <span className="text-[9px] font-medium tracking-wide">GYMS</span>
+        {activeTab === 'gyms' && <div className="absolute bottom-0 left-0 w-full h-[4px] bg-[var(--primary)]" />}
       </button>
-      <button className="flex flex-col items-center justify-center text-[var(--subtitle)] hover:text-[var(--title)] w-16 py-2 transition-colors">
+      <button onClick={() => handleNav('friends')} className={getBtnClass('friends')}>
         <Users className="w-[20px] h-[20px] mb-1" />
         <span className="text-[9px] font-medium tracking-wide">FRIENDS</span>
+        {activeTab === 'friends' && <div className="absolute bottom-0 left-0 w-full h-[4px] bg-[var(--primary)]" />}
       </button>
-      <button className="flex flex-col items-center justify-center text-[var(--subtitle)] hover:text-[var(--title)] w-16 py-2 transition-colors">
-        <Bookmark className="w-[20px] h-[20px] mb-1" />
+      <button onClick={() => handleNav('saved')} className={getBtnClass('saved')}>
+        <Bookmark className="w-[20px] h-[20px] mb-1" fill={activeTab === 'saved' ? "currentColor" : "none"} />
         <span className="text-[9px] font-medium tracking-wide">SAVED</span>
+        {activeTab === 'saved' && <div className="absolute bottom-0 left-0 w-full h-[4px] bg-[var(--primary)]" />}
       </button>
     </div>
   );
@@ -146,6 +164,12 @@ const MentionBadge = ({ name, inText }) => (
     <ProfileHoverCard user={getDummyUser(name)} />
   </span>
 );
+
+const mockCollections = [
+  { id: 'c1', name: 'Leg Day Workouts', coverImage: 'https://images.unsplash.com/photo-1434596922112-19c563067271?w=400&auto=format&fit=crop', itemsCount: 12 },
+  { id: 'c2', name: 'Healthy Recipes', coverImage: 'https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=400&auto=format&fit=crop', itemsCount: 8 },
+  { id: 'c3', name: 'Motivation', coverImage: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=400&auto=format&fit=crop', itemsCount: 45 },
+];
 
 const mockPosts = [
   {
@@ -772,6 +796,7 @@ const PostItem = ({
   handleDeletePost, 
   handleToggleLike, 
   handleToggleFollow,
+  handleToggleSave,
   onCommentClick,
   isDetailsMode = false
 }) => (
@@ -910,7 +935,7 @@ const PostItem = ({
             className={`w-4 h-4 sm:w-5 sm:h-5 cursor-pointer transition-colors hover:text-[var(--primary)] hover:opacity-100 ${post.isLiked ? 'text-[var(--primary)] fill-[var(--primary)] opacity-100 scale-110' : ''}`} 
           />
           <MessageCircle onClick={() => onCommentClick(post.id)} className={`w-4 h-4 sm:w-5 sm:h-5 cursor-pointer transition-colors hover:text-[var(--title)] hover:opacity-100`} />
-          <Bookmark className={`w-4 h-4 sm:w-5 sm:h-5 cursor-pointer transition-colors hover:text-[var(--title)] hover:opacity-100`} />
+          <Bookmark onClick={() => handleToggleSave?.(post.id)} className={`w-4 h-4 sm:w-5 sm:h-5 cursor-pointer transition-colors hover:text-[var(--title)] hover:opacity-100 ${post.isSaved ? 'text-[var(--primary)] fill-[var(--primary)] opacity-100 scale-110' : ''}`} />
           <Share className={`w-4 h-4 sm:w-5 sm:h-5 cursor-pointer transition-colors hover:text-[var(--title)] hover:opacity-100`} />
         </div>
       </div>
@@ -1131,13 +1156,23 @@ export function AuraHub({ onNavigate }) {
   const [isActivitiesOpen, setIsActivitiesOpen] = useState(false);
 
   // Interactivity State
-  const [posts, setPosts] = useState(mockPosts);
+  const [activeTab, setActiveTab] = useState('home');
+  const [posts, setPosts] = useState(() => mockPosts.map((p, idx) => ({
+    ...p,
+    authorType: p.author.toLowerCase().includes('aura') ? 'aura' : (p.author.toLowerCase().includes('gym') ? 'gym' : 'user'),
+    isFollowing: p.author === 'Sarah Jenkins' || p.author === 'Wilson John' || p.author === 'David Chen' || p.author === 'Marcus Johnson' ? true : !!p.isFollowing,
+    isSaved: idx === 1 || idx === 3,
+    collectionId: idx === 1 ? 'c1' : (idx === 3 ? 'c2' : null)
+  })));
   const [activePostId, setActivePostId] = useState(null);
   const [newPostText, setNewPostText] = useState('');
   const [editingPostId, setEditingPostId] = useState(null);
   const [editContent, setEditContent] = useState('');
   const [attachedTemplate, setAttachedTemplate] = useState(null);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
+  const [activeCollectionId, setActiveCollectionId] = useState(null);
+  const [showScrollTop, setShowScrollTop] = useState(false);
+  const [showMobileComposer, setShowMobileComposer] = useState(false);
 
   // Scroll to top when a post or leaderboard is opened
   useEffect(() => {
@@ -1145,6 +1180,18 @@ export function AuraHub({ onNavigate }) {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   }, [activePostId, showLeaderboard]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 300);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   // Handlers
   const handleCreatePost = () => {
@@ -1197,6 +1244,10 @@ export function AuraHub({ onNavigate }) {
       }
       return p;
     }));
+  };
+
+  const handleToggleSave = (id) => {
+    setPosts(posts.map(p => p.id === id ? { ...p, isSaved: !p.isSaved } : p));
   };
 
   const handleToggleFollow = (id) => {
@@ -1381,6 +1432,15 @@ export function AuraHub({ onNavigate }) {
     </div>
   );
 
+  const filteredPosts = posts.filter(post => {
+    if (activeTab === 'home') return true;
+    if (activeTab === 'news') return post.authorType === 'aura';
+    if (activeTab === 'gyms') return post.authorType === 'gym';
+    if (activeTab === 'friends') return post.isFollowing;
+    if (activeTab === 'saved') return post.isSaved;
+    return true;
+  });
+
   return (
     <div className={`min-h-screen bg-[var(--background)] text-[var(--title)] font-sans selection:bg-[var(--primary-lite)]`}>
       <Header 
@@ -1391,7 +1451,7 @@ export function AuraHub({ onNavigate }) {
 
       <div className="max-w-[1650px] mx-auto px-4 sm:px-[20px] pt-4 pb-[100px] lg:pb-[20px]">
         {/* Header Section (Desktop keeps Streak here, Mobile hides it) */}
-        {!activePostId && !showLeaderboard && (
+        {!activePostId && !showLeaderboard && activeTab !== 'saved' && (
           <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4 animate-fade-in">
             <div>
               <h1 className="text-2xl sm:text-3xl font-bold text-[var(--title)] tracking-tight mb-1">
@@ -1412,7 +1472,7 @@ export function AuraHub({ onNavigate }) {
         )}
 
         {/* Mobile Active Users (Stories) */}
-        {!activePostId && !showLeaderboard && (
+        {!activePostId && !showLeaderboard && activeTab !== 'saved' && (
           <div className="lg:hidden flex gap-4 overflow-x-auto pb-2 mb-6" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
             {activeFriends.map((friend) => (
               <div key={`story-${friend.id}`} className="flex flex-col items-center gap-2 min-w-[56px]">
@@ -1431,7 +1491,7 @@ export function AuraHub({ onNavigate }) {
         )}
 
         {/* Mobile Leaderboard */}
-        {!activePostId && !showLeaderboard && (
+        {!activePostId && !showLeaderboard && activeTab === 'home' && (
           <div className="block lg:hidden">
             {renderLeaderboard()}
           </div>
@@ -1445,30 +1505,83 @@ export function AuraHub({ onNavigate }) {
               {/* Navigation Menu */}
               <div className={`bg-[var(--formfield)] border border-[var(--stroke)] rounded-[20px] overflow-hidden flex flex-col shadow-sm`}>
                 <button 
-                  onClick={(activePostId || showLeaderboard) ? () => { setActivePostId(null); setShowLeaderboard(false); } : undefined}
+                  onClick={() => { setActiveTab('home'); setActivePostId(null); setShowLeaderboard(false); setActiveCollectionId(null); }}
                   className={`flex items-center gap-4 px-6 py-4 border-l-[4px] transition-colors group cursor-pointer
-                    ${(!activePostId && !showLeaderboard) ? 'border-l-[var(--primary)] bg-[var(--primary-lite)] text-[var(--primary)]' : 'border-l-transparent text-[var(--subtitle)] hover:text-[var(--title)] hover:bg-[var(--overlay)]'}`}
+                    ${(!activePostId && !showLeaderboard && activeTab === 'home') ? 'border-l-[var(--primary)] bg-[var(--primary-lite)] text-[var(--primary)]' : 'border-l-transparent text-[var(--subtitle)] hover:text-[var(--title)] hover:bg-[var(--overlay)]'}`}
                 >
-                  <Home className="w-[18px] h-[18px]" fill="currentColor" strokeWidth={1.5} /> 
+                  <Home className="w-[18px] h-[18px]" fill={(!activePostId && !showLeaderboard && activeTab === 'home') ? "currentColor" : "none"} strokeWidth={1.5} /> 
                   <span className="font-bold text-xs tracking-wide">HOME</span>
                 </button>
-                <button className={`flex items-center gap-4 px-6 py-4 border-l-[4px] border-l-transparent text-[var(--subtitle)] hover:text-[var(--title)] hover:bg-[var(--overlay)] transition-colors group`}>
+                <button 
+                  onClick={() => { setActiveTab('news'); setActivePostId(null); setShowLeaderboard(false); setActiveCollectionId(null); }}
+                  className={`flex items-center gap-4 px-6 py-4 border-l-[4px] transition-colors group cursor-pointer
+                    ${(!activePostId && !showLeaderboard && activeTab === 'news') ? 'border-l-[var(--primary)] bg-[var(--primary-lite)] text-[var(--primary)]' : 'border-l-transparent text-[var(--subtitle)] hover:text-[var(--title)] hover:bg-[var(--overlay)]'}`}
+                >
                   <Newspaper className="w-[18px] h-[18px]" strokeWidth={1.5} /> 
                   <span className="font-bold text-xs tracking-wide">AURA NEWS</span>
                 </button>
-                <button className={`flex items-center gap-4 px-6 py-4 border-l-[4px] border-l-transparent text-[var(--subtitle)] hover:text-[var(--title)] hover:bg-[var(--overlay)] transition-colors group`}>
+                <button 
+                  onClick={() => { setActiveTab('gyms'); setActivePostId(null); setShowLeaderboard(false); setActiveCollectionId(null); }}
+                  className={`flex items-center gap-4 px-6 py-4 border-l-[4px] transition-colors group cursor-pointer
+                    ${(!activePostId && !showLeaderboard && activeTab === 'gyms') ? 'border-l-[var(--primary)] bg-[var(--primary-lite)] text-[var(--primary)]' : 'border-l-transparent text-[var(--subtitle)] hover:text-[var(--title)] hover:bg-[var(--overlay)]'}`}
+                >
                   <Dumbbell className="w-[18px] h-[18px]" strokeWidth={1.5} /> 
                   <span className="font-bold text-xs tracking-wide">GYMS</span>
                 </button>
-                <button className={`flex items-center gap-4 px-6 py-4 border-l-[4px] border-l-transparent text-[var(--subtitle)] hover:text-[var(--title)] hover:bg-[var(--overlay)] transition-colors group`}>
+                <button 
+                  onClick={() => { setActiveTab('friends'); setActivePostId(null); setShowLeaderboard(false); setActiveCollectionId(null); }}
+                  className={`flex items-center gap-4 px-6 py-4 border-l-[4px] transition-colors group cursor-pointer
+                    ${(!activePostId && !showLeaderboard && activeTab === 'friends') ? 'border-l-[var(--primary)] bg-[var(--primary-lite)] text-[var(--primary)]' : 'border-l-transparent text-[var(--subtitle)] hover:text-[var(--title)] hover:bg-[var(--overlay)]'}`}
+                >
                   <Users className="w-[18px] h-[18px]" strokeWidth={1.5} /> 
                   <span className="font-bold text-xs tracking-wide">FRIENDS</span>
                 </button>
-                <button className={`flex items-center gap-4 px-6 py-4 border-l-[4px] border-l-transparent text-[var(--subtitle)] hover:text-[var(--title)] hover:bg-[var(--overlay)] transition-colors group`}>
-                  <Bookmark className="w-[18px] h-[18px]" strokeWidth={1.5} /> 
+                <button 
+                  onClick={() => { setActiveTab('saved'); setActivePostId(null); setShowLeaderboard(false); setActiveCollectionId(null); }}
+                  className={`flex items-center gap-4 px-6 py-4 border-l-[4px] transition-colors group cursor-pointer
+                    ${(!activePostId && !showLeaderboard && activeTab === 'saved') ? 'border-l-[var(--primary)] bg-[var(--primary-lite)] text-[var(--primary)]' : 'border-l-transparent text-[var(--subtitle)] hover:text-[var(--title)] hover:bg-[var(--overlay)]'}`}
+                >
+                  <Bookmark className="w-[18px] h-[18px]" fill={(!activePostId && !showLeaderboard && activeTab === 'saved') ? "currentColor" : "none"} strokeWidth={1.5} /> 
                   <span className="font-bold text-xs tracking-wide">SAVED</span>
                 </button>
               </div>
+
+              {activeTab === 'saved' && (
+                 <div className={`bg-[var(--formfield)] border border-[var(--stroke)] rounded-[20px] p-5 shadow-sm`}>
+                    <h3 className="text-xs font-bold text-[var(--subtitle)] tracking-wider flex items-center gap-2 mb-4">
+                       <Bookmark className="w-4 h-4" /> QUICK FILTERS
+                    </h3>
+                    <div className="flex flex-col gap-2">
+                       <button className="flex items-center justify-between w-full p-2.5 rounded-xl hover:bg-[var(--background)] transition-colors group">
+                          <div className="flex items-center gap-3">
+                             <div className="w-8 h-8 rounded-lg bg-[var(--primary-lite)] text-[var(--primary)] flex items-center justify-center">
+                                <ImageIcon className="w-4 h-4" />
+                             </div>
+                             <span className="text-sm font-bold text-[var(--title)] group-hover:text-[var(--primary)] transition-colors">Photos</span>
+                          </div>
+                          <span className="text-xs font-bold text-[var(--subtitle)]">12</span>
+                       </button>
+                       <button className="flex items-center justify-between w-full p-2.5 rounded-xl hover:bg-[var(--background)] transition-colors group">
+                          <div className="flex items-center gap-3">
+                             <div className="w-8 h-8 rounded-lg bg-[var(--primary-lite)] text-[var(--primary)] flex items-center justify-center">
+                                <PlayCircle className="w-4 h-4" />
+                             </div>
+                             <span className="text-sm font-bold text-[var(--title)] group-hover:text-[var(--primary)] transition-colors">Videos</span>
+                          </div>
+                          <span className="text-xs font-bold text-[var(--subtitle)]">5</span>
+                       </button>
+                       <button className="flex items-center justify-between w-full p-2.5 rounded-xl hover:bg-[var(--background)] transition-colors group">
+                          <div className="flex items-center gap-3">
+                             <div className="w-8 h-8 rounded-lg bg-[var(--primary-lite)] text-[var(--primary)] flex items-center justify-center">
+                                <FileText className="w-4 h-4" />
+                             </div>
+                             <span className="text-sm font-bold text-[var(--title)] group-hover:text-[var(--primary)] transition-colors">Articles</span>
+                          </div>
+                          <span className="text-xs font-bold text-[var(--subtitle)]">28</span>
+                       </button>
+                    </div>
+                 </div>
+              )}
 
               {/* Recent Activities */}
               <div className={`bg-[var(--formfield)] border border-[var(--stroke)] rounded-[20px] p-0 overflow-hidden shadow-sm`}>
@@ -1544,14 +1657,13 @@ export function AuraHub({ onNavigate }) {
                      });
                    })()}
                 </div>
-                
                 <div className="p-4 pt-0">
                   <button className="w-full py-2.5 text-xs text-[var(--primary)] font-bold bg-[var(--primary-lite)] hover:bg-[var(--primary-border)] rounded-xl transition-colors flex items-center justify-center gap-1">
                     See more <ChevronDown className="w-3 h-3" />
                   </button>
                 </div>
               </div>
-            </StickySidebar>
+        </StickySidebar>
           </div>
 
           {/* ================= CENTER COLUMN ================= */}
@@ -1567,15 +1679,130 @@ export function AuraHub({ onNavigate }) {
                   onBack={() => setActivePostId(null)}
                   renderPostProps={{
                     editingPostId, editContent, setEditContent, setEditingPostId,
-                    handleSaveEdit, handleDeletePost, handleToggleLike, handleToggleFollow,
+                    handleSaveEdit, handleDeletePost, handleToggleLike, handleToggleFollow, handleToggleSave,
                     onCommentClick: (id) => setActivePostId(id)
                   }}
                 />
               );
-            })() : (
+            })() : activeTab === 'saved' ? (
+              <div className="animate-fade-in space-y-6">
+                {activeCollectionId ? (
+                   <>
+                     <div className="bg-[var(--formfield)] border border-[var(--stroke)] rounded-[20px] p-6 flex flex-col gap-4 relative overflow-hidden shadow-sm">
+                        <div className="flex items-center justify-between z-10 relative">
+                           <div className="flex items-center gap-2 text-[10px] sm:text-[12px] font-bold tracking-wide text-[var(--subtitle)]">
+                             <span className="cursor-pointer hover:text-[var(--title)] transition-colors" onClick={() => { setActiveTab('home'); setActiveCollectionId(null); }}>AURAHUB</span>
+                             <span className="text-[var(--stroke)]">/</span>
+                             <span className="cursor-pointer hover:text-[var(--title)] transition-colors" onClick={() => setActiveCollectionId(null)}>Saved Collections</span>
+                             <span className="text-[var(--stroke)]">/</span>
+                             <span className="text-[var(--primary)] truncate max-w-[120px] sm:max-w-[200px]">
+                                {(() => {
+                                  const col = mockCollections.find(c => c.id === activeCollectionId);
+                                  return col?.name;
+                                })()}
+                             </span>
+                           </div>
+                           <div className="flex items-center gap-2">
+                              <button className="p-2 bg-[var(--sidebar)] hover:bg-[var(--overlay)] border border-[var(--stroke)] rounded-xl transition-colors tooltip" title="Edit Collection">
+                                 <Edit2 className="w-4 h-4 text-[var(--title)]" />
+                              </button>
+                              <button className="p-2 bg-[var(--sidebar)] hover:bg-[var(--primary-lite)] border border-[var(--stroke)] hover:border-[var(--primary)] rounded-xl transition-colors tooltip" title="Add Post">
+                                 <Plus className="w-4 h-4 text-[var(--primary)]" />
+                              </button>
+                              <button className="p-2 bg-[var(--sidebar)] hover:bg-[var(--alert)]/10 border border-[var(--stroke)] hover:border-[var(--alert)] rounded-xl transition-colors tooltip" title="Delete Collection">
+                                 <Trash2 className="w-4 h-4 text-[var(--alert)]" />
+                              </button>
+                           </div>
+                        </div>
+                        <div className="flex items-center gap-4 z-10 relative mt-2">
+                           {(() => {
+                              const col = mockCollections.find(c => c.id === activeCollectionId);
+                              return (
+                                 <>
+                                    <img src={col?.coverImage} className="w-16 h-16 rounded-xl object-cover shadow-sm border border-[var(--stroke)]" alt={col?.name} />
+                                    <div>
+                                       <h2 className="text-xl font-black text-[var(--title)]">{col?.name}</h2>
+                                       <p className="text-sm text-[var(--subtitle)]">{col?.itemsCount} Saved Items</p>
+                                    </div>
+                                 </>
+                              )
+                           })()}
+                        </div>
+                     </div>
+                     <div className="space-y-6">
+                        {posts.filter(p => p.collectionId === activeCollectionId).map(post => (
+                          <PostItem 
+                            key={post.id} 
+                            post={post} 
+                            editingPostId={editingPostId}
+                            editContent={editContent}
+                            setEditContent={setEditContent}
+                            setEditingPostId={setEditingPostId}
+                            handleSaveEdit={handleSaveEdit}
+                            handleDeletePost={handleDeletePost}
+                            handleToggleLike={handleToggleLike}
+                            handleToggleFollow={handleToggleFollow}
+                            handleToggleSave={handleToggleSave}
+                            onCommentClick={(id) => setActivePostId(id)}
+                          />
+                        ))}
+                        {posts.filter(p => p.collectionId === activeCollectionId).length === 0 && (
+                          <div className="flex flex-col items-center justify-center p-12 bg-[var(--formfield)] border border-[var(--stroke)] rounded-[20px] text-center shadow-sm">
+                            <div className="w-16 h-16 bg-[var(--sidebar)] border border-[var(--stroke)] rounded-full flex items-center justify-center mb-4">
+                              <Bookmark className="w-8 h-8 text-[var(--subtitle)] opacity-50" />
+                            </div>
+                            <h3 className="text-[16px] font-bold text-[var(--title)] mb-2">No posts in this collection</h3>
+                            <p className="text-[13px] text-[var(--subtitle)] max-w-[250px]">
+                              Add posts to this collection by clicking the Add Post button.
+                            </p>
+                          </div>
+                        )}
+                     </div>
+                   </>
+                ) : (
+                   <div className="animate-fade-in space-y-4 sm:space-y-6">
+                     <div className="flex sm:hidden items-center justify-between bg-[var(--formfield)] border border-[var(--stroke)] rounded-2xl p-4 shadow-sm mb-2">
+                        <div className="flex items-center gap-3">
+                           <div className="w-10 h-10 rounded-full bg-[var(--primary-lite)] text-[var(--primary)] flex items-center justify-center">
+                              <Bookmark className="w-5 h-5" />
+                           </div>
+                           <div>
+                              <h3 className="text-sm font-black text-[var(--title)]">{mockCollections.length} Collections</h3>
+                              <p className="text-[11px] text-[var(--subtitle)]">{mockCollections.reduce((acc, c) => acc + c.itemsCount, 0)} Total Saved Items</p>
+                           </div>
+                        </div>
+                     </div>
+                     <div className="grid grid-cols-2 gap-3 sm:gap-4">
+                     {mockCollections.map(col => (
+                        <div key={col.id} onClick={() => setActiveCollectionId(col.id)} className="bg-[var(--formfield)] border border-[var(--stroke)] rounded-[16px] sm:rounded-[20px] overflow-hidden group cursor-pointer hover:border-[var(--primary)] transition-all hover:-translate-y-1 shadow-sm hover:shadow-md flex flex-col">
+                           <div className="h-24 sm:h-32 relative w-full overflow-hidden shrink-0">
+                              <img src={col.coverImage} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt={col.name} />
+                              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                           </div>
+                           <div className="p-3 sm:p-5 flex items-center justify-between flex-1">
+                              <div className="min-w-0 flex-1">
+                                 <h3 className="font-bold text-[13px] sm:text-[16px] text-[var(--title)] mb-0.5 group-hover:text-[var(--primary)] transition-colors truncate">{col.name}</h3>
+                                 <p className="text-[10px] sm:text-[12px] text-[var(--subtitle)] truncate">{col.itemsCount} Saved Items</p>
+                              </div>
+                              <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-[var(--sidebar)] group-hover:bg-[var(--primary-lite)] flex items-center justify-center transition-colors shrink-0 ml-2">
+                                 <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 text-[var(--subtitle)] group-hover:text-[var(--primary)]" />
+                              </div>
+                           </div>
+                        </div>
+                     ))}
+                   </div>
+                 </div>
+                )}
+              </div>
+            ) : (
               <div className="animate-fade-in space-y-6">
                 {/* Composer */}
-                <div className={`bg-[var(--formfield)] border border-[var(--stroke)] rounded-[20px] p-5 sm:p-6 shadow-sm`}>
+                <div className={`${showMobileComposer ? 'block' : 'hidden'} sm:block bg-[var(--formfield)] border border-[var(--stroke)] rounded-[20px] p-5 sm:p-6 shadow-sm relative`}>
+                  {showMobileComposer && (
+                    <button onClick={() => setShowMobileComposer(false)} className="absolute top-4 right-4 sm:hidden text-[var(--subtitle)] hover:text-[var(--title)]">
+                      <X className="w-5 h-5" />
+                    </button>
+                  )}
                   <div className="flex justify-between items-start mb-5">
                     <div className="flex items-center gap-3">
                       <img src="https://images.unsplash.com/photo-1568602471122-7832951cc4c5?w=150&auto=format&fit=crop" className={`w-10 h-10 rounded-full object-cover border border-[var(--stroke)]`} alt="Me" />
@@ -1639,7 +1866,17 @@ export function AuraHub({ onNavigate }) {
                 </div>
 
                 {/* Feed Posts */}
-                {posts.map((post) => (
+                {filteredPosts.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center p-12 bg-[var(--formfield)] border border-[var(--stroke)] rounded-[20px] text-center shadow-sm">
+                    <div className="w-16 h-16 bg-[var(--sidebar)] border border-[var(--stroke)] rounded-full flex items-center justify-center mb-4">
+                      {activeTab === 'saved' ? <Bookmark className="w-8 h-8 text-[var(--subtitle)] opacity-50" /> : <Newspaper className="w-8 h-8 text-[var(--subtitle)] opacity-50" />}
+                    </div>
+                    <h3 className="text-[16px] font-bold text-[var(--title)] mb-2">No posts found</h3>
+                    <p className="text-[13px] text-[var(--subtitle)] max-w-[250px]">
+                      {activeTab === 'saved' ? "You haven't saved any posts yet. Click the bookmark icon on any post to save it for later." : "There are no posts in this category yet."}
+                    </p>
+                  </div>
+                ) : filteredPosts.map((post) => (
                   <PostItem 
                     key={post.id} 
                     post={post} 
@@ -1651,6 +1888,7 @@ export function AuraHub({ onNavigate }) {
                     handleDeletePost={handleDeletePost}
                     handleToggleLike={handleToggleLike}
                     handleToggleFollow={handleToggleFollow}
+                    handleToggleSave={handleToggleSave}
                     onCommentClick={(id) => setActivePostId(id)}
                   />
                 ))}
@@ -1666,7 +1904,31 @@ export function AuraHub({ onNavigate }) {
                 const activePost = posts.find(p => p.id === activePostId);
                 if (!activePost) return null;
                 return renderPostInsights(activePost);
-              })() : (
+              })() : activeTab === 'saved' ? (
+                 <div className="animate-fade-in space-y-6">
+                    {/* Saved Insights */}
+                    <div className="bg-[var(--formfield)] border border-[var(--stroke)] rounded-[20px] p-5 shadow-sm">
+                       <h3 className="text-xs font-bold text-[var(--subtitle)] tracking-wider mb-5 flex items-center gap-2">
+                          <PieChart className="w-4 h-4" /> SAVED INSIGHTS
+                       </h3>
+                       <div className="grid grid-cols-2 gap-3 mb-5">
+                          <div className="bg-[var(--background)] border border-[var(--stroke)] rounded-xl p-3 flex flex-col items-center justify-center text-center">
+                             <Dumbbell className="w-5 h-5 text-[#3cbdf6] mb-1.5" />
+                             <span className="font-black text-lg text-[var(--title)]">42</span>
+                             <span className="text-[10px] text-[var(--subtitle)]">Workouts</span>
+                          </div>
+                          <div className="bg-[var(--background)] border border-[var(--stroke)] rounded-xl p-3 flex flex-col items-center justify-center text-center">
+                             <Apple className="w-5 h-5 text-[#22c55e] mb-1.5" />
+                             <span className="font-black text-lg text-[var(--title)]">28</span>
+                             <span className="text-[10px] text-[var(--subtitle)]">Recipes</span>
+                          </div>
+                       </div>
+                       <button className="w-full py-2.5 text-xs text-[var(--primary)] font-bold bg-[var(--primary-lite)] border border-[var(--stroke)] hover:border-[var(--primary)] rounded-xl transition-colors">
+                          View Full Analytics
+                       </button>
+                    </div>
+                 </div>
+              ) : (
                 <div className="animate-fade-in space-y-6">
                   {/* Leaderboard */}
                   {renderLeaderboard()}
@@ -1749,7 +2011,25 @@ export function AuraHub({ onNavigate }) {
       )}
 
       {/* Mobile Bottom Navigation */}
-      {(!activePostId && !showLeaderboard) && <AuraBottomNav />}
+      {(!activePostId && !showLeaderboard && !activeCollectionId) && <AuraBottomNav activeTab={activeTab} setActiveTab={setActiveTab} setActivePostId={setActivePostId} setShowLeaderboard={setShowLeaderboard} setActiveCollectionId={setActiveCollectionId} />}
+
+      {/* Floating Action Buttons */}
+      <div className="fixed right-4 bottom-24 sm:bottom-8 z-[60] flex flex-col gap-3 items-end pointer-events-none">
+        {/* Scroll to Top FAB */}
+        <button 
+          onClick={scrollToTop}
+          className={`pointer-events-auto w-12 h-12 bg-[var(--formfield)] border border-[var(--stroke)] text-[var(--title)] hover:text-[var(--primary)] rounded-full shadow-lg flex items-center justify-center transition-all duration-300 ${showScrollTop ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0 pointer-events-none'}`}
+        >
+          <ChevronUp className="w-6 h-6" />
+        </button>
+        
+        {/* Mobile New Post FAB */}
+        {!activePostId && !showLeaderboard && activeTab !== 'saved' && (
+          <button onClick={() => setShowMobileComposer(true)} className="pointer-events-auto sm:hidden w-14 h-14 bg-[var(--primary)] text-[var(--background)] rounded-full shadow-lg shadow-green-500/30 flex items-center justify-center transition-transform active:scale-95">
+            <Plus className="w-7 h-7" />
+          </button>
+        )}
+      </div>
     </div>
   );
 }
