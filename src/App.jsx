@@ -34,12 +34,19 @@ class ErrorBoundary extends React.Component {
 }
 
 function App() {
-  const [currentPage, setCurrentPage] = useState('dashboard');
+  const [currentPage, setCurrentPage] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('page') || 'dashboard';
+  });
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' });
     setSearchQuery(''); // Reset search on page change
+    // Sync URL when page changes internally, without reloading
+    const newUrl = new URL(window.location);
+    newUrl.searchParams.set('page', currentPage);
+    window.history.pushState({}, '', newUrl);
   }, [currentPage]);
 
   const [branding, setBranding] = useState({

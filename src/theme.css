@@ -47,6 +47,7 @@
 /* Utility classes for App.jsx */
 .bg-background { background-color: var(--background); }
 .text-title { color: var(--title); }
+.bg-title { background-color: var(--title); }
 .bg-sidebar { background-color: var(--sidebar); }
 .border-stroke { border-color: var(--stroke); }
 .hover\:bg-primary-lite:hover { background-color: var(--primary-lite); }

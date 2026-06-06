@@ -1,14 +1,42 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { MessageFormatter } from './components/MessageFormatter';
+import { MentionDropdown } from './components/MentionDropdown';
+import { WorkoutTemplateCard } from './components/WorkoutTemplateCard';
+import { PlansModal } from './components/PlansModal';
+import { Repeat } from 'lucide-react';
+import AuraLogo from '../../assets/Aura.svg';
+import AuraOutlinedLogoBlack from '../../assets/Aura-outlined-black.svg';
+import AuraOutlinedLogoWhite from '../../assets/Aura-outlined-white.svg';
 import { 
-  Menu, Paperclip, ArrowUp, ChevronDown, ChevronRight, ChevronLeft,
-  Copy, ThumbsUp, ThumbsDown, Folder, ArrowLeft,
-  Bot, Loader2, Zap, Bell, Shield, Activity, UserPlus, CheckCircle2, XCircle, Edit3, Save, X,
-  GripVertical, RefreshCw, TrendingUp, TrendingDown, Link as LinkIcon, Trash2, Plus, Utensils, Key, Search, PieChart, Database, Eye, MessageSquare,
-  Users, DollarSign, CalendarDays, Award
+  User, Menu, Paperclip, ArrowUp, ChevronDown, ChevronRight, ChevronLeft,
+  Copy, Puzzle, Headphones, ThumbsUp, ThumbsDown, Folder, Plus, Search,
+  Bot, MoreVertical, Edit3, Trash2, CheckCircle2, XCircle, Loader2,
+  Star, StarOff, ArrowLeftRight,
+  ArrowLeft, Zap, Play, Target, UserPlus, Save, X, GripVertical, RefreshCw,
+  Key, Shield, Bell, Utensils, Database, PieChart, Activity, Eye, MessageSquare,
+  CalendarDays, Grid, Settings, LogOut, Send, Dumbbell, FileText, BarChart2,
+  TrendingDown, LinkIcon, DollarSign, TrendingUp, Users, Award
 } from 'lucide-react';
 import './AuraAI.css';
 
 // --- MOCK DATA ---
+const MOCK_PEOPLE = [
+  { id: 'p1', name: 'Omar Alaa', role: 'Trainee', icon: <User size={14}/> },
+  { id: 'p2', name: 'Hajer Ahmed', role: 'Trainee', icon: <User size={14}/> },
+  { id: 'p3', name: 'Sarah Jenkins', role: 'Staff', icon: <User size={14}/> },
+  { id: 'p4', name: 'Alex Morgan', role: 'Trainer', icon: <User size={14}/> }
+];
+const MOCK_TEMPLATES = [
+  { id: 't1', code: 'tmp_workout', name: 'Workout Template', icon: <Dumbbell size={14}/> },
+  { id: 't2', code: 'tmp_nutrition', name: 'Nutrition Template', icon: <Utensils size={14}/> },
+  { id: 't3', code: 'tmp_analytics', name: 'Analytics Report', icon: <Activity size={14}/> }
+];
+const MOCK_PLANS = [
+  { id: 'pl1', code: 'pl_vip', name: 'VIP Plan - Premium Plan', icon: <FileText size={14}/> },
+  { id: 'pl2', code: 'pl_basic', name: 'Basic Starter Plan', icon: <FileText size={14}/> },
+  { id: 'pl3', code: 'pl_shred', name: 'Summer Shred', icon: <FileText size={14}/> }
+];
+
 const mockWorkoutDays = [
   {
     id: 'day-1', title: 'Push Day (Chest/Shoulders/Triceps)',
@@ -143,6 +171,61 @@ export function AuraAI({ onNavigate }) {
   const [inputText, setInputText] = useState('');
   const [sessions, setSessions] = useState(initialSessions);
   const [activeSessionId, setActiveSessionId] = useState('s1');
+  const [mentionState, setMentionState] = useState({ active: false, type: null, query: '', startIndex: -1, items: [], selectedIndex: 0 });
+  const [isPlansModalOpen, setIsPlansModalOpen] = useState(false);
+  const inputRef = useRef(null);
+  const overlayRef = useRef(null);
+
+  const handleInputChange = (e) => {
+    let val = e.target.value;
+    
+    // Auto-replace shortcuts
+    val = val.replace(/\btmp_workout\b/g, '[WORKOUT TEMPLATE]');
+    val = val.replace(/\btmp_nutrition\b/g, '[NUTRITION TEMPLATE]');
+    val = val.replace(/\bpl_vip\b/g, '[VIP PLAN]');
+    val = val.replace(/\bpl_basic\b/g, '[BASIC PLAN]');
+
+    setInputText(val);
+
+    // Auto-resize textarea
+    e.target.style.height = '24px';
+    const newHeight = Math.min(e.target.scrollHeight, 24 * 4);
+    e.target.style.height = `${newHeight}px`;
+    if (overlayRef.current) overlayRef.current.style.height = `${newHeight}px`;
+    
+    // Simple mention logic
+    const cursor = e.target.selectionStart;
+    const textBeforeCursor = val.slice(0, cursor);
+    const lastWord = textBeforeCursor.split(/\s/).pop();
+
+    if (lastWord.startsWith('@')) {
+      const q = lastWord.slice(1);
+      const items = MOCK_PEOPLE.filter(p => p.name.toLowerCase().includes(q.toLowerCase()));
+      setMentionState({ active: true, type: '@', query: q, startIndex: cursor - lastWord.length, items, selectedIndex: 0 });
+    } else if (lastWord.startsWith('tmp_')) {
+      const q = lastWord.slice(4);
+      const items = MOCK_TEMPLATES.filter(t => t.name.toLowerCase().includes(q.toLowerCase()) || t.code.includes(q.toLowerCase()));
+      setMentionState({ active: true, type: 'tmp_', query: q, startIndex: cursor - lastWord.length, items, selectedIndex: 0 });
+    } else if (lastWord.startsWith('pl_')) {
+      const q = lastWord.slice(3);
+      const items = MOCK_PLANS.filter(p => p.name.toLowerCase().includes(q.toLowerCase()) || p.code.includes(q.toLowerCase()));
+      setMentionState({ active: true, type: 'pl_', query: q, startIndex: cursor - lastWord.length, items, selectedIndex: 0 });
+    } else {
+      setMentionState({ active: false, type: null, query: '', startIndex: -1, items: [], selectedIndex: 0 });
+    }
+  };
+
+  const handleMentionSelect = (replacement) => {
+    const before = inputText.slice(0, mentionState.startIndex);
+    const after = inputText.slice(inputText.length); // Just append for now, or find end of word
+    // Actually we should slice up to the current cursor position which might be tricky if we don't have it,
+    // but a simple replace of the last typed word works.
+    const words = inputText.split(' ');
+    words[words.length - 1] = replacement;
+    setInputText(words.join(' ') + ' ');
+    setMentionState({ active: false, type: null, query: '', startIndex: -1 });
+  };
+
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [isDesktopSidebarOpen, setIsDesktopSidebarOpen] = useState(true);
   const [editStyle, setEditStyle] = useState('modal');
@@ -307,8 +390,63 @@ export function AuraAI({ onNavigate }) {
   };
 
   const handleKeyDown = (e) => {
-    if (e.key === 'Enter') handleSend();
+    if (mentionState.active && mentionState.items.length > 0) {
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        setMentionState(prev => ({ ...prev, selectedIndex: (prev.selectedIndex + 1) % prev.items.length }));
+        return;
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        setMentionState(prev => ({ ...prev, selectedIndex: prev.selectedIndex - 1 < 0 ? prev.items.length - 1 : prev.selectedIndex - 1 }));
+        return;
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        const item = mentionState.items[mentionState.selectedIndex];
+        const prefix = mentionState.type === '@' ? '@' : '';
+        handleMentionSelect(prefix + (item.code || item.name));
+        return;
+      }
+    }
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+    }
   };
+
+  const handleScrollSync = (e) => {
+    if (overlayRef.current) {
+      overlayRef.current.scrollLeft = e.target.scrollLeft;
+      overlayRef.current.scrollTop = e.target.scrollTop;
+    }
+  };
+
+  const renderInputOverlay = (text) => {
+    if (!text) return <span className="text-subtitle">Ask Aura.AI.</span>;
+    const parts = text.split(/(\[.*?\]|\*{1,2}.*?\*{1,2})/g);
+    return parts.map((part, i) => {
+      if (part.startsWith('**') && part.endsWith('**')) return <strong key={i} className="font-bold text-title"><span className="text-transparent">**</span>{part.slice(2, -2)}<span className="text-transparent">**</span></strong>;
+      if (part.startsWith('*') && part.endsWith('*')) return <strong key={i} className="font-bold text-title"><span className="text-transparent">*</span>{part.slice(1, -1)}<span className="text-transparent">*</span></strong>;
+      
+      if (part.startsWith('[') && part.endsWith('TEMPLATE]')) {
+         return <span key={i} className="bg-primary-lite text-primary rounded px-1"><span className="text-transparent">[</span>{part.slice(1, -1)}<span className="text-transparent">]</span></span>;
+      }
+      if (part.startsWith('[') && part.endsWith('PLAN]')) {
+         return <span key={i} className="bg-purple-500/30 text-purple-400 rounded px-1"><span className="text-transparent">[</span>{part.slice(1, -1)}<span className="text-transparent">]</span></span>;
+      }
+      if (part.startsWith('[@') && part.endsWith(']')) {
+         return <span key={i} className="bg-orange-500/30 text-orange-400 rounded px-1"><span className="text-transparent">[</span>{part.slice(1, -1)}<span className="text-transparent">]</span></span>;
+      }
+      
+      const subParts = part.split(/(@[A-Za-z0-9_ ]+|tmp_[a-z_]+|pl_[a-z_]+)/g);
+      return subParts.map((sub, j) => {
+         if (sub.startsWith('@')) return <span key={`${i}-${j}`} className="text-orange-400">{sub}</span>;
+         if (sub.startsWith('tmp_')) return <span key={`${i}-${j}`} className="text-primary">{sub}</span>;
+         if (sub.startsWith('pl_')) return <span key={`${i}-${j}`} className="text-purple-400">{sub}</span>;
+         return <span key={`${i}-${j}`} className="text-title">{sub}</span>;
+      });
+    });
+  };
+
 
   // --- WORKOUT BUILDER MUTATIONS ---
   const handleAddWorkoutDay = () => {
@@ -381,8 +519,8 @@ export function AuraAI({ onNavigate }) {
             <div className="flex justify-between items-center mb-6">
                <input type="text" value={editPlanState[activeDayIndex].title} onChange={(e) => {const n=[...editPlanState]; n[activeDayIndex].title = e.target.value; setEditPlanState(n);}} className="font-bold text-title text-lg bg-transparent border-none focus:outline-none focus:border-b focus:border-primary w-2/3" />
                <div className="flex gap-2">
-                 <button onClick={() => handleAddWorkoutBlock('dropset')} className="flex items-center gap-1 bg-purple-500/10 text-purple-500 border border-purple-500/20 px-2 py-1.5 rounded-lg text-[10px] font-bold hover:bg-purple-500 hover:text-white transition-colors"><TrendingDown size={12} /> + Drop</button>
-                 <button onClick={() => handleAddWorkoutBlock('superset')} className="flex items-center gap-1 bg-blue-500/10 text-blue-500 border border-blue-500/20 px-2 py-1.5 rounded-lg text-[10px] font-bold hover:bg-blue-500 hover:text-white transition-colors"><LinkIcon size={12} /> + Super</button>
+                 <button onClick={() => handleAddWorkoutBlock('dropset')} className="flex items-center gap-1 bg-purple-500/10 text-purple-500 border border-purple-500/20 px-2 py-1.5 rounded-lg text-[10px] font-bold hover:bg-purple-500 hover:text-title transition-colors"><TrendingDown size={12} /> + Drop</button>
+                 <button onClick={() => handleAddWorkoutBlock('superset')} className="flex items-center gap-1 bg-blue-500/10 text-blue-500 border border-blue-500/20 px-2 py-1.5 rounded-lg text-[10px] font-bold hover:bg-blue-500 hover:text-title transition-colors"><LinkIcon size={12} /> + Super</button>
                </div>
             </div>
             
@@ -566,277 +704,381 @@ export function AuraAI({ onNavigate }) {
   );
 
   return (
-    <div className="aura-ai-wrapper h-screen w-full relative overflow-hidden bg-background flex">
-      {/* Background Mesh */}
-      <div className="absolute inset-0 z-0 pointer-events-none">
-        <div className="absolute top-1/4 right-1/4 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[100px]"></div>
-      </div>
-
-      {/* ================= LEFT SIDEBAR (CONTEXT) ================= */}
-      {isMobileSidebarOpen && <div className="fixed inset-0 bg-black/50 z-40 lg:hidden backdrop-blur-sm" onClick={() => setIsMobileSidebarOpen(false)}/>}
-      <div className={`
-        fixed inset-y-0 left-0 z-50 bg-sidebar border-r border-stroke shadow-2xl flex flex-col
-        transition-all duration-300 ease-in-out
-        ${isMobileSidebarOpen ? 'translate-x-0 w-[300px] sm:w-[320px]' : '-translate-x-full w-[300px] sm:w-[320px]'}
-        lg:relative lg:translate-x-0 lg:z-20
-        ${isDesktopSidebarOpen ? 'lg:w-[320px] opacity-100' : 'lg:w-0 lg:overflow-hidden lg:opacity-0 lg:border-none'}
-      `}>
-        {/* Top Branding / Nav */}
-        <div className="p-4 border-b border-stroke flex items-center justify-between shrink-0 min-w-[320px]">
-          <div className="flex items-center gap-3">
-            <button onClick={() => onNavigate('dashboard')} className="p-2 bg-background border border-stroke rounded-lg text-subtitle hover:text-title hover:bg-stroke transition-colors">
-              <ArrowLeft size={16} />
-            </button>
-            <div className="flex items-center gap-2">
-              <img src="/src/assets/Aura.svg" alt="Aura Logo" className="w-7 h-7" onError={(e) => e.target.style.display='none'} />
-              <span className="text-lg font-black tracking-tight text-title">AURA AI</span>
-            </div>
-          </div>
-          <button onClick={() => setIsMobileSidebarOpen(false)} className="lg:hidden p-2 text-subtitle"><X size={18} /></button>
-          <button onClick={() => setIsDesktopSidebarOpen(false)} className="hidden lg:flex p-2 text-subtitle hover:text-title hover:bg-background rounded-lg"><ChevronLeft size={18}/></button>
-        </div>
-
-        <div className="flex-1 overflow-y-auto flex flex-col p-4 custom-scrollbar min-w-[320px]">
+    <div className="h-screen w-full relative overflow-hidden bg-background flex font-sans text-title">
+      
+      {/* ================= LEFT SIDEBAR (EXPANDED) ================= */}
+      <div className={`transition-all duration-500 ease-[cubic-bezier(0.2,0.8,0.2,1)] overflow-hidden shrink-0 relative z-50 ${isDesktopSidebarOpen ? 'w-[300px] h-[calc(100vh-32px)] my-4 ml-4 opacity-100' : 'w-0 h-[calc(100vh-32px)] my-4 ml-0 opacity-0 pointer-events-none'}`}>
+        <div className="flex flex-col h-full w-[300px] shrink-0 bg-background border border-stroke rounded-[32px] z-20 overflow-hidden shadow-2xl">
           
-          {/* Collections Section */}
-          <div className="mb-6">
-            <div className="flex items-center gap-2 mb-3">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-subtitle">Collections</span>
+          {/* Logo Area */}
+          <div className="p-6 flex items-center justify-between shrink-0">
+            <div className="flex items-center gap-2 cursor-pointer">
+              <img src={AuraLogo} alt="Aura Logo" className="w-6 h-6 object-contain" />
+              <span className="text-xl font-black tracking-widest text-title ml-1">AURA.AI<span className="text-primary">.</span></span>
             </div>
-            <div className="bg-background border border-stroke rounded-xl overflow-hidden shadow-inner flex flex-col">
-              <div>
-                <button onClick={() => setExpandedCollections({...expandedCollections, nutrition: !expandedCollections.nutrition})} className="w-full p-3 flex items-center justify-between text-sm font-bold text-title hover:bg-stroke transition-colors">
-                  <div className="flex items-center gap-3"><Folder size={16} className="text-primary" /> Nutrition Library</div>
-                  <ChevronDown size={14} className={`text-subtitle transition-transform ${expandedCollections.nutrition ? 'rotate-180' : ''}`} />
-                </button>
-                {expandedCollections.nutrition && (
-                  <div className="bg-sidebar border-t border-stroke p-2 flex flex-col gap-1">
-                    {mockCollections.nutrition.map(col => <button key={col.id} className="text-xs font-medium text-subtitle hover:text-title hover:bg-background p-2 text-left rounded-md transition-colors truncate">{col.title}</button>)}
-                  </div>
-                )}
-              </div>
-              <div className="border-t border-stroke">
-                <button onClick={() => setExpandedCollections({...expandedCollections, workouts: !expandedCollections.workouts})} className="w-full p-3 flex items-center justify-between text-sm font-bold text-title hover:bg-stroke transition-colors">
-                  <div className="flex items-center gap-3"><Folder size={16} className="text-blue-500" /> Workout Splits</div>
-                  <ChevronDown size={14} className={`text-subtitle transition-transform ${expandedCollections.workouts ? 'rotate-180' : ''}`} />
-                </button>
-                {expandedCollections.workouts && (
-                  <div className="bg-sidebar border-t border-stroke p-2 flex flex-col gap-1">
-                    {mockCollections.workouts.map(col => <button key={col.id} className="text-xs font-medium text-subtitle hover:text-title hover:bg-background p-2 text-left rounded-md transition-colors truncate">{col.title}</button>)}
-                  </div>
-                )}
-              </div>
-            </div>
+            <button onClick={() => setIsDesktopSidebarOpen(false)} className="w-8 h-8 rounded-full bg-sidebar border border-stroke flex items-center justify-center text-subtitle hover:text-title transition-colors">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            </button>
           </div>
 
-          {/* Search & Conversations */}
-          <div className="flex-1 min-h-0 flex flex-col">
-            <div className="relative mb-4">
-              <Search size={14} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-subtitle" />
-              <input type="text" placeholder="Search histories..." className="w-full bg-background border border-stroke rounded-lg pl-9 pr-3 py-2 text-sm text-title focus:outline-none focus:border-primary" />
+          {/* New Chat Button */}
+          <div className="px-6 flex items-center gap-3">
+            <button onClick={handleNewSession} className="flex-1 bg-primary hover:bg-[#3b82f6] transition-colors text-black font-bold py-3 px-4 rounded-full flex items-center justify-center gap-2 text-sm shadow-[0_0_15px_rgba(74,222,128,0.3)]">
+              <Plus size={16} strokeWidth={3} /> New Chat
+            </button>
+            <button className="w-11 h-11 rounded-full border border-stroke flex items-center justify-center text-subtitle hover:text-title hover:bg-sidebar transition-all">
+              <Grid size={18} />
+            </button>
+          </div>
+
+          {/* Chat Lists */}
+          <div className="flex-1 overflow-y-auto px-4 pt-6 pb-12 mt-2 custom-scrollbar flex flex-col gap-6 mask-bottom-edge">
+            
+            {/* Pinned/Recent Cards */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="relative h-24 rounded-2xl overflow-hidden border border-stroke group cursor-pointer">
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0A111E] via-[#0A111E]/80 to-transparent z-10"></div>
+                <img src="https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?q=80&w=400&auto=format&fit=crop" alt="bg" className="absolute inset-0 w-full h-full object-cover opacity-40 mix-blend-overlay group-hover:scale-110 transition-transform duration-500" />
+                <div className="relative z-20 p-3 h-full flex flex-col justify-end">
+                   <span className="text-[9px] text-subtitle absolute top-2 right-2 bg-black/50 px-1.5 py-0.5 rounded-full backdrop-blur-sm">now</span>
+                   <span className="text-[11px] leading-tight font-black text-primary uppercase truncate">OMAR ALAA</span>
+                   <span className="text-[9px] font-bold text-subtitle uppercase tracking-wider mt-0.5 truncate">WORKOUT PLAN</span>
+                </div>
+              </div>
+              
+              <div className="relative h-24 rounded-2xl overflow-hidden border border-stroke group cursor-pointer">
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0A111E] via-[#0A111E]/80 to-transparent z-10"></div>
+                <img src="https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?q=80&w=400&auto=format&fit=crop" alt="bg" className="absolute inset-0 w-full h-full object-cover opacity-40 mix-blend-overlay group-hover:scale-110 transition-transform duration-500" />
+                <div className="relative z-20 p-3 h-full flex flex-col justify-end">
+                   <span className="text-[9px] text-subtitle absolute top-2 right-2 bg-black/50 px-1.5 py-0.5 rounded-full backdrop-blur-sm">14m</span>
+                   <span className="text-[11px] leading-tight font-black text-primary uppercase truncate">HAJER AHMED</span>
+                   <span className="text-[9px] font-bold text-subtitle uppercase tracking-wider mt-0.5 truncate">NUTRITION PLAN</span>
+                </div>
+              </div>
             </div>
 
-            <div className="flex justify-between items-center mb-2 px-1">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-subtitle">Conversations</span>
-              <button onClick={handleNewSession} className="text-[10px] font-bold text-primary hover:underline uppercase tracking-wider">+ New</button>
-            </div>
-            
-            <div className="flex-1 overflow-y-auto flex flex-col gap-1 custom-scrollbar pr-1">
-              {sessions.map((session) => (
-                <button key={session.id} onClick={() => handleSessionSelect(session.id)} className={`text-left py-2.5 px-3 text-sm transition-all truncate rounded-lg cursor-pointer border ${activeSessionId === session.id ? 'bg-background text-title border-stroke font-bold shadow-sm border-l-2 border-l-primary' : 'bg-transparent text-subtitle hover:text-title hover:bg-background border-transparent font-medium'}`}>{session.title}</button>
+            {/* Today */}
+            <div className="flex flex-col gap-2">
+              <div className="px-2 flex items-center justify-between mb-1">
+                <span className="text-[10px] font-bold text-subtitle uppercase tracking-widest">TODAY</span>
+                <button className="text-[10px] font-bold text-[#f87171] hover:text-red-400 uppercase tracking-widest">Clear all</button>
+              </div>
+              {sessions.slice(0, 3).map(session => (
+                session.id === activeSessionId ? (
+                  <div key={session.id} className="active-chat-item flex items-center justify-between pl-5 py-2.5 group">
+                     <div className="absolute left-2 top-2 bottom-2 w-1 bg-primary rounded-full"></div>
+                     <span className="text-[13px] font-bold text-primary truncate pr-2 cursor-pointer w-full z-10" onClick={() => handleSessionSelect(session.id)}>{session.title}</span>
+                     <div className="flex items-center gap-2 shrink-0 bg-sidebar px-3 py-1.5 rounded-full z-10 shadow-sm border border-stroke">
+                       <Edit3 size={14} className="text-subtitle hover:text-title cursor-pointer"/>
+                       <Trash2 size={14} className="text-alert hover:text-red-400 cursor-pointer"/>
+                     </div>
+                  </div>
+                ) : (
+                  <button key={session.id} onClick={() => handleSessionSelect(session.id)} className="text-left px-3 py-2 text-[13px] text-subtitle hover:text-title truncate transition-colors w-full">{session.title}</button>
+                )
               ))}
             </div>
-          </div>
-        </div>
 
-        {/* Footer Toggles */}
-        <div className="p-4 border-t border-stroke bg-background/50 flex flex-col gap-3 shrink-0 min-w-[320px]">
-          <div className="flex bg-background rounded-lg p-1 border border-stroke shadow-inner">
-            <button onClick={() => setEditStyle('inline')} className={`flex-1 py-1.5 text-xs font-bold rounded-md uppercase tracking-wider transition-all ${editStyle === 'inline' ? 'bg-sidebar text-title shadow border border-stroke' : 'text-subtitle hover:text-title'}`}>Inline</button>
-            <button onClick={() => setEditStyle('modal')} className={`flex-1 py-1.5 text-xs font-bold rounded-md uppercase tracking-wider transition-all ${editStyle === 'modal' ? 'bg-sidebar text-title shadow border border-stroke' : 'text-subtitle hover:text-title'}`}>Modal</button>
+            {/* History */}
+            {sessions.length > 3 && (
+            <div className="flex flex-col gap-2 mt-4">
+              <div className="px-2 flex items-center justify-between mb-1">
+                <span className="text-[10px] font-bold text-subtitle uppercase tracking-widest">CHATS HISTORY</span>
+                <button className="text-[10px] font-bold text-[#f87171] hover:text-red-400 uppercase tracking-widest">Clear all</button>
+              </div>
+              {sessions.slice(3).map(session => (
+                session.id === activeSessionId ? (
+                  <div key={session.id} className="active-chat-item flex items-center justify-between pl-5 py-2.5 group">
+                     <div className="absolute left-2 top-2 bottom-2 w-1 bg-primary rounded-full"></div>
+                     <span className="text-[13px] font-bold text-primary truncate pr-2 cursor-pointer w-full z-10" onClick={() => handleSessionSelect(session.id)}>{session.title}</span>
+                     <div className="flex items-center gap-2 shrink-0 bg-sidebar px-3 py-1.5 rounded-full z-10 shadow-sm border border-stroke">
+                       <Edit3 size={14} className="text-subtitle hover:text-title cursor-pointer"/>
+                       <Trash2 size={14} className="text-alert hover:text-red-400 cursor-pointer"/>
+                     </div>
+                  </div>
+                ) : (
+                  <button key={session.id} onClick={() => handleSessionSelect(session.id)} className="text-left px-3 py-2 text-[13px] text-subtitle hover:text-title truncate transition-colors w-full">{session.title}</button>
+                )
+              ))}
+            </div>
+            )}
+
           </div>
-          <button className="w-full bg-sidebar border border-stroke rounded-lg p-2.5 flex justify-between items-center hover:border-primary transition-colors group">
-            <div className="flex items-center gap-2"><Zap size={14} className="text-yellow-500"/><span className="font-bold text-title text-xs">Strategist AI</span></div>
-            <ChevronDown size={14} className="text-subtitle" />
-          </button>
+
+          {/* Bottom Area */}
+          <div className="p-5 flex flex-col gap-4 border-t border-stroke">
+            <div className="flex items-center gap-2">
+              <div className="flex-1 bg-sidebar rounded-full px-3 py-2.5 flex items-center gap-2 border border-stroke">
+                <Search size={14} className="text-subtitle"/>
+                <input type="text" placeholder="Search networks..." className="bg-transparent border-none text-[12px] text-title focus:outline-none w-full placeholder:text-subtitle" />
+              </div>
+              <button className="w-10 h-10 rounded-full bg-sidebar border border-stroke flex items-center justify-center text-subtitle hover:text-title transition-colors shrink-0">
+                <Settings size={16} />
+              </button>
+            </div>
+            <button onClick={() => setIsPlansModalOpen(true)} className="w-full relative group overflow-hidden rounded-2xl p-[1px]">
+              <span className="absolute inset-0 bg-gradient-to-r from-primary to-primary opacity-70 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></span>
+              <div className="relative bg-background group-hover:bg-transparent transition-all duration-300 rounded-2xl py-3 px-4 flex items-center justify-center gap-2">
+                <Zap size={16} className="text-primary group-hover:text-black transition-colors" />
+                <span className="font-bold text-sm tracking-wide text-primary group-hover:text-black transition-colors">Upgrade to Pro</span>
+              </div>
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* ================= RIGHT ARENA (CHAT) ================= */}
-      <div className="flex-1 flex flex-col relative z-10 w-full h-full transition-all duration-300">
+      {/* ================= LEFT SIDEBAR (COLLAPSED) ================= */}
+      <div className={`transition-all duration-500 ease-[cubic-bezier(0.2,0.8,0.2,1)] overflow-hidden shrink-0 relative z-50 ${!isDesktopSidebarOpen ? 'w-[80px] opacity-100' : 'w-0 opacity-0 pointer-events-none'}`}>
+        <div className="flex flex-col h-full w-[80px] shrink-0 bg-background py-6 px-3 items-center z-20">
+          
+          <div className="flex flex-col items-center gap-6 w-full">
+            <button onClick={handleNewSession} className="w-12 h-12 rounded-full bg-sidebar border border-stroke flex items-center justify-center text-primary hover:text-title hover:bg-sidebar transition-colors">
+              <Plus size={20} strokeWidth={2.5}/>
+            </button>
+
+            <div className="w-full bg-sidebar rounded-full py-4 flex flex-col items-center gap-5 border border-stroke">
+              <button onClick={() => setIsDesktopSidebarOpen(true)} className="text-subtitle hover:text-title transition-colors"><Grid size={18}/></button>
+              <button onClick={() => setIsDesktopSidebarOpen(true)} className="text-subtitle hover:text-title transition-colors"><Search size={18}/></button>
+              <button onClick={() => setIsDesktopSidebarOpen(true)} className="text-subtitle hover:text-title transition-colors"><Settings size={18}/></button>
+            </div>
+
+            <button onClick={() => setIsDesktopSidebarOpen(true)} className="w-12 h-12 rounded-full bg-sidebar border border-stroke flex items-center justify-center text-subtitle hover:text-title transition-colors">
+              <LogOut size={18} className="ml-1"/>
+            </button>
+          </div>
+        </div>
+      </div>
+
+
+      {/* ================= MAIN CONTENT ================= */}
+      <div className="flex-1 flex flex-col relative z-10 w-full h-full bg-background">
         
-        <div className={`h-16 px-4 flex items-center border-b border-stroke bg-background/80 backdrop-blur-md shrink-0 gap-4 ${isDesktopSidebarOpen ? 'lg:hidden' : 'flex'}`}>
-          <button onClick={() => setIsMobileSidebarOpen(true)} className="lg:hidden p-2 bg-sidebar border border-stroke rounded-lg text-subtitle"><Menu size={18} /></button>
-          {!isDesktopSidebarOpen && (
-            <button onClick={() => setIsDesktopSidebarOpen(true)} className="hidden lg:flex p-2 bg-sidebar border border-stroke rounded-lg text-subtitle hover:text-title"><Menu size={18}/></button>
-          )}
-          <span className="font-black text-title tracking-tight flex items-center gap-2"><img src="/src/assets/Aura.svg" className="w-5 h-5" onError={(e)=>e.target.style.display='none'}/> AURA AI</span>
-        </div>
+        {/* Top Header for Collapsed State */}
+        <div className={`absolute left-0 right-0 flex justify-center z-30 transition-all duration-500 ease-[cubic-bezier(0.2,0.8,0.2,1)] ${!isDesktopSidebarOpen ? 'top-6 opacity-100 scale-100' : '-top-20 opacity-0 scale-90 pointer-events-none'}`}>
+              <div className="bg-background border border-stroke rounded-full p-1.5 pl-5 flex items-center gap-5 shadow-[0_0_30px_rgba(74,222,128,0.1)]">
+                 <div className="flex items-center gap-2">
+                   <img src={AuraLogo} alt="Aura Logo" className="w-5 h-5 object-contain" />
+                   <span className="text-base font-black tracking-widest text-title ml-1">AURA.AI<span className="text-primary">.</span></span>
+                 </div>
+                 <button onClick={() => setIsPlansModalOpen(!isPlansModalOpen)} className="flex items-center gap-1 text-[11px] font-bold text-primary bg-primary-lite border border-primary-border px-3 py-1 rounded-full transition-colors hover:bg-primary hover:text-black">
+                    Basic <ChevronDown size={12} strokeWidth={3}/>
+                 </button>
+              </div>
+           </div>
 
-        <div className="flex-1 overflow-y-auto px-4 md:px-12 lg:px-32 py-10 pb-40 flex flex-col gap-8 custom-scrollbar">
-          {messages.map((msg) => {
+        <PlansModal isOpen={isPlansModalOpen} onClose={() => setIsPlansModalOpen(false)} hideTab={isDesktopSidebarOpen} />
+
+        {/* Central Chat Area (Empty State) */}
+        {activeSession.messages.length === 1 && activeSession.messages[0].type === 'ai_text_template' ? (
+          <div className="flex-1 flex flex-col items-center justify-center p-6">
             
-            // --- TEMPLATE WELCOME MESSAGE ---
-            if (msg.type === 'ai_text_template') {
-              return (
-                <div key={msg.id} className="w-full flex flex-col items-center justify-center mt-10 md:mt-20 animate-fade-in">
-                  <div className="w-16 h-16 bg-sidebar border-2 border-primary rounded-full flex items-center justify-center mb-6 shadow-[0_0_20px_rgba(34,197,94,0.2)]">
-                    <img src="/src/assets/Aura.svg" alt="Aura" className="w-8 h-8" onError={(e) => {e.target.style.display='none'; e.target.parentElement.innerHTML = '<span class="text-2xl">✨</span>'}} />
+            {/* Center Icon & Text */}
+            <div className="flex flex-col items-center mb-10">
+              <img src={AuraOutlinedLogoBlack} alt="Aura Logo" className="w-16 h-16 mb-6 opacity-80 object-contain theme-logo-light" />
+              <img src={AuraOutlinedLogoWhite} alt="Aura Logo" className="w-16 h-16 mb-6 opacity-80 object-contain theme-logo-dark" />
+              <div className="text-[32px] font-medium text-subtitle">Try a template or describe an idea in chat</div>
+            </div>
+
+            {/* Chat Input */}
+            <div className="w-full max-w-3xl relative mb-8">
+              <MentionDropdown mentionState={mentionState} items={mentionState.items} selectedIndex={mentionState.selectedIndex} onSelect={handleMentionSelect} />
+              <div className="bg-sidebar border border-stroke rounded-full pl-6 pr-2 py-2 flex items-center gap-4 shadow-xl transition-all">
+                <button className="text-subtitle hover:text-title transition-colors"><Grid size={20}/></button>
+                <div className="relative flex-1 min-h-[24px] overflow-hidden">
+                  <div ref={overlayRef} className="absolute inset-0 text-[15px] font-medium pointer-events-none whitespace-pre overflow-hidden leading-[24px]" aria-hidden="true">
+                    {renderInputOverlay(inputText)}
                   </div>
-                  <h2 className="text-2xl font-black text-title mb-2">How can I assist you today?</h2>
-                  <p className="text-subtitle mb-10 text-center max-w-md">Select an action template below or type a custom command.</p>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-3xl">
-                    <button onClick={() => handleSend('Create a workout plan for Omar')} className="flex items-center gap-3 bg-sidebar border border-stroke p-4 rounded-xl hover:border-primary hover:bg-background transition-all text-left group">
-                      <div className="bg-primary/10 p-2 rounded-lg text-primary"><Activity size={18} /></div>
-                      <div>
-                        <span className="block font-bold text-title text-sm group-hover:text-primary transition-colors">Workout Programming</span>
-                        <span className="block text-xs text-subtitle mt-0.5">Generate multi-day splits & protocols.</span>
-                      </div>
-                    </button>
-                    <button onClick={() => handleSend('Create a bulk diet for Sarah')} className="flex items-center gap-3 bg-sidebar border border-stroke p-4 rounded-xl hover:border-blue-500 hover:bg-background transition-all text-left group">
-                      <div className="bg-blue-500/10 p-2 rounded-lg text-blue-500"><Utensils size={18} /></div>
-                      <div>
-                        <span className="block font-bold text-title text-sm group-hover:text-blue-500 transition-colors">Nutrition Diets</span>
-                        <span className="block text-xs text-subtitle mt-0.5">Multi-day nutrition scheduling.</span>
-                      </div>
-                    </button>
-                    <button onClick={() => handleSend('Give me AI analytics of my site according to the data in it.')} className="flex items-center gap-3 bg-sidebar border border-stroke p-4 rounded-xl hover:border-purple-500 hover:bg-background transition-all text-left group">
-                      <div className="bg-purple-500/10 p-2 rounded-lg text-purple-500"><PieChart size={18} /></div>
-                      <div>
-                        <span className="block font-bold text-title text-sm group-hover:text-purple-500 transition-colors">Site Analytics</span>
-                        <span className="block text-xs text-subtitle mt-0.5">Generate operational insights report.</span>
-                      </div>
-                    </button>
-                    <button onClick={() => handleSend('Draft a notification for the summer challenge')} className="flex items-center gap-3 bg-sidebar border border-stroke p-4 rounded-xl hover:border-blue-400 hover:bg-background transition-all text-left group">
-                      <div className="bg-blue-400/10 p-2 rounded-lg text-blue-400"><Bell size={18} /></div>
-                      <div>
-                        <span className="block font-bold text-title text-sm group-hover:text-blue-400 transition-colors">Broadcast Notifications</span>
-                        <span className="block text-xs text-subtitle mt-0.5">Draft automated retention messages.</span>
-                      </div>
-                    </button>
-                  </div>
+                  <textarea 
+                    rows={1}
+                    ref={inputRef}
+                    value={inputText} 
+                    onChange={handleInputChange} 
+                    onKeyDown={handleKeyDown}
+                    onScroll={handleScrollSync}
+                    placeholder={!inputText ? "Ask Aura.AI." : ""}
+                    className="w-full h-full bg-transparent border-none text-[15px] leading-[24px] focus:outline-none placeholder:text-subtitle font-medium z-10 resize-none"
+                    style={{ color: 'transparent', caretColor: 'white', scrollbarWidth: 'none' }}
+                  />
                 </div>
-              );
-            }
+                <button 
+                  onClick={() => handleSend()}
+                  className={`w-11 h-11 shrink-0 rounded-full flex items-center justify-center transition-all shadow-[0_0_15px_rgba(74,222,128,0.3)] ${inputText.trim() ? 'bg-primary text-black' : 'bg-primary text-black'}`}
+                >
+                  <Send size={16} strokeWidth={2.5} className="ml-0.5"/>
+                </button>
+              </div>
+            </div>
 
-            if (msg.type === 'user') return (<div key={msg.id} className="self-end max-w-[90%] md:max-w-[70%] flex items-start gap-3"><div className="user-bubble rounded-3xl rounded-tr-sm px-5 py-3 text-[14px] text-title font-medium shadow-md bg-sidebar border border-stroke">{msg.content}</div></div>);
-            if (msg.type === 'ai_text') return (<div key={msg.id} className="self-start max-w-[90%] md:max-w-[70%] flex items-start gap-4"><div className="pt-2"><div className="text-[14px] text-title leading-relaxed font-medium">{msg.content}</div></div></div>);
+            {/* Template Pills Row */}
+            <div className="w-full max-w-7xl overflow-x-auto pb-4 custom-scrollbar mask-edges">
+              <div className="w-max mx-auto flex gap-3 px-12">
+              <button onClick={() => handleSend('Create a workout plan')} className="flex items-center gap-2.5 px-6 py-3.5 rounded-full bg-sidebar border border-stroke text-sm text-title hover:text-title hover:border-gray-600 transition-colors shrink-0 font-medium">
+                <Dumbbell size={16} className="text-subtitle" /> Workout Template
+              </button>
+              <button onClick={() => handleSend('Create a nutrition plan')} className="flex items-center gap-2.5 px-6 py-3.5 rounded-full bg-sidebar border border-stroke text-sm text-title hover:text-title hover:border-gray-600 transition-colors shrink-0 font-medium">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-subtitle"><path d="M12 21a9 9 0 0 0 9-9H3a9 9 0 0 0 9 9Z"/><path d="M12 3v18"/><path d="M3 12h18"/><path d="m12 12 6-6"/><path d="m12 12-6-6"/></svg>
+                Nutrition Template
+              </button>
+              <button onClick={() => handleSend('Give me analytics')} className="flex items-center gap-2.5 px-6 py-3.5 rounded-full bg-sidebar border border-stroke text-sm text-title hover:text-title hover:border-gray-600 transition-colors shrink-0 font-medium">
+                <Activity size={16} className="text-subtitle" /> Analysis
+              </button>
+              <button className="flex items-center gap-2.5 px-6 py-3.5 rounded-full bg-sidebar border border-stroke text-sm text-title hover:text-title hover:border-gray-600 transition-colors shrink-0 font-medium">
+                <FileText size={16} className="text-subtitle" /> Post on Hub
+              </button>
+              <button onClick={() => handleSend('Draft notification')} className="flex items-center gap-2.5 px-6 py-3.5 rounded-full bg-sidebar border border-stroke text-sm text-title hover:text-title hover:border-gray-600 transition-colors shrink-0 font-medium">
+                <Bell size={16} className="text-subtitle" /> Broadcast Notifications
+              </button>
+              <button className="flex items-center gap-2.5 px-6 py-3.5 rounded-full bg-sidebar border border-stroke text-sm text-title hover:text-title hover:border-gray-600 transition-colors shrink-0 font-medium">
+                <BarChart2 size={16} className="text-subtitle" /> Browse Data
+              </button>
+              </div>
+            </div>
 
-            if (msg.type === 'ai_action_proposal') {
-              const isEditingInline = editStyle === 'inline' && editingMessageId === msg.id;
-
-              return (
-                <div key={msg.id} className="self-center w-full max-w-[1000px] flex items-start gap-4 my-4">
-                  <div className="w-full">
-                    <div className="text-[14px] text-title leading-relaxed font-medium mb-4 text-center md:text-left">{msg.content}</div>
-                    
-                    <div className="action-proposal-card bg-sidebar border border-stroke rounded-2xl overflow-hidden backdrop-blur-md shadow-2xl mx-auto">
-                      <div className="bg-background/80 border-b border-stroke px-5 py-3 flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          {msg.action.icon}
-                          <span className="text-sm font-black text-title tracking-widest uppercase">{msg.action.title}</span>
-                        </div>
-                        {msg.status !== 'success' && <span className="bg-yellow-500/10 text-yellow-500 text-[10px] uppercase font-bold tracking-wider px-2 py-1 rounded-full border border-yellow-500/20">Pending Approval</span>}
-                      </div>
-                      
-                      <div className="p-5 bg-sidebar/50">
-                        {isEditingInline ? (
-                          msg.action.title === 'ASSIGN WORKOUT PLAN' ? renderWorkoutBuilderPreview() :
-                          msg.action.title === 'ASSIGN NUTRITION PLAN' ? renderNutritionPreview() :
-                          msg.action.title === 'BROADCAST NOTIFICATION' ? renderNotificationPreview() :
-                          msg.action.title === 'SITE ANALYTICS REPORT' ? renderAnalyticsPreview() :
-                          msg.action.title === 'CREATE SYSTEM ROLE' ? renderPermissionsPreview() : renderGenericForm()
-                        ) : (
-                          <div className="flex flex-col gap-4">
-                            {msg.action.targets && (
-                              <div className="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-4 border-b border-stroke/50 pb-2">
-                                <span className="text-xs font-bold text-primary uppercase tracking-wider w-40 shrink-0 pt-0.5">Assigned Targets</span>
-                                <div className="flex flex-wrap gap-2 flex-1">
-                                  {msg.action.targets.map(t => <span key={t} className="bg-primary/10 border border-primary/20 text-primary text-[10px] font-bold px-2 py-0.5 rounded">{t}</span>)}
-                                </div>
-                              </div>
-                            )}
-                            {msg.action.details.map((detail, idx) => (
-                              <div key={idx} className="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-4 border-b border-stroke/50 pb-2 last:border-0 last:pb-0">
-                                <span className="text-xs font-bold text-subtitle uppercase tracking-wider w-40 shrink-0 pt-0.5">{detail.label}</span>
-                                <span className="text-sm text-title font-medium flex-1">{detail.value}</span>
-                              </div>
-                            ))}
-                            {msg.action.planData && <div className="mt-2 bg-background border border-stroke rounded-lg p-3 text-center"><span className="text-xs font-bold text-subtitle">{msg.action.planData.length} Workout Days Attached. Click Preview/Edit to view Routine Details.</span></div>}
-                            {msg.action.nutritionData && <div className="mt-2 bg-background border border-stroke rounded-lg p-3 text-center"><span className="text-xs font-bold text-subtitle">{msg.action.nutritionData.days?.length || 1} Days / {msg.action.nutritionData.durationWeeks} Weeks Attached. Click Preview to view.</span></div>}
-                            {msg.action.permissionsData && <div className="mt-2 bg-background border border-stroke rounded-lg p-3 text-center"><span className="text-xs font-bold text-subtitle">Matrix Configuration Attached. Click Preview/Edit to view Access Levels.</span></div>}
-                            {msg.action.notificationData && <div className="mt-2 bg-background border border-stroke rounded-lg p-4"><span className="text-xs font-bold text-subtitle uppercase mb-1 block">Preview snippet</span><p className="text-sm text-title italic">"{msg.action.notificationData.body.substring(0,80)}..."</p></div>}
-                            {msg.action.analyticsData && renderAnalyticsPreview()}
-                          </div>
-                        )}
-                      </div>
-
-                      {!isEditingInline && msg.status !== 'success' && (
-                        <div className="bg-background/80 border-t border-stroke p-4 flex flex-wrap justify-end gap-3">
-                          <button onClick={() => handleActionReject(msg.id)} disabled={msg.status === 'loading'} className="px-4 py-2 rounded-xl text-sm font-bold text-subtitle hover:text-red-500 hover:bg-sidebar transition-colors">Reject</button>
-                          <button onClick={() => startEditing(msg)} disabled={msg.status === 'loading'} className="px-4 py-2 rounded-xl text-sm font-bold text-blue-500 bg-blue-500/10 border border-blue-500/20 hover:bg-blue-500/20 flex items-center gap-2 transition-colors"><Edit3 size={16} /> Preview / Edit</button>
-                          <button onClick={() => handleActionApprove(msg.id)} disabled={msg.status === 'loading'} className="relative px-6 py-2 rounded-xl text-sm font-black bg-primary text-black hover:bg-primary/90 transition-all shadow-[0_0_15px_rgba(34,197,94,0.3)] hover:shadow-[0_0_25px_rgba(34,197,94,0.5)] flex justify-center items-center min-w-[160px]">
-                            {msg.status === 'loading' ? <span className="flex items-center gap-2"><Loader2 size={16} className="animate-spin text-black" /> Executing...</span> : "Approve & Execute"}
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              );
-            }
-
-            if (msg.type === 'ai_action_result') {
-               return (
-                <div key={msg.id} className="self-center w-full max-w-3xl flex items-start gap-4 my-2">
-                  <div className="w-full">
-                    <div className={`border rounded-2xl p-5 flex items-center justify-center gap-4 mx-auto shadow-xl ${msg.status === 'success' ? 'bg-primary/10 border-primary/30 text-primary' : 'bg-red-500/10 border-red-500/30 text-red-500'}`}>
-                      {msg.status === 'success' ? <CheckCircle2 size={24} /> : <XCircle size={24} />}
-                      <span className="text-sm font-bold text-title">{msg.resultMsg}</span>
-                    </div>
-                  </div>
-                </div>
-               );
-            }
-            return null;
-          })}
-          <div ref={chatEndRef} />
-        </div>
-
-        <div className={`absolute bottom-6 left-0 right-0 z-20 px-4 md:px-8 transition-all duration-300 ${isDesktopSidebarOpen ? 'md:max-w-4xl lg:max-w-5xl md:mx-auto' : 'md:max-w-5xl lg:max-w-6xl md:mx-auto'}`}>
-          <div className="rounded-[2rem] flex items-center px-2 py-2 shadow-2xl border border-stroke bg-background/90 backdrop-blur-2xl">
-            <button className="hidden sm:flex w-12 h-12 items-center justify-center text-subtitle hover:text-title hover:bg-sidebar transition-colors rounded-full shrink-0"><Paperclip size={20} /></button>
-            <input type="text" value={inputText} onChange={(e) => setInputText(e.target.value)} onKeyDown={handleKeyDown} placeholder="Ask Aura to generate or assign anything..." className="flex-1 bg-transparent border-none text-title px-4 focus:outline-none placeholder:text-subtitle text-[15px]" />
-            <button onClick={() => handleSend()} disabled={!inputText.trim()} className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 shrink-0 ${inputText.trim().length > 0 ? 'bg-primary text-black shadow-[0_0_15px_rgba(34,197,94,0.3)] cursor-pointer' : 'bg-sidebar border border-stroke text-subtitle cursor-default'}`}><ArrowUp size={20} strokeWidth={2.5} /></button>
           </div>
-        </div>
+        ) : (
+          /* Active Chat View */
+          <div className="flex-1 flex flex-col px-6 pb-6 pt-0 w-full max-w-7xl mx-auto h-full overflow-hidden">
+             <div className={`flex-1 overflow-y-auto pr-4 pb-4 custom-scrollbar flex flex-col gap-6 mask-bottom-edge ${!isDesktopSidebarOpen ? 'pt-28' : 'pt-6'}`}>
+                {messages.map((msg) => {
+                  if (msg.type === 'ai_text_template') return null;
+                  if (msg.type === 'user') return (
+                    <div key={msg.id} className="self-end max-w-[80%] flex flex-col items-end gap-2 group">
+                      <div className="bg-sidebar border border-stroke rounded-2xl rounded-tr-sm px-5 py-3 text-[15px] font-medium text-title">
+                         <MessageFormatter content={msg.content} />
+                      </div>
+                      <div className="flex items-center bg-sidebar border border-stroke rounded-full overflow-hidden opacity-0 group-hover:opacity-100 transition-opacity mr-2">
+                        <button onClick={() => navigator.clipboard.writeText(msg.content)} className="p-2 text-subtitle hover:text-title transition-colors border-r border-stroke">
+                          <Copy size={14} />
+                        </button>
+                        <button className="p-2 text-subtitle hover:text-title transition-colors border-r border-stroke">
+                          <Edit3 size={14} />
+                        </button>
+                        <button className="p-2 text-alert hover:text-red-400 transition-colors">
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    </div>
+                  );
+                  if (msg.type === 'ai_text') return (
+                    <div key={msg.id} className="self-start max-w-[80%] flex flex-col gap-2 group">
+                      <div className="flex items-start gap-4">
+                         <div className="flex items-center justify-center shrink-0 mt-1">
+                           <img src={AuraOutlinedLogoBlack} alt="Aura AI" className="w-6 h-6 object-contain opacity-80 theme-logo-light" />
+                           <img src={AuraOutlinedLogoWhite} alt="Aura AI" className="w-6 h-6 object-contain opacity-80 theme-logo-dark" />
+                         </div>
+                         <div className="text-[15px] text-title leading-relaxed font-medium mt-1.5 w-full">
+                           <MessageFormatter content={msg.content} />
+                         </div>
+                      </div>
+                      <div className="flex items-center bg-sidebar border border-stroke rounded-full overflow-hidden mt-2 opacity-0 group-hover:opacity-100 transition-opacity w-fit ml-12">
+                         <button className="p-2 px-3 text-subtitle hover:text-title transition-colors border-r border-stroke">
+                           <ArrowLeftRight size={16} />
+                         </button>
+                         <button className="p-2 px-3 text-subtitle hover:text-title transition-colors border-r border-stroke">
+                           <Star size={16} />
+                         </button>
+                         <button className="p-2 px-3 text-subtitle hover:text-title transition-colors border-r border-stroke">
+                           <StarOff size={16} />
+                         </button>
+                         <button onClick={() => navigator.clipboard.writeText(msg.content)} className="p-2 px-3 text-subtitle hover:text-title transition-colors border-r border-stroke">
+                           <Copy size={16} />
+                         </button>
+                         <button className="p-2 px-3 text-subtitle hover:text-title transition-colors">
+                           <RefreshCw size={16} />
+                         </button>
+                      </div>
+                    </div>
+                  );
+                  if (msg.type === 'ai_action_proposal') return (
+                    <div key={msg.id} className="self-start max-w-[80%] flex items-start gap-4 w-full">
+                       <div className="flex items-center justify-center shrink-0 mt-1">
+                         <img src={AuraOutlinedLogoBlack} alt="Aura AI" className="w-6 h-6 object-contain opacity-80 theme-logo-light" />
+                         <img src={AuraOutlinedLogoWhite} alt="Aura AI" className="w-6 h-6 object-contain opacity-80 theme-logo-dark" />
+                       </div>
+                       <div className="w-full">
+                          <div className="text-[15px] text-title leading-relaxed font-medium mb-4"><MessageFormatter content={msg.content} /></div>
+                          {msg.action.title === 'ASSIGN WORKOUT PLAN' ? (
+                            <WorkoutTemplateCard data={msg.action.planData || {}} onApprove={() => handleActionApprove(msg.id)} onReject={() => handleActionReject(msg.id)} />
+                          ) : (
+                          <div className="bg-sidebar border border-stroke rounded-2xl overflow-hidden w-full">
+                             <div className="bg-sidebar border-b border-stroke px-5 py-3 flex items-center justify-between">
+                               <div className="flex items-center gap-3">
+                                  <div className="bg-background p-1.5 rounded-lg border border-stroke">{msg.action.icon}</div>
+                                  <span className="text-sm font-bold text-title">{msg.action.title}</span>
+                               </div>
+                               {msg.status !== 'success' && <span className="bg-yellow-500/10 text-yellow-500 text-[10px] uppercase font-bold tracking-wider px-2 py-1 rounded-full border border-yellow-500/20">Pending</span>}
+                             </div>
+                             <div className="p-5">
+                               <div className="flex flex-col gap-4">
+                                 {msg.action.details.map((detail, idx) => (
+                                   <div key={idx} className="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-4 border-b border-stroke pb-2 last:border-0 last:pb-0">
+                                     <span className="text-xs font-bold text-subtitle uppercase tracking-wider w-40 shrink-0 pt-0.5">{detail.label}</span>
+                                     <span className="text-sm text-gray-200 font-medium flex-1">{detail.value}</span>
+                                   </div>
+                                 ))}
+                               </div>
+                             </div>
+                             {msg.status !== 'success' && (
+                               <div className="bg-background border-t border-stroke p-3 flex justify-end gap-3 items-center">
+                                  <button onClick={() => handleActionReject(msg.id)} disabled={msg.status === 'loading'} className="px-3 py-1.5 rounded-lg text-xs font-bold text-subtitle hover:text-red-500 transition-colors uppercase tracking-wider">Reject</button>
+                                  <button disabled={msg.status === 'loading'} className="px-3 py-1.5 rounded-lg text-xs font-bold border border-gray-600 text-title hover:text-title hover:border-gray-400 transition-colors uppercase tracking-wider">Save</button>
+                                  <button onClick={() => startEditing(msg)} disabled={msg.status === 'loading'} className="px-3 py-1.5 rounded-lg text-xs font-bold text-blue-400 bg-blue-500/10 border border-blue-500/20 hover:bg-blue-500/20 flex items-center gap-1.5 transition-colors uppercase tracking-wider"><Edit3 size={14} /> Edit</button>
+                                  <button onClick={() => handleActionApprove(msg.id)} disabled={msg.status === 'loading'} className="px-4 py-1.5 rounded-lg text-xs font-black bg-primary text-black hover:bg-[#3b82f6] transition-all flex justify-center items-center min-w-[100px] uppercase tracking-wider">
+                                    {msg.status === 'loading' ? <span className="flex items-center gap-2"><Loader2 size={14} className="animate-spin" /> ...</span> : "Approve"}
+                                  </button>
+                               </div>
+                             )}
+                          </div>
+                          )}
+                       </div>
+                    </div>
+                  );
+                  if (msg.type === 'ai_action_result') return (
+                    <div key={msg.id} className="self-center max-w-[80%] flex items-start gap-4 my-2 w-full">
+                       <div className={`w-full border rounded-2xl p-4 flex items-center justify-center gap-3 ${msg.status === 'success' ? 'bg-primary/10 border-[#4ade80]/30 text-primary' : 'bg-red-500/10 border-red-500/30 text-red-500'}`}>
+                         {msg.status === 'success' ? <CheckCircle2 size={20} /> : <XCircle size={20} />}
+                         <span className="text-sm font-bold">{msg.resultMsg}</span>
+                       </div>
+                    </div>
+                  );
+                  return null;
+                })}
+                <div ref={chatEndRef} />
+             </div>
+
+             {/* Active Chat Input */}
+             <div className="pt-6 flex justify-center shrink-0">
+                <div className="w-full max-w-3xl relative bg-sidebar border border-stroke rounded-full pl-6 pr-2 py-2 flex items-center gap-4 shadow-xl transition-all">
+                  <MentionDropdown mentionState={mentionState} items={mentionState.items} selectedIndex={mentionState.selectedIndex} onSelect={handleMentionSelect} />
+                  <button className="text-subtitle hover:text-title transition-colors"><Grid size={20}/></button>
+                  <div className="relative flex-1 min-h-[24px] overflow-hidden">
+                    <div ref={overlayRef} className="absolute inset-0 text-[15px] font-medium pointer-events-none whitespace-pre overflow-hidden leading-[24px]" aria-hidden="true">
+                      {renderInputOverlay(inputText)}
+                    </div>
+                      <textarea 
+                        rows={1}
+                        ref={inputRef}
+                        value={inputText} 
+                        onChange={handleInputChange} 
+                        onKeyDown={handleKeyDown}
+                        onScroll={handleScrollSync}
+                        className="w-full h-full bg-transparent border-none text-[15px] leading-[24px] focus:outline-none z-10 resize-none"
+                        style={{ color: 'transparent', caretColor: 'var(--title)', scrollbarWidth: 'none' }}
+                      />
+                  </div>
+                  <button 
+                    onClick={() => handleSend()}
+                    disabled={!inputText.trim()}
+                    className={`w-11 h-11 shrink-0 rounded-full flex items-center justify-center transition-all ${inputText.trim() ? 'bg-primary text-black shadow-[0_0_15px_rgba(74,222,128,0.3)]' : 'bg-primary text-black'}`}
+                  >
+                    <Send size={16} strokeWidth={2.5} className="ml-0.5"/>
+                  </button>
+                </div>
+             </div>
+          </div>
+        )}
       </div>
 
-      {/* MODAL EDITOR OVERLAY */}
-      {editStyle === 'modal' && editingMessageId && (
-        <div className="absolute inset-0 z-50 bg-black/60 backdrop-blur-md flex items-center justify-center p-4 overflow-hidden">
-          <div className="w-full max-w-[1400px] bg-sidebar border border-stroke rounded-2xl shadow-2xl flex flex-col max-h-[95vh] animate-fade-in">
-            <div className="px-4 md:px-6 py-4 border-b border-stroke flex justify-between items-center bg-background shrink-0 rounded-t-2xl">
-              <h2 className="text-lg font-black text-title tracking-tight flex items-center gap-2"><Edit3 size={20} className="text-blue-500" /> AI Payload Editor</h2>
-              <button onClick={cancelEdits} className="text-subtitle hover:text-alert transition-colors p-1 rounded-md hover:bg-alert-lite"><X size={20} /></button>
-            </div>
-            
-            <div className="p-4 md:p-6 overflow-y-auto flex-1 custom-scrollbar">
-              {messages.find(m => m.id === editingMessageId)?.action?.title === 'ASSIGN WORKOUT PLAN' ? renderWorkoutBuilderPreview() :
-               messages.find(m => m.id === editingMessageId)?.action?.title === 'ASSIGN NUTRITION PLAN' ? renderNutritionPreview() :
-               messages.find(m => m.id === editingMessageId)?.action?.title === 'BROADCAST NOTIFICATION' ? renderNotificationPreview() :
-               messages.find(m => m.id === editingMessageId)?.action?.title === 'SITE ANALYTICS REPORT' ? renderAnalyticsPreview() :
-               messages.find(m => m.id === editingMessageId)?.action?.title === 'CREATE SYSTEM ROLE' ? renderPermissionsPreview() : renderGenericForm()}
-            </div>
-            
-            <div className="px-4 md:px-6 py-4 border-t border-stroke bg-background flex flex-col sm:flex-row justify-end gap-3 shrink-0 rounded-b-2xl">
-              <button onClick={cancelEdits} className="px-5 py-3 sm:py-2.5 text-sm font-bold text-subtitle hover:text-title hover:bg-sidebar rounded-xl transition-colors border border-stroke sm:border-none">Cancel</button>
-              <button onClick={saveEdits} className="flex items-center justify-center gap-2 px-6 py-3 sm:py-2.5 bg-blue-500 text-white text-sm font-bold rounded-xl shadow-md hover:bg-blue-600 transition-colors"><Save size={18} /> Apply Changes</button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

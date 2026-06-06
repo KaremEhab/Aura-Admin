@@ -70,3 +70,27 @@
   from { opacity: 0; }
   to { opacity: 1; }
 }
+
+/* Horizontal Scrolling Edge Mask */
+.mask-edges {
+  -webkit-mask-image: linear-gradient(to right, transparent, black 40px, black calc(100% - 40px), transparent);
+  mask-image: linear-gradient(to right, transparent, black 40px, black calc(100% - 40px), transparent);
+}
+
+/* Vertical Scrolling Bottom Edge Mask */
+.mask-bottom-edge {
+  -webkit-mask-image: linear-gradient(to bottom, black 0%, black calc(100% - 40px), transparent 100%);
+  mask-image: linear-gradient(to bottom, black 0%, black calc(100% - 40px), transparent 100%);
+}
+
+/* Sidebar Active Chat Item Tabs */
+.active-chat-item {
+  position: relative;
+  background-color: var(--primary-lite);
+  border-radius: 9999px;
+}
+/* Theme Logos */
+.theme-logo-light { display: block; }
+.theme-logo-dark { display: none; }
+[data-theme='dark'] .theme-logo-light { display: none; }
+[data-theme='dark'] .theme-logo-dark { display: block; }

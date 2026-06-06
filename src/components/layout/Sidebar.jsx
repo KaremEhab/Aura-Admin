@@ -24,6 +24,11 @@ export function Sidebar({ isOpen, onClose, currentPage, onNavigate, branding }) 
   };
 
   const handleNavigate = (pageId) => {
+    if (pageId === 'aura-ai') {
+      window.open(window.location.origin + window.location.pathname + '?page=aura-ai', '_blank');
+      onClose?.();
+      return;
+    }
     onNavigate(pageId);
     onClose?.();
   };
