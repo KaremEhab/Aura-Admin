@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { MessageFormatter } from './components/MessageFormatter';
 import { MentionDropdown } from './components/MentionDropdown';
 import { WorkoutTemplateCard } from './components/WorkoutTemplateCard';
+import { SocialPostCard } from './components/SocialPostCard';
 import { PlansModal } from './components/PlansModal';
 import { Repeat } from 'lucide-react';
 import AuraLogo from '../../assets/Aura.svg';
@@ -11,7 +12,7 @@ import {
   User, Menu, Paperclip, ArrowUp, ChevronDown, ChevronRight, ChevronLeft,
   Copy, Puzzle, Headphones, ThumbsUp, ThumbsDown, Folder, Plus, Search,
   Bot, MoreVertical, Edit3, Trash2, CheckCircle2, XCircle, Loader2,
-  Star, StarOff, ArrowLeftRight,
+  Star, StarOff, ArrowLeftRight, Share2,
   ArrowLeft, Zap, Play, Target, UserPlus, Save, X, GripVertical, RefreshCw,
   Key, Shield, Bell, Utensils, Database, PieChart, Activity, Eye, MessageSquare,
   CalendarDays, Grid, Settings, LogOut, Send, Dumbbell, FileText, BarChart2,
@@ -164,6 +165,28 @@ const initialSessions = [
         action: { title: "SITE ANALYTICS REPORT", icon: <PieChart size={18} className="text-purple-500"/>, details: [{ label: "Report Period", value: "Last 30 Days" }], analyticsData: mockAnalyticsData }, status: 'success'
       }
     ]
+  },
+  {
+    id: 's7', title: 'Social Media Post',
+    messages: [
+      { id: 'msg-s7-1', type: 'user', content: 'Create a new Instagram post for our summer promotion.' },
+      {
+        id: 'msg-s7-3', type: 'ai_action_proposal', content: "I've generated a draft for the Instagram summer promotion post.",
+        action: { 
+          title: "CREATE SOCIAL POST", 
+          icon: <Share2 size={18} className="text-pink-500"/>, 
+          details: [{ label: "Platform", value: "Instagram" }], 
+          postData: { 
+            platform: 'Instagram', 
+            targetAudience: ['All Members'], 
+            publishDate: 'Immediate', 
+            tags: ['#SummerFitness', '#AuraGym'], 
+            caption: 'Ready to crush your goals this summer? Join our new 30-day challenge! 💪🔥 #SummerFitness #AuraGym' 
+          } 
+        }, 
+        status: 'pending'
+      }
+    ]
   }
 ];
 
@@ -184,6 +207,7 @@ export function AuraAI({ onNavigate }) {
     val = val.replace(/\btmp_nutrition\b/g, '[NUTRITION TEMPLATE]');
     val = val.replace(/\bpl_vip\b/g, '[VIP PLAN]');
     val = val.replace(/\bpl_basic\b/g, '[BASIC PLAN]');
+    val = val.replace(/\btmp_post\b/g, '[SOCIAL POST TEMPLATE]');
 
     setInputText(val);
 
@@ -432,6 +456,9 @@ export function AuraAI({ onNavigate }) {
       }
       if (part.startsWith('[') && part.endsWith('PLAN]')) {
          return <span key={i} className="bg-purple-500/30 text-purple-400 rounded px-1"><span className="text-transparent">[</span>{part.slice(1, -1)}<span className="text-transparent">]</span></span>;
+      }
+      if (part.startsWith('[') && part.endsWith('POST TEMPLATE]')) {
+         return <span key={i} className="bg-pink-500/30 text-pink-400 rounded px-1"><span className="text-transparent">[</span>{part.slice(1, -1)}<span className="text-transparent">]</span></span>;
       }
       if (part.startsWith('[@') && part.endsWith(']')) {
          return <span key={i} className="bg-orange-500/30 text-orange-400 rounded px-1"><span className="text-transparent">[</span>{part.slice(1, -1)}<span className="text-transparent">]</span></span>;
@@ -737,20 +764,20 @@ export function AuraAI({ onNavigate }) {
             {/* Pinned/Recent Cards */}
             <div className="grid grid-cols-2 gap-3">
               <div className="relative h-24 rounded-2xl overflow-hidden border border-stroke group cursor-pointer">
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0A111E] via-[#0A111E]/80 to-transparent z-10"></div>
+                <div className="absolute inset-0 z-10" style={{ background: 'linear-gradient(to top, var(--background) 5%, transparent 100%)' }}></div>
                 <img src="https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?q=80&w=400&auto=format&fit=crop" alt="bg" className="absolute inset-0 w-full h-full object-cover opacity-40 mix-blend-overlay group-hover:scale-110 transition-transform duration-500" />
                 <div className="relative z-20 p-3 h-full flex flex-col justify-end">
-                   <span className="text-[9px] text-subtitle absolute top-2 right-2 bg-black/50 px-1.5 py-0.5 rounded-full backdrop-blur-sm">now</span>
+                   <span className="text-[9px] text-title absolute top-2 right-2 bg-sidebar px-2 py-0.5 rounded-full backdrop-blur-sm border border-stroke">now</span>
                    <span className="text-[11px] leading-tight font-black text-primary uppercase truncate">OMAR ALAA</span>
                    <span className="text-[9px] font-bold text-subtitle uppercase tracking-wider mt-0.5 truncate">WORKOUT PLAN</span>
                 </div>
               </div>
               
               <div className="relative h-24 rounded-2xl overflow-hidden border border-stroke group cursor-pointer">
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0A111E] via-[#0A111E]/80 to-transparent z-10"></div>
+                <div className="absolute inset-0 z-10" style={{ background: 'linear-gradient(to top, var(--background) 5%, transparent 100%)' }}></div>
                 <img src="https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?q=80&w=400&auto=format&fit=crop" alt="bg" className="absolute inset-0 w-full h-full object-cover opacity-40 mix-blend-overlay group-hover:scale-110 transition-transform duration-500" />
                 <div className="relative z-20 p-3 h-full flex flex-col justify-end">
-                   <span className="text-[9px] text-subtitle absolute top-2 right-2 bg-black/50 px-1.5 py-0.5 rounded-full backdrop-blur-sm">14m</span>
+                   <span className="text-[9px] text-title absolute top-2 right-2 bg-sidebar px-2 py-0.5 rounded-full backdrop-blur-sm border border-stroke">14m</span>
                    <span className="text-[11px] leading-tight font-black text-primary uppercase truncate">HAJER AHMED</span>
                    <span className="text-[9px] font-bold text-subtitle uppercase tracking-wider mt-0.5 truncate">NUTRITION PLAN</span>
                 </div>
@@ -998,7 +1025,9 @@ export function AuraAI({ onNavigate }) {
                        <div className="w-full">
                           <div className="text-[15px] text-title leading-relaxed font-medium mb-4"><MessageFormatter content={msg.content} /></div>
                           {msg.action.title === 'ASSIGN WORKOUT PLAN' ? (
-                            <WorkoutTemplateCard data={msg.action.planData || {}} onApprove={() => handleActionApprove(msg.id)} onReject={() => handleActionReject(msg.id)} />
+                            <WorkoutTemplateCard data={msg.action.planData || {}} onApprove={() => handleActionApprove(msg.id)} onReject={() => handleActionReject(msg.id)} status={msg.status} />
+                          ) : msg.action.title === 'CREATE SOCIAL POST' ? (
+                            <SocialPostCard data={msg.action.postData || {}} onApprove={() => handleActionApprove(msg.id)} onReject={() => handleActionReject(msg.id)} status={msg.status} />
                           ) : (
                           <div className="bg-sidebar border border-stroke rounded-2xl overflow-hidden w-full">
                              <div className="bg-sidebar border-b border-stroke px-5 py-3 flex items-center justify-between">
