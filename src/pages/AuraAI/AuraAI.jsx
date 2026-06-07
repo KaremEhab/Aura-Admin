@@ -4,6 +4,7 @@ import { MentionDropdown } from './components/MentionDropdown';
 import { WorkoutTemplateCard } from './components/WorkoutTemplateCard';
 import { SocialPostCard } from './components/SocialPostCard';
 import { BroadcastCard } from './components/BroadcastCard';
+import { AnalyticsCard } from './components/AnalyticsCard';
 import { PlansModal } from './components/PlansModal';
 import { SearchModal } from './components/SearchModal';
 import { SettingsModal } from './components/SettingsModal';
@@ -99,7 +100,26 @@ const mockAnalyticsData = {
   members: "1,240", membersGrowth: "+5.2%",
   activeRate: "78%",
   topTrainer: "Omar Sherif",
-  retentionScore: 92
+  retentionScore: 92,
+  period: "Last 30 Days"
+};
+
+const mockAnalyticsDataQ2 = {
+  revenue: "$115,200", revenueGrowth: "+8.1%",
+  members: "1,180", membersGrowth: "+2.5%",
+  activeRate: "74%",
+  topTrainer: "Sarah Jenkins",
+  retentionScore: 89,
+  period: "Q2 (Apr - Jun)"
+};
+
+const mockAnalyticsDataDemographics = {
+  revenue: "$41,000", revenueGrowth: "+5.0%",
+  members: "1,250", membersGrowth: "+6.1%",
+  activeRate: "82%",
+  topTrainer: "Omar Sherif",
+  retentionScore: 94,
+  period: "Trailing 12 Months"
 };
 
 const mockCollections = {
@@ -170,6 +190,17 @@ const initialSessions = [
       {
         id: 'msg-s6-3', type: 'ai_action_proposal', content: "I have compiled the latest operational metrics from your gym data.",
         action: { title: "SITE ANALYTICS REPORT", icon: <PieChart size={18} className="text-purple-500"/>, details: [{ label: "Report Period", value: "Last 30 Days" }], analyticsData: mockAnalyticsData }, status: 'success'
+      },
+      { id: 'msg-s6-4', type: 'user', content: 'What about the financial breakdown for the last quarter (Q2)?' },
+      { id: 'msg-s6-5', type: 'ai_text', content: 'Pulling the financial data for Q2. Revenue was stable with steady growth.' },
+      {
+        id: 'msg-s6-6', type: 'ai_action_proposal', content: "Here is the Q2 Operational Analytics Report.",
+        action: { title: "SITE ANALYTICS REPORT", icon: <PieChart size={18} className="text-purple-500"/>, details: [{ label: "Report Period", value: "Q2 (Apr - Jun)" }], analyticsData: mockAnalyticsDataQ2 }, status: 'success'
+      },
+      { id: 'msg-s6-7', type: 'user', content: 'Can you show me the active member demographics and retention?' },
+      {
+        id: 'msg-s6-8', type: 'ai_action_proposal', content: "I've filtered the analytics to focus on member demographics and activity rates.",
+        action: { title: "SITE ANALYTICS REPORT", icon: <PieChart size={18} className="text-purple-500"/>, details: [{ label: "Focus", value: "Demographics & Retention" }], analyticsData: mockAnalyticsDataDemographics }, status: 'success'
       }
     ]
   },
@@ -1078,6 +1109,8 @@ export function AuraAI({ onNavigate }) {
                             <SocialPostCard data={msg.action.postData || {}} onApprove={() => handleActionApprove(msg.id)} onReject={() => handleActionReject(msg.id)} status={msg.status} />
                           ) : msg.action.title === 'BROADCAST NOTIFICATION' ? (
                             <BroadcastCard data={msg.action.notificationData || {}} onApprove={() => handleActionApprove(msg.id)} onReject={() => handleActionReject(msg.id)} status={msg.status} />
+                          ) : msg.action.title === 'SITE ANALYTICS REPORT' ? (
+                            <AnalyticsCard data={msg.action.analyticsData || {}} />
                           ) : (
                           <div className="bg-sidebar border border-stroke rounded-2xl overflow-hidden w-full">
                              <div className="bg-sidebar border-b border-stroke px-5 py-3 flex items-center justify-between">

@@ -3,6 +3,7 @@ import { X, Sparkles, ArrowRight } from 'lucide-react';
 import { WorkoutTemplateCard } from './WorkoutTemplateCard';
 import { SocialPostCard } from './SocialPostCard';
 import { BroadcastCard } from './BroadcastCard';
+import { AnalyticsCard } from './AnalyticsCard';
 
 export const FeaturePreviewModal = ({ isOpen, onClose, feature, onUseFeature }) => {
   if (!isOpen || !feature) return null;
@@ -51,6 +52,18 @@ export const FeaturePreviewModal = ({ isOpen, onClose, feature, onUseFeature }) 
               ctaText: "View Schedule"
             }} 
             status="success" 
+          />
+        );
+      case 'data':
+        return (
+          <AnalyticsCard 
+            data={{
+              revenue: "$42,500", revenueGrowth: "+12.4%",
+              members: "1,240", membersGrowth: "+5.2%",
+              activeRate: "78%",
+              topTrainer: "Omar Sherif",
+              retentionScore: 92
+            }}
           />
         );
       default:
