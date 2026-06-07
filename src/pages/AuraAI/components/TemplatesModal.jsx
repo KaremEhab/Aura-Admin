@@ -5,6 +5,7 @@ import { SocialPostCard } from './SocialPostCard';
 import { BroadcastCard } from './BroadcastCard';
 import { AnalyticsCard } from './AnalyticsCard';
 import { InsightsCard } from './InsightsCard';
+import { NutritionTemplateCard } from './NutritionTemplateCard';
 
 export const TemplatesModal = ({ isOpen, onClose, sessions }) => {
   const [selectedTemplate, setSelectedTemplate] = useState(null);
@@ -38,14 +39,14 @@ export const TemplatesModal = ({ isOpen, onClose, sessions }) => {
        return { 
          category: 'Nutrition Plan', 
          icon: <Utensils size={20} />, 
-         title: t.msg.action.targets?.[0] ? `${t.msg.action.targets[0]}'s Nutrition` : 'Generated Diet' 
+         title: t.msg.action.nutritionData?.templateName || 'Custom Diet' 
        };
     }
     if (t.msg.action.title === 'CREATE SOCIAL POST') {
        return { 
-         category: 'Social Media Post', 
+         category: 'Social Post', 
          icon: <FileText size={20} />, 
-         title: t.msg.action.postData?.platform ? `${t.msg.action.postData.platform} Post` : 'Social Draft' 
+         title: 'Hub Announcement' 
        };
     }
     if (t.msg.action.title === 'BROADCAST NOTIFICATION') {
@@ -82,6 +83,9 @@ export const TemplatesModal = ({ isOpen, onClose, sessions }) => {
     }
     if (t.msg.action.title === 'CREATE SOCIAL POST') {
       return <SocialPostCard data={t.msg.action.postData || {}} status={t.msg.status} onApprove={() => {}} onReject={() => {}} />;
+    }
+    if (t.msg.action.title === 'ASSIGN NUTRITION PLAN') {
+      return <NutritionTemplateCard data={t.msg.action.nutritionData || {}} status={t.msg.status} onApprove={() => {}} onReject={() => {}} />;
     }
     if (t.msg.action.title === 'BROADCAST NOTIFICATION') {
       return <BroadcastCard data={t.msg.action.notificationData || {}} status={t.msg.status} onApprove={() => {}} onReject={() => {}} />;

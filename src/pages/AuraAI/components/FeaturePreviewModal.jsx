@@ -5,6 +5,7 @@ import { SocialPostCard } from './SocialPostCard';
 import { BroadcastCard } from './BroadcastCard';
 import { AnalyticsCard } from './AnalyticsCard';
 import { InsightsCard } from './InsightsCard';
+import { NutritionTemplateCard } from './NutritionTemplateCard';
 
 export const FeaturePreviewModal = ({ isOpen, onClose, feature, onUseFeature }) => {
   if (!isOpen || !feature) return null;
@@ -23,6 +24,28 @@ export const FeaturePreviewModal = ({ isOpen, onClose, feature, onUseFeature }) 
               exercises: [
                 { id: 1, type: 'single', name: 'Barbell Bench Press', sets: 4, reps: '8-10', rest: '90s', rpe: '8', rir: '2' },
                 { id: 2, type: 'single', name: 'Incline Dumbbell Press', sets: 3, reps: '10', rest: '60s', rpe: '9', rir: '1' }
+              ]
+            }} 
+            status="success" 
+          />
+        );
+      case 'nutrition':
+        return (
+          <NutritionTemplateCard 
+            data={{
+              templateName: "Shred Phase 1",
+              goal: "Fat Loss",
+              dietType: "Carb Cycling",
+              durationWeeks: 4,
+              days: [
+                {
+                  id: 'day-1', title: 'Training Day (High Carb)',
+                  globalTargets: { p: 180, c: 250, f: 65, cals: 2305 },
+                  meals: [
+                    { id: 1, name: 'Breakfast', items: [{ name: 'Oats (Raw)', p: 13, c: 68, f: 6.5, cals: 389, amount: 100, unit: 'g' }, { name: 'Whey Protein Isolate', p: 25, c: 1, f: 0.5, cals: 110, amount: 30, unit: 'g' }] },
+                    { id: 2, name: 'Lunch', items: [{ name: 'Chicken Breast (Raw)', p: 23, c: 0, f: 1.2, cals: 110, amount: 200, unit: 'g' }, { name: 'White Rice', p: 2.7, c: 28, f: 0.3, cals: 130, amount: 150, unit: 'g' }] }
+                  ]
+                }
               ]
             }} 
             status="success" 

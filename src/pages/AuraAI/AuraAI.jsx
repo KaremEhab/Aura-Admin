@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { MessageFormatter } from './components/MessageFormatter';
 import { MentionDropdown } from './components/MentionDropdown';
 import { WorkoutTemplateCard } from './components/WorkoutTemplateCard';
+import { NutritionTemplateCard } from './components/NutritionTemplateCard';
 import { SocialPostCard } from './components/SocialPostCard';
 import { BroadcastCard } from './components/BroadcastCard';
 import { AnalyticsCard } from './components/AnalyticsCard';
@@ -1112,6 +1113,8 @@ export function AuraAI({ onNavigate }) {
                           <div className="text-[15px] text-title leading-relaxed font-medium mb-4"><MessageFormatter content={msg.content} /></div>
                           {msg.action.title === 'ASSIGN WORKOUT PLAN' ? (
                             <WorkoutTemplateCard data={msg.action.planData || {}} onApprove={() => handleActionApprove(msg.id)} onReject={() => handleActionReject(msg.id)} status={msg.status} />
+                          ) : msg.action.title === 'ASSIGN NUTRITION PLAN' ? (
+                            <NutritionTemplateCard data={msg.action.nutritionData || {}} onApprove={() => handleActionApprove(msg.id)} onReject={() => handleActionReject(msg.id)} status={msg.status} />
                           ) : msg.action.title === 'CREATE SOCIAL POST' ? (
                             <SocialPostCard data={msg.action.postData || {}} onApprove={() => handleActionApprove(msg.id)} onReject={() => handleActionReject(msg.id)} status={msg.status} />
                           ) : msg.action.title === 'BROADCAST NOTIFICATION' ? (
