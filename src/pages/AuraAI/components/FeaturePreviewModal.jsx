@@ -2,6 +2,7 @@ import React from 'react';
 import { X, Sparkles, ArrowRight } from 'lucide-react';
 import { WorkoutTemplateCard } from './WorkoutTemplateCard';
 import { SocialPostCard } from './SocialPostCard';
+import { BroadcastCard } from './BroadcastCard';
 
 export const FeaturePreviewModal = ({ isOpen, onClose, feature, onUseFeature }) => {
   if (!isOpen || !feature) return null;
@@ -34,6 +35,20 @@ export const FeaturePreviewModal = ({ isOpen, onClose, feature, onUseFeature }) 
               hashtags: ["AuraFitness", "SummerShred", "Goals"],
               mediaType: "Image",
               scheduledTime: "Tomorrow 10:00 AM"
+            }} 
+            status="success" 
+          />
+        );
+      case 'broadcast':
+        return (
+          <BroadcastCard 
+            data={{
+              subject: "Upcoming Gym Maintenance Notice",
+              message: "Hi everyone,\n\nPlease note that the main weight room will be closed for equipment maintenance this Saturday from 10 PM to 2 AM.\n\nThe cardio area and studio will remain open.\n\nThank you for your understanding!",
+              channels: ["Push", "Email"],
+              audience: "All Active Members",
+              scheduledTime: "Tomorrow 8:00 AM",
+              ctaText: "View Schedule"
             }} 
             status="success" 
           />

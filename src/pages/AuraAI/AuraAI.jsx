@@ -3,6 +3,7 @@ import { MessageFormatter } from './components/MessageFormatter';
 import { MentionDropdown } from './components/MentionDropdown';
 import { WorkoutTemplateCard } from './components/WorkoutTemplateCard';
 import { SocialPostCard } from './components/SocialPostCard';
+import { BroadcastCard } from './components/BroadcastCard';
 import { PlansModal } from './components/PlansModal';
 import { SearchModal } from './components/SearchModal';
 import { SettingsModal } from './components/SettingsModal';
@@ -85,10 +86,12 @@ const mockPermissionsData = {
 };
 
 const mockNotificationData = {
-  title: "🔥 Summer Challenge Activation",
-  body: "The 8-Week Summer Shred Challenge begins next Monday. Opt-in now through the member portal to secure your spot and unlock exclusive tracking features.",
-  actionLink: "aura://challenge/summer2026",
-  audience: "Active Members (Excluding VIP)"
+  subject: "🔥 Summer Challenge Activation",
+  message: "The 8-Week Summer Shred Challenge begins next Monday.\n\nOpt-in now through the member portal to secure your spot and unlock exclusive tracking features.",
+  ctaText: "Join Challenge",
+  audience: "Active Members (Excluding VIP)",
+  channels: ["Push", "Email", "In-App"],
+  scheduledTime: "Tomorrow at 9:00 AM"
 };
 
 const mockAnalyticsData = {
@@ -1073,6 +1076,8 @@ export function AuraAI({ onNavigate }) {
                             <WorkoutTemplateCard data={msg.action.planData || {}} onApprove={() => handleActionApprove(msg.id)} onReject={() => handleActionReject(msg.id)} status={msg.status} />
                           ) : msg.action.title === 'CREATE SOCIAL POST' ? (
                             <SocialPostCard data={msg.action.postData || {}} onApprove={() => handleActionApprove(msg.id)} onReject={() => handleActionReject(msg.id)} status={msg.status} />
+                          ) : msg.action.title === 'BROADCAST NOTIFICATION' ? (
+                            <BroadcastCard data={msg.action.notificationData || {}} onApprove={() => handleActionApprove(msg.id)} onReject={() => handleActionReject(msg.id)} status={msg.status} />
                           ) : (
                           <div className="bg-sidebar border border-stroke rounded-2xl overflow-hidden w-full">
                              <div className="bg-sidebar border-b border-stroke px-5 py-3 flex items-center justify-between">

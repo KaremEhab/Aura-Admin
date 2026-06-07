@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { X, Grid as GridIcon, Dumbbell, FileText, Utensils, Activity, ArrowLeft, ChevronRight, Search } from 'lucide-react';
+import { X, Grid as GridIcon, Dumbbell, FileText, Utensils, Activity, ArrowLeft, ChevronRight, Search, Bell } from 'lucide-react';
 import { WorkoutTemplateCard } from './WorkoutTemplateCard';
 import { SocialPostCard } from './SocialPostCard';
+import { BroadcastCard } from './BroadcastCard';
 
 export const TemplatesModal = ({ isOpen, onClose, sessions }) => {
   const [selectedTemplate, setSelectedTemplate] = useState(null);
@@ -45,6 +46,13 @@ export const TemplatesModal = ({ isOpen, onClose, sessions }) => {
          title: t.msg.action.postData?.platform ? `${t.msg.action.postData.platform} Post` : 'Social Draft' 
        };
     }
+    if (t.msg.action.title === 'BROADCAST NOTIFICATION') {
+       return { 
+         category: 'Push Notification', 
+         icon: <Bell size={20} />, 
+         title: t.msg.action.notificationData?.subject || 'Broadcast Draft' 
+       };
+    }
     return { 
       category: 'General Template', 
       icon: <Activity size={20} />, 
@@ -58,6 +66,9 @@ export const TemplatesModal = ({ isOpen, onClose, sessions }) => {
     }
     if (t.msg.action.title === 'CREATE SOCIAL POST') {
       return <SocialPostCard data={t.msg.action.postData || {}} status={t.msg.status} onApprove={() => {}} onReject={() => {}} />;
+    }
+    if (t.msg.action.title === 'BROADCAST NOTIFICATION') {
+      return <BroadcastCard data={t.msg.action.notificationData || {}} status={t.msg.status} onApprove={() => {}} onReject={() => {}} />;
     }
     
     // Generic fallback for Nutrition and others
