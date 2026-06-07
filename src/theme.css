@@ -59,4 +59,9 @@
 .text-subtitle { color: var(--subtitle); }
 .hover\:text-primary-lite:hover { color: var(--primary-lite); }
 
+/* Logo/Image Theme Toggles */
+.theme-logo-dark { display: none !important; }
+[data-theme='dark'] .theme-logo-dark { display: block !important; }
 
+.theme-logo-light { display: block !important; }
+[data-theme='dark'] .theme-logo-light { display: none !important; }

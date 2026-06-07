@@ -26,7 +26,7 @@ export const PlansModal = ({ isOpen, onClose, hideTab }) => {
         onClick={onClose} 
       />
       <div 
-        className={`absolute top-[80px] left-1/2 z-40 w-[95%] max-w-[1300px] px-8 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] origin-top ${isVisible ? 'opacity-100 translate-y-0 scale-100 -translate-x-1/2' : 'opacity-0 -translate-y-4 scale-[0.98] -translate-x-1/2'}`}
+        className={`absolute top-[80px] left-1/2 z-40 w-[95%] max-w-[1300px] px-0 lg:px-8 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] origin-top ${isVisible ? 'opacity-100 translate-y-0 scale-100 -translate-x-1/2' : 'opacity-0 -translate-y-4 scale-[0.98] -translate-x-1/2'}`}
       >
         {!hideTab && (
           <div className="flex justify-center -mb-[1px] relative z-10">
@@ -37,10 +37,10 @@ export const PlansModal = ({ isOpen, onClose, hideTab }) => {
         )}
         
         {/* Main Panel */}
-        <div className="bg-background border border-stroke rounded-3xl p-6 shadow-2xl flex flex-col lg:flex-row gap-6">
+        <div className="bg-background border border-stroke rounded-[32px] p-5 lg:p-6 shadow-2xl flex flex-col lg:flex-row gap-5 lg:gap-6 h-[calc(100dvh-105px)] lg:h-auto lg:max-h-[85vh] overflow-y-auto custom-scrollbar pb-12 lg:pb-6">
           
           {/* Card 1: Basic Plan */}
-          <div className="flex-1 bg-background border border-stroke rounded-2xl p-6 flex flex-col">
+          <div className="flex-none lg:flex-1 shrink-0 bg-background border border-stroke rounded-2xl p-6 flex flex-col">
             <div className="flex justify-between items-start mb-6">
               <Sparkles size={20} className="text-subtitle" />
               <span className="px-3 py-1 rounded-full border border-gray-600 text-[10px] text-subtitle font-bold uppercase tracking-wider">Basic Plan</span>
@@ -71,7 +71,7 @@ export const PlansModal = ({ isOpen, onClose, hideTab }) => {
           </div>
 
           {/* Card 2: VR Fitness */}
-          <div className="flex-1 bg-background border border-stroke rounded-2xl p-6 flex flex-col">
+          <div className="flex-none lg:flex-1 shrink-0 bg-background border border-stroke rounded-2xl p-6 flex flex-col">
             <div className="flex justify-between items-start mb-6">
               <Sparkles size={20} className="text-subtitle" />
               <span className="px-3 py-1 rounded-full border border-gray-600 text-[10px] text-subtitle font-bold uppercase tracking-wider">Exclusive Access</span>
@@ -105,7 +105,7 @@ export const PlansModal = ({ isOpen, onClose, hideTab }) => {
           </div>
 
           {/* Card 3: Pro Feature */}
-          <div className="flex-1 bg-background border-2 border-primary-border rounded-2xl p-6 flex flex-col relative overflow-hidden group">
+          <div className="flex-none lg:flex-1 shrink-0 bg-background border-2 border-primary-border rounded-2xl p-6 flex flex-col relative overflow-hidden group">
             {/* Glowing Orb Gradient */}
             <div className="absolute -top-32 -right-32 w-64 h-64 bg-primary rounded-full mix-blend-screen filter blur-[100px] opacity-40 group-hover:opacity-60 transition-opacity duration-500"></div>
             <div className="absolute inset-0 bg-gradient-to-br from-primary-lite via-transparent to-transparent opacity-80"></div>

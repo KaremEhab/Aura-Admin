@@ -29,7 +29,7 @@ export const SocialPostCard = ({ data, onApprove, onReject, status = 'pending' }
   ];
 
   return (
-    <div className="bg-sidebar border border-stroke rounded-3xl overflow-hidden shadow-2xl w-full max-w-4xl mx-auto my-6 relative transition-all duration-300">
+    <div className="bg-sidebar border border-stroke rounded-3xl overflow-hidden shadow-2xl w-full mx-auto my-6 relative transition-all duration-300">
       
       {/* Header */}
       <div className="px-6 py-4 flex items-center justify-between border-b border-stroke">
