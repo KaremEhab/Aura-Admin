@@ -5,6 +5,7 @@ import { WorkoutTemplateCard } from './components/WorkoutTemplateCard';
 import { SocialPostCard } from './components/SocialPostCard';
 import { BroadcastCard } from './components/BroadcastCard';
 import { AnalyticsCard } from './components/AnalyticsCard';
+import { InsightsCard } from './components/InsightsCard';
 import { PlansModal } from './components/PlansModal';
 import { SearchModal } from './components/SearchModal';
 import { SettingsModal } from './components/SettingsModal';
@@ -421,6 +422,12 @@ export function AuraAI({ onNavigate }) {
       newMessages.push({
         id: messageId, type: 'ai_action_proposal', content: "I've drafted the notification copy. Review before broadcasting.",
         action: { title: "BROADCAST NOTIFICATION", icon: <Bell size={18} className="text-blue-500"/>, details: [{ label: "Channel", value: "In-App Push" }], targets: ["Global"], notificationData: mockNotificationData }, status: 'pending' 
+      });
+    }
+    else if (textLower.includes('analysis') || textLower.includes('insight')) {
+      newMessages.push({
+        id: messageId, type: 'ai_action_proposal', content: "I've analyzed the recent operational data and generated key business insights.",
+        action: { title: "AI INSIGHTS REPORT", icon: <Sparkles size={18} className="text-purple-500"/>, details: [{ label: "Focus", value: "Operational Health & Churn" }] }, status: 'success' 
       });
     }
     else if (textLower.includes('analytic') || textLower.includes('data')) {
@@ -1111,6 +1118,8 @@ export function AuraAI({ onNavigate }) {
                             <BroadcastCard data={msg.action.notificationData || {}} onApprove={() => handleActionApprove(msg.id)} onReject={() => handleActionReject(msg.id)} status={msg.status} />
                           ) : msg.action.title === 'SITE ANALYTICS REPORT' ? (
                             <AnalyticsCard data={msg.action.analyticsData || {}} />
+                          ) : msg.action.title === 'AI INSIGHTS REPORT' ? (
+                            <InsightsCard data={{}} />
                           ) : (
                           <div className="bg-sidebar border border-stroke rounded-2xl overflow-hidden w-full">
                              <div className="bg-sidebar border-b border-stroke px-5 py-3 flex items-center justify-between">

@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { X, Grid as GridIcon, Dumbbell, FileText, Utensils, Activity, ArrowLeft, ChevronRight, Search, Bell } from 'lucide-react';
+import { X, Grid as GridIcon, Dumbbell, FileText, Utensils, Activity, ArrowLeft, ChevronRight, Search, Bell, PieChart, Sparkles } from 'lucide-react';
 import { WorkoutTemplateCard } from './WorkoutTemplateCard';
 import { SocialPostCard } from './SocialPostCard';
 import { BroadcastCard } from './BroadcastCard';
+import { AnalyticsCard } from './AnalyticsCard';
+import { InsightsCard } from './InsightsCard';
 
 export const TemplatesModal = ({ isOpen, onClose, sessions }) => {
   const [selectedTemplate, setSelectedTemplate] = useState(null);
@@ -53,6 +55,20 @@ export const TemplatesModal = ({ isOpen, onClose, sessions }) => {
          title: t.msg.action.notificationData?.subject || 'Broadcast Draft' 
        };
     }
+    if (t.msg.action.title === 'SITE ANALYTICS REPORT') {
+       return { 
+         category: 'Analytics Report', 
+         icon: <PieChart size={20} />, 
+         title: 'Site Data & Operations' 
+       };
+    }
+    if (t.msg.action.title === 'AI INSIGHTS REPORT') {
+       return { 
+         category: 'Business Analysis', 
+         icon: <Sparkles size={20} />, 
+         title: 'AI Predictive Insights' 
+       };
+    }
     return { 
       category: 'General Template', 
       icon: <Activity size={20} />, 
@@ -69,6 +85,12 @@ export const TemplatesModal = ({ isOpen, onClose, sessions }) => {
     }
     if (t.msg.action.title === 'BROADCAST NOTIFICATION') {
       return <BroadcastCard data={t.msg.action.notificationData || {}} status={t.msg.status} onApprove={() => {}} onReject={() => {}} />;
+    }
+    if (t.msg.action.title === 'SITE ANALYTICS REPORT') {
+      return <AnalyticsCard data={t.msg.action.analyticsData || {}} status={t.msg.status} />;
+    }
+    if (t.msg.action.title === 'AI INSIGHTS REPORT') {
+      return <InsightsCard data={{}} status={t.msg.status} />;
     }
     
     // Generic fallback for Nutrition and others

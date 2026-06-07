@@ -4,6 +4,7 @@ import { WorkoutTemplateCard } from './WorkoutTemplateCard';
 import { SocialPostCard } from './SocialPostCard';
 import { BroadcastCard } from './BroadcastCard';
 import { AnalyticsCard } from './AnalyticsCard';
+import { InsightsCard } from './InsightsCard';
 
 export const FeaturePreviewModal = ({ isOpen, onClose, feature, onUseFeature }) => {
   if (!isOpen || !feature) return null;
@@ -65,6 +66,10 @@ export const FeaturePreviewModal = ({ isOpen, onClose, feature, onUseFeature }) 
               retentionScore: 92
             }}
           />
+        );
+      case 'analytics':
+        return (
+          <InsightsCard data={{}} />
         );
       default:
         return (

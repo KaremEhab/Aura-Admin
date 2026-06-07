@@ -63,33 +63,64 @@ export const AnalyticsCard = ({ data }) => {
 
       <div className="p-5 md:p-6 bg-background/50">
         {activeTab === 'overview' && (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 animate-fade-in">
-             <div className="bg-background border border-stroke rounded-2xl p-4 flex flex-col gap-2 relative overflow-hidden group">
-               <div className="absolute -right-4 -top-4 w-16 h-16 bg-green-500/5 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
-               <div className="text-subtitle flex items-center gap-2 mb-1 relative z-10"><DollarSign size={14} className="text-green-500"/> <span className="text-[10px] font-bold uppercase tracking-wider">Revenue</span></div>
-               <div className="text-xl font-bold text-title relative z-10">{extendedData.revenue}</div>
-               <div className="text-[11px] font-medium text-green-500 flex items-center gap-1 relative z-10"><TrendingUp size={12}/> {extendedData.revenueGrowth} vs last month</div>
+          <div className="flex flex-col gap-6 animate-fade-in">
+             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+               <div className="bg-background border border-stroke rounded-2xl p-4 flex flex-col gap-2 relative overflow-hidden group">
+                 <div className="absolute -right-4 -top-4 w-16 h-16 bg-green-500/5 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
+                 <div className="text-subtitle flex items-center gap-2 mb-1 relative z-10"><DollarSign size={14} className="text-green-500"/> <span className="text-[10px] font-bold uppercase tracking-wider">Revenue</span></div>
+                 <div className="text-xl font-bold text-title relative z-10">{extendedData.revenue}</div>
+                 <div className="text-[11px] font-medium text-green-500 flex items-center gap-1 relative z-10"><TrendingUp size={12}/> {extendedData.revenueGrowth} vs last month</div>
+               </div>
+
+               <div className="bg-background border border-stroke rounded-2xl p-4 flex flex-col gap-2 relative overflow-hidden group">
+                 <div className="absolute -right-4 -top-4 w-16 h-16 bg-blue-500/5 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
+                 <div className="text-subtitle flex items-center gap-2 mb-1 relative z-10"><Users size={14} className="text-blue-500"/> <span className="text-[10px] font-bold uppercase tracking-wider">Members</span></div>
+                 <div className="text-xl font-bold text-title relative z-10">{extendedData.members}</div>
+                 <div className="text-[11px] font-medium text-green-500 flex items-center gap-1 relative z-10"><TrendingUp size={12}/> {extendedData.membersGrowth} vs last month</div>
+               </div>
+
+               <div className="bg-background border border-stroke rounded-2xl p-4 flex flex-col gap-2 relative overflow-hidden group">
+                 <div className="absolute -right-4 -top-4 w-16 h-16 bg-yellow-500/5 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
+                 <div className="text-subtitle flex items-center gap-2 mb-1 relative z-10"><Activity size={14} className="text-yellow-500"/> <span className="text-[10px] font-bold uppercase tracking-wider">Retention</span></div>
+                 <div className="text-xl font-bold text-title relative z-10">{extendedData.retentionScore}%</div>
+                 <div className="text-[11px] font-medium text-subtitle relative z-10">Healthy Level</div>
+               </div>
+
+               <div className="bg-background border border-stroke rounded-2xl p-4 flex flex-col gap-2 relative overflow-hidden group">
+                 <div className="absolute -right-4 -top-4 w-16 h-16 bg-purple-500/5 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
+                 <div className="text-subtitle flex items-center gap-2 mb-1 relative z-10"><Award size={14} className="text-purple-500"/> <span className="text-[10px] font-bold uppercase tracking-wider">Top Trainer</span></div>
+                 <div className="text-sm font-bold text-title mt-1 relative z-10">{extendedData.topTrainer}</div>
+                 <div className="text-[11px] font-medium text-purple-400 flex items-center gap-1 relative z-10 cursor-pointer hover:underline">View Profile <ChevronRight size={12}/></div>
+               </div>
              </div>
 
-             <div className="bg-background border border-stroke rounded-2xl p-4 flex flex-col gap-2 relative overflow-hidden group">
-               <div className="absolute -right-4 -top-4 w-16 h-16 bg-blue-500/5 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
-               <div className="text-subtitle flex items-center gap-2 mb-1 relative z-10"><Users size={14} className="text-blue-500"/> <span className="text-[10px] font-bold uppercase tracking-wider">Members</span></div>
-               <div className="text-xl font-bold text-title relative z-10">{extendedData.members}</div>
-               <div className="text-[11px] font-medium text-green-500 flex items-center gap-1 relative z-10"><TrendingUp size={12}/> {extendedData.membersGrowth} vs last month</div>
-             </div>
-
-             <div className="bg-background border border-stroke rounded-2xl p-4 flex flex-col gap-2 relative overflow-hidden group">
-               <div className="absolute -right-4 -top-4 w-16 h-16 bg-yellow-500/5 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
-               <div className="text-subtitle flex items-center gap-2 mb-1 relative z-10"><Activity size={14} className="text-yellow-500"/> <span className="text-[10px] font-bold uppercase tracking-wider">Retention</span></div>
-               <div className="text-xl font-bold text-title relative z-10">{extendedData.retentionScore}%</div>
-               <div className="text-[11px] font-medium text-subtitle relative z-10">Healthy Level</div>
-             </div>
-
-             <div className="bg-background border border-stroke rounded-2xl p-4 flex flex-col gap-2 relative overflow-hidden group">
-               <div className="absolute -right-4 -top-4 w-16 h-16 bg-purple-500/5 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
-               <div className="text-subtitle flex items-center gap-2 mb-1 relative z-10"><Award size={14} className="text-purple-500"/> <span className="text-[10px] font-bold uppercase tracking-wider">Top Trainer</span></div>
-               <div className="text-sm font-bold text-title mt-1 relative z-10">{extendedData.topTrainer}</div>
-               <div className="text-[11px] font-medium text-purple-400 flex items-center gap-1 relative z-10 cursor-pointer hover:underline">View Profile <ChevronRight size={12}/></div>
+             <div className="bg-background border border-stroke rounded-2xl p-5">
+               <div className="flex items-center justify-between mb-4">
+                 <div>
+                   <h4 className="text-sm font-bold text-title">Revenue Growth</h4>
+                   <p className="text-[11px] text-subtitle">Trailing 6 months performance</p>
+                 </div>
+               </div>
+               <div className="h-40 w-full flex justify-between gap-2">
+                 {extendedData.monthlyRevenue.map((dataPoint, idx) => {
+                   const heightPct = (dataPoint.val / maxRev) * 100;
+                   return (
+                     <div key={idx} className="flex flex-col items-center gap-2 flex-1 group h-full">
+                       <div className="w-full relative flex-1 flex items-end justify-center rounded-t-md overflow-hidden bg-sidebar">
+                         <div 
+                           className="w-full bg-gradient-to-t from-green-500/20 to-green-500/80 rounded-t-md transition-all duration-700 ease-out group-hover:to-green-400"
+                           style={{ height: `${heightPct}%` }}
+                         ></div>
+                         {/* Tooltip on hover */}
+                         <div className="absolute top-2 opacity-0 group-hover:opacity-100 transition-opacity text-[10px] font-bold text-white bg-black/80 px-2 py-1 rounded shadow-lg pointer-events-none">
+                           ${(dataPoint.val / 1000).toFixed(1)}k
+                         </div>
+                       </div>
+                       <span className="text-[10px] font-bold text-subtitle uppercase">{dataPoint.month}</span>
+                     </div>
+                   );
+                 })}
+               </div>
              </div>
           </div>
         )}
@@ -107,26 +138,26 @@ export const AnalyticsCard = ({ data }) => {
                </div>
              </div>
              
-             <div className="h-40 w-full flex items-end justify-between gap-2 pt-4">
-               {extendedData.monthlyRevenue.map((dataPoint, idx) => {
-                 const heightPct = (dataPoint.val / maxRev) * 100;
-                 return (
-                   <div key={idx} className="flex flex-col items-center gap-2 flex-1 group">
-                     <div className="w-full relative h-full flex items-end justify-center rounded-t-md overflow-hidden bg-sidebar">
-                       <div 
-                         className="w-full bg-gradient-to-t from-green-500/20 to-green-500/80 rounded-t-md transition-all duration-700 ease-out group-hover:to-green-400"
-                         style={{ height: `${heightPct}%` }}
-                       ></div>
-                       {/* Tooltip on hover */}
-                       <div className="absolute top-2 opacity-0 group-hover:opacity-100 transition-opacity text-[10px] font-bold text-white bg-black/80 px-2 py-1 rounded shadow-lg pointer-events-none">
-                         ${(dataPoint.val / 1000).toFixed(1)}k
-                       </div>
-                     </div>
-                     <span className="text-[10px] font-bold text-subtitle uppercase">{dataPoint.month}</span>
-                   </div>
-                 );
-               })}
-             </div>
+             <div className="h-40 w-full flex justify-between gap-2 pt-4">
+                {extendedData.monthlyRevenue.map((dataPoint, idx) => {
+                  const heightPct = (dataPoint.val / maxRev) * 100;
+                  return (
+                    <div key={idx} className="flex flex-col items-center gap-2 flex-1 group h-full">
+                      <div className="w-full relative flex-1 flex items-end justify-center rounded-t-md overflow-hidden bg-sidebar">
+                        <div 
+                          className="w-full bg-gradient-to-t from-green-500/20 to-green-500/80 rounded-t-md transition-all duration-700 ease-out group-hover:to-green-400"
+                          style={{ height: `${heightPct}%` }}
+                        ></div>
+                        {/* Tooltip on hover */}
+                        <div className="absolute top-2 opacity-0 group-hover:opacity-100 transition-opacity text-[10px] font-bold text-white bg-black/80 px-2 py-1 rounded shadow-lg pointer-events-none">
+                          ${(dataPoint.val / 1000).toFixed(1)}k
+                        </div>
+                      </div>
+                      <span className="text-[10px] font-bold text-subtitle uppercase">{dataPoint.month}</span>
+                    </div>
+                  );
+                })}
+              </div>
           </div>
         )}
 
